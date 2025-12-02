@@ -1,31 +1,23 @@
-import {Routes, Route} from 'react-router-dom';
-import Header from './components/Header.jsx';
-import BookPage from './pages/BookPage.jsx';
-
-
-const ComingSoon = ({title}) => (
-  <div className = "text-center py-20 text-2xl text-gray-400">
-   Tính năng <b>{title}</b> đang được phát triển...
-  </div>
-);
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import DashboardPage from "./pages/DashboardPage";
+import BookPage from "./pages/BookPage";
+import SalesPage from "./pages/SalesPage";
+import InventoryPage from "./pages/InventoryPage";
+import PageNotFound from "./pages/PageNotFound";
 
 function App() {
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
-      <Header />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <Routes>
-        <Route path="/" element={<ComingSoon title="Dashboard" />} />
-        <Route path="/books" element={<BookPage />} />
-        <Route path="/inventory" element={<ComingSoon title="Kho hàng" />} />
-        <Route path="/finance" element={<ComingSoon title="Tài chính" />} />
-        <Route path="/customers" element={<ComingSoon title="Khách hàng" />} />
-        <Route path="/reports" element={<ComingSoon title="Báo cáo" />} />
-        <Route path="/settings" element={<ComingSoon title="Cài đặt" />} />
-      </Routes>
-      </main>
-    </div>
-  );
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route index element={<DashboardPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/book" element={<BookPage />} />
+                <Route path="/sale" element={<SalesPage />} />
+                <Route path="/inventory" element={<InventoryPage />} />
+                <Route path="*" element={<PageNotFound />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
-export default App
+export default App;

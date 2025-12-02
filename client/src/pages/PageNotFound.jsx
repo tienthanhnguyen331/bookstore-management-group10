@@ -1,13 +1,12 @@
 import { Header } from "../components/Header";
 
-// Trang bán hàng
-function SalesPage() {
+function PageNotFound() {
     return (
         <div>
             <Header />
-            <div>This is Sales Page</div>
+            <div>Page Not Found</div>
         </div>
     );
 }
 
-export default SalesPage;
+export default PageNotFound;
