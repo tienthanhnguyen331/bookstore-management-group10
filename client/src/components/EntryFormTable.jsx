@@ -10,14 +10,26 @@ export function EntryFormTable({
         setEntries(entries.filter((entry) => entry.id !== id));
     };
 
-    // // convert a form into a history to save in historyList
-    // const convertEntryFormIntoHistory = function () {
-    //     // date (temp curdate)
-    //     const date = new Date().toLocaleDateString();
+    // convert a form into a history to save in historyList
+    // a history includes: id, date, bookTypes, totalQuantity
+    const convertEntryFormIntoHistory = function () {
+        // date (temp curdate)
+        const date = new Date().toLocaleDateString();
 
-    //     // id
-    //     const id = history[history.length - 1].id.at(-1);
-    // };
+        // id
+        const id = history[history.length - 1]?.id + 1 || 1;
+
+        //bookTypes
+        const bookTypes = entries.length;
+
+        // totalQuantity
+        const totalQuantity = entries.reduce(
+            (total, entry) => total + entry.quantity,
+            0
+        );
+
+        return { id, date, bookTypes, totalQuantity };
+    };
 
     return (
         <div className="mb-8">
@@ -25,7 +37,7 @@ export function EntryFormTable({
             <div className="bg-white rounded-lg p-6 shadow-sm">
                 <p className="text-gray-500 mb-6">Ngày: 16/11/2025</p>
 
-                <div className="mb-6 overflow-auto h-100">
+                <div className="mb-6 overflow-auto max-h-96">
                     <table className="w-full">
                         <thead>
                             <tr className="bg-gray-100">
@@ -52,7 +64,9 @@ export function EntryFormTable({
 
                 <div className="flex justify-center">
                     <button
-                        onClick={handleSaveEntry}
+                        onClick={() =>
+                            handleSaveEntry(convertEntryFormIntoHistory())
+                        }
                         className="px-8 py-3 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors"
                     >
                         Lưu phiếu nhập

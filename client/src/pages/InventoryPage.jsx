@@ -35,28 +35,33 @@ const tempData = [
     },
 ];
 
-const history = [
-    { id: "#PN01", date: "15/11/2025", bookTypes: 2, totalQuantity: 2000 },
-    { id: "#PN02", date: "15/11/2025", bookTypes: 3, totalQuantity: 3000 },
-    { id: "#PN03", date: "15/11/2025", bookTypes: 4, totalQuantity: 4000 },
-    { id: "#PN04", date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
-    { id: "#PN05", date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
-    { id: "#PN06", date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
-    { id: "#PN07", date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
-    { id: "#PN08", date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
+const initialHistory = [
+    { id: 1, date: "15/11/2025", bookTypes: 2, totalQuantity: 2000 },
+    { id: 2, date: "15/11/2025", bookTypes: 3, totalQuantity: 3000 },
+    { id: 3, date: "15/11/2025", bookTypes: 4, totalQuantity: 4000 },
+    { id: 4, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
+    { id: 5, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
+    { id: 6, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
+    { id: 7, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
+    { id: 8, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
 ];
 
 export default function InventoryPage() {
     const [entries, setEntries] = useState(tempData);
 
-    const [histories, setHistories] = useState(history);
+    const [histories, setHistories] = useState(initialHistory);
 
     // this function will save entry into history, when user click 'Lưu phiếu nhập' at EntryFormTable
     const handleSaveEntry = function (newHistory) {
-        if (!history.date || !history.bookTypes || !history.totalQuantity)
+        if (
+            !newHistory.date ||
+            !newHistory.bookTypes ||
+            !newHistory.totalQuantity
+        )
             return;
 
         setHistories([...histories, newHistory]);
+        setEntries([]);
     };
 
     return (
@@ -66,8 +71,8 @@ export default function InventoryPage() {
                 <h1 className="mb-8 text-xl font-semibold">Nhập kho</h1>
                 <StockEntryForm entries={entries} setEntries={setEntries} />
                 <EntryFormTable
-                    entries={entries}
                     history={histories}
+                    entries={entries}
                     setEntries={setEntries}
                     handleSaveEntry={handleSaveEntry}
                 />

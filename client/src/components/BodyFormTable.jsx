@@ -1,3 +1,5 @@
+import { Trash } from "lucide-react";
+
 function BodyFormTable({ entries, handleDelete }) {
     return (
         <tbody className="">
@@ -13,7 +15,7 @@ function BodyFormTable({ entries, handleDelete }) {
                             onClick={() => handleDelete(entry.id)}
                             className="p-2 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition-colors"
                         >
-                            🗑️
+                            <Trash className="w-4 h-4" />
                         </button>
                     </td>
                 </tr>

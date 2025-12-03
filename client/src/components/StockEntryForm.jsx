@@ -16,7 +16,7 @@ export function StockEntryForm({ entries, setEntries }) {
 
     // get temp ID to add into entry form
     const getTemporaryID = function () {
-        const id = entries[entries.length - 1].id;
+        const id = entries[entries.length - 1]?.id || 1;
 
         return id + 1;
     };
