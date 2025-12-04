@@ -11,6 +11,7 @@ const tempData = [
         category: "TL01",
         author: "Nguyễn Văn A",
         quantity: 1000,
+        unitPrice: 50000,
     },
     {
         id: 2,
@@ -18,6 +19,7 @@ const tempData = [
         category: "TL02",
         author: "Nguyễn Văn C",
         quantity: 2000,
+        unitPrice: 50000,
     },
     {
         id: 3,
@@ -25,6 +27,7 @@ const tempData = [
         category: "TL03",
         author: "Nguyễn Văn C",
         quantity: 3000,
+        unitPrice: 50000,
     },
     {
         id: 4,
@@ -32,18 +35,67 @@ const tempData = [
         category: "TL04",
         author: "Nguyễn Văn D",
         quantity: 4000,
+        unitPrice: 50000,
     },
 ];
 
 const initialHistory = [
-    { id: 1, date: "15/11/2025", bookTypes: 2, totalQuantity: 2000 },
-    { id: 2, date: "15/11/2025", bookTypes: 3, totalQuantity: 3000 },
-    { id: 3, date: "15/11/2025", bookTypes: 4, totalQuantity: 4000 },
-    { id: 4, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
-    { id: 5, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
-    { id: 6, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
-    { id: 7, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
-    { id: 8, date: "15/11/2025", bookTypes: 5, totalQuantity: 5000 },
+    {
+        id: 1,
+        date: "15/11/2025",
+        bookTypes: 2,
+        totalQuantity: 2000,
+        bookList: tempData,
+    },
+    {
+        id: 2,
+        date: "15/11/2025",
+        bookTypes: 3,
+        totalQuantity: 3000,
+        bookList: tempData,
+    },
+    {
+        id: 3,
+        date: "15/11/2025",
+        bookTypes: 4,
+        totalQuantity: 4000,
+        bookList: tempData,
+    },
+    {
+        id: 4,
+        date: "15/11/2025",
+        bookTypes: 5,
+        totalQuantity: 5000,
+        bookList: tempData,
+    },
+    {
+        id: 5,
+        date: "15/11/2025",
+        bookTypes: 5,
+        totalQuantity: 5000,
+        bookList: tempData,
+    },
+    {
+        id: 6,
+        date: "15/11/2025",
+        bookTypes: 5,
+        totalQuantity: 5000,
+        bookList: tempData,
+    },
+    {
+        id: 7,
+        date: "15/11/2025",
+        bookTypes: 5,
+        totalQuantity: 5000,
+        bookList: tempData,
+    },
+    {
+        id: 8,
+        date: "15/11/2025",
+        bookTypes: 5,
+        totalQuantity: 5000,
+        bookList: tempData,
+    },
 ];
 
 export default function InventoryPage() {
@@ -56,7 +108,8 @@ export default function InventoryPage() {
         if (
             !newHistory.date ||
             !newHistory.bookTypes ||
-            !newHistory.totalQuantity
+            !newHistory.totalQuantity ||
+            !newHistory.bookList.length
         )
             return;
 
