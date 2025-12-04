@@ -1,6 +1,6 @@
 import { Eye } from "lucide-react";
 
-function BodyHistoryTable({ history }) {
+function BodyHistoryTable({ history, handleViewDetails }) {
     return (
         <tbody>
             {history.map((entry) => (
@@ -13,7 +13,10 @@ function BodyHistoryTable({ history }) {
                     <td className="px-4 py-4">{entry.bookTypes}</td>
                     <td className="px-4 py-4">{entry.totalQuantity}</td>
                     <td className="px-4 py-4">
-                        <button className="p-2 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition-colors">
+                        <button
+                            onClick={() => handleViewDetails(entry)}
+                            className="p-2 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition-colors"
+                        >
                             <Eye className="w-4 h-4" />
                         </button>
                     </td>

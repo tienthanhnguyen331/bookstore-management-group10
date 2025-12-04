@@ -11,7 +11,7 @@ export function EntryFormTable({
     };
 
     // convert a form into a history to save in historyList
-    // a history includes: id, date, bookTypes, totalQuantity
+    // a history includes: id, date, bookTypes, totalQuantity, bookList
     const convertEntryFormIntoHistory = function () {
         // date (temp curdate)
         const date = new Date().toLocaleDateString();
@@ -28,7 +28,9 @@ export function EntryFormTable({
             0
         );
 
-        return { id, date, bookTypes, totalQuantity };
+        const bookList = [...entries];
+
+        return { id, date, bookTypes, totalQuantity, bookList };
     };
 
     return (
@@ -51,6 +53,10 @@ export function EntryFormTable({
                                 <th className="px-4 py-3 text-left">Tác giả</th>
                                 <th className="px-4 py-3 text-left">
                                     Số lượng
+                                </th>
+                                <th className="px-4 py-3 text-left">Đơn giá</th>
+                                <th className="px-4 py-3 text-left">
+                                    Thành tiền
                                 </th>
                                 <th className="px-4 py-3"></th>
                             </tr>

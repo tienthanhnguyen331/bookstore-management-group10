@@ -1,6 +1,6 @@
 import { Trash } from "lucide-react";
 
-function BodyFormTable({ entries, handleDelete }) {
+function BodyFormTable({ entries, handleDelete = null, haveButton = true }) {
     return (
         <tbody className="">
             {entries.map((entry, index) => (
@@ -11,13 +11,24 @@ function BodyFormTable({ entries, handleDelete }) {
                     <td className="px-4 py-4">{entry.author}</td>
                     <td className="px-4 py-4">{entry.quantity}</td>
                     <td className="px-4 py-4">
-                        <button
-                            onClick={() => handleDelete(entry.id)}
-                            className="p-2 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition-colors"
-                        >
-                            <Trash className="w-4 h-4" />
-                        </button>
+                        {entry.unitPrice.toLocaleString("vi-VN")} đ
                     </td>
+                    <td className="px-4 py-4">
+                        {(entry.quantity * entry.unitPrice).toLocaleString(
+                            "vi-VN"
+                        )}{" "}
+                        đ
+                    </td>
+                    {haveButton && (
+                        <td className="px-4 py-4">
+                            <button
+                                onClick={() => handleDelete(entry.id)}
+                                className="p-2 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition-colors"
+                            >
+                                <Trash className="w-4 h-4" />
+                            </button>
+                        </td>
+                    )}
                 </tr>
             ))}
         </tbody>
