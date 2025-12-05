@@ -4,6 +4,7 @@ import BookPage from "./pages/BookPage";
 import SalesPage from "./pages/SalesPage";
 import InventoryPage from "./pages/InventoryPage";
 import PageNotFound from "./pages/PageNotFound";
+import CustomerDebtPage from "./pages/CustomerDebtPage";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                 <Route path="/book" element={<BookPage />} />
                 <Route path="/sale" element={<SalesPage />} />
                 <Route path="/inventory" element={<InventoryPage />} />
+                <Route path="/finance" element={<CustomerDebtPage />} />
                 <Route path="*" element={<PageNotFound />} />
             </Routes>
         </BrowserRouter>
