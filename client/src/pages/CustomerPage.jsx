@@ -4,12 +4,8 @@ import { useState } from "react";
 import { useCustomerFilter } from "../components/finance/useCustomerFilter";
 import CustomerSearchForm from "../components/finance/CustomerSearchForm";
 import CustomerTable from "../components/customers/CustomerTable";
-import EditCustomerModal from "../components/customers/EditCustomerModal";
+import EditCustomerModal from "../components/shared/EditCustomerModal";
 import DeleteConfirmModal from "../components/customers/DeleteConfirmModal";
-// import { CustomerTable } from "./customers/CustomerTable";
-// import { AddEditCustomerModal } from "./customers/AddEditCustomerModal";
-// import { DeleteConfirmModal } from "./customers/DeleteConfirmModal";
-// import { customersData } from "./customers/customerListData";
 
 const customersData = [
     {
@@ -153,7 +149,10 @@ export default function CustomerListPage() {
             {/* Modal for editing and adding */}
             <EditCustomerModal
                 isOpen={isAddEditModalOpen}
-                onClose={() => setIsAddEditModalOpen((isOpen) => !isOpen)}
+                onClose={() => {
+                    setIsAddEditModalOpen(false);
+                    setSelectedCustomer(null);
+                }}
                 customer={selectedCustomer}
                 onSave={handleSaveCustomer}
             />

@@ -1,13 +1,4 @@
-export default function CustomerTableHead() {
-    const headers = [
-        "MÃ KH",
-        "Tên khách hàng",
-        "Email",
-        "Địa chỉ",
-        "Số điện thoại",
-        "Thao tác",
-    ];
-
+export default function CustomerTableHead({ headers }) {
     return (
         <thead>
             <tr className="bg-gray-50 border-b border-gray-200">

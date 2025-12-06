@@ -1,17 +1,27 @@
-import { Edit2, Trash2, AlertCircle } from "lucide-react";
-import CustomerTableHead from "./CustomerTableHead";
-import CustomerTableBody from "./CustomerTableBody";
+import CustomerTableHead from "../shared/CustomerTableHead";
+import CustomerTableBody from "../shared/CustomerTableBody";
+
+const customerTableHeaders = [
+    "MÃ KH",
+    "Tên khách hàng",
+    "Email",
+    "Địa chỉ",
+    "Số điện thoại",
+    "Thao tác",
+];
 
 export default function CustomerTable({ customers, onEdit, onDelete }) {
     return (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full">
-                    <CustomerTableHead />
+                    <CustomerTableHead headers={customerTableHeaders} />
                     <CustomerTableBody
                         customers={customers}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        showDebtColumn={false}
+                        colSpan={6}
                     />
                 </table>
             </div>

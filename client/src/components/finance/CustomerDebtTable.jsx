@@ -1,8 +1,17 @@
-import { Plus, Edit2, Slice } from "lucide-react";
-import CustomerDebtTableBody from "./CustomerDebtTableBody";
-import CustomerDebtTableHead from "./CustomerDebtTableHead";
+import CustomerTableHead from "../shared/CustomerTableHead";
+import CustomerTableBody from "../shared/CustomerTableBody";
+import EditCustomerModal from "../shared/EditCustomerModal";
 import { useState } from "react";
-import EditCustomerModal from "./EditCustomerModal";
+
+const debtTableHeaders = [
+    "STT",
+    "Tên khách hàng",
+    "Email",
+    "Số điện thoại",
+    "Địa chỉ",
+    "Số tiền nợ",
+    "Thao tác",
+];
 
 export default function CustomerDebtTable({ customers, onUpdateCustomer }) {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -10,27 +19,29 @@ export default function CustomerDebtTable({ customers, onUpdateCustomer }) {
 
     const handleEditClick = (customer) => {
         setSelectedCustomer(customer);
-        setIsModalOpen((isModalOpen) => !isModalOpen);
+        setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
-        setIsModalOpen((isModalOpen) => !isModalOpen);
+        setIsModalOpen(false);
         setSelectedCustomer(null);
     };
 
     const handleSaveCustomer = (updatedCustomer) => {
         onUpdateCustomer(updatedCustomer);
+        handleCloseModal();
     };
 
     return (
         <>
-            {isModalOpen && (
-                <EditCustomerModal
-                    onCloseModal={handleCloseModal}
-                    onSaveCustomer={handleSaveCustomer}
-                    customer={selectedCustomer}
-                />
-            )}
+            <EditCustomerModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                customer={selectedCustomer}
+                onSave={handleSaveCustomer}
+                showDebtField={true}
+                title="Chỉnh sửa thông tin khách hàng"
+            />
 
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
@@ -42,10 +53,13 @@ export default function CustomerDebtTable({ customers, onUpdateCustomer }) {
                 <div className="overflow-x-auto">
                     <div className="min-h-[500px] overflow-y-auto">
                         <table className="w-full">
-                            <CustomerDebtTableHead />
-                            <CustomerDebtTableBody
+                            <CustomerTableHead headers={debtTableHeaders} />
+                            <CustomerTableBody
                                 customers={customers}
-                                onEditClick={handleEditClick}
+                                onEdit={handleEditClick}
+                                showDebtColumn={true}
+                                colSpan={7}
+                                useIndexAsKey={false}
                             />
                         </table>
                     </div>
