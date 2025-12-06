@@ -36,10 +36,6 @@ export default function CustomerDebtTable({ customers, onUpdateCustomer }) {
                 <div className="p-6 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <h2>Danh sách ({customers.length})</h2>
-                        <button className="flex items-center gap-2 px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors">
-                            <Plus className="w-4 h-4" />
-                            Thêm khách hàng
-                        </button>
                     </div>
                 </div>
 
