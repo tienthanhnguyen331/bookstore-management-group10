@@ -109,6 +109,9 @@ namespace DoAnPhanMem.Migrations
                     b.Property<decimal>("DonGiaBan")
                         .HasColumnType("decimal(18,0)");
 
+                    b.Property<DateTime>("NgayLapHoaDon")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
 

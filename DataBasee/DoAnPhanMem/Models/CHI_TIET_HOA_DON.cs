@@ -29,5 +29,8 @@ namespace DoAnPhanMem.Models
 
         [Column(TypeName = "decimal(18, 0)")]
         public decimal DonGiaBan { get; set; } 
+        public DateTime NgayLapHoaDon { get; set; }
+
     }
 }
+

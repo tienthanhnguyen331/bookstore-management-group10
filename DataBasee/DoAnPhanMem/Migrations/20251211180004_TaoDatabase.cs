@@ -283,7 +283,8 @@ namespace DoAnPhanMem.Migrations
                     MaHoaDon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     MaSach = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SoLuong = table.Column<int>(type: "int", nullable: false),
-                    DonGiaBan = table.Column<decimal>(type: "decimal(18,0)", nullable: false)
+                    DonGiaBan = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    NgayLapHoaDon = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
