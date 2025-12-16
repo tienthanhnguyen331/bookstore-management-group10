@@ -380,6 +380,9 @@ namespace DoAnPhanMem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<decimal>("DonGia")
+                        .HasColumnType("decimal(18,0)");
+
                     b.Property<string>("MaTL")
                         .IsRequired()
                         .HasMaxLength(100)

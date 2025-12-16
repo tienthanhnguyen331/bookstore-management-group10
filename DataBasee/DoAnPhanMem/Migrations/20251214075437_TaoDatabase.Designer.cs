@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoAnPhanMem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251211180004_TaoDatabase")]
+    [Migration("20251214075437_TaoDatabase")]
     partial class TaoDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -381,6 +381,9 @@ namespace DoAnPhanMem.Migrations
                     b.Property<string>("MaSach")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("DonGia")
+                        .HasColumnType("decimal(18,0)");
 
                     b.Property<string>("MaTL")
                         .IsRequired()

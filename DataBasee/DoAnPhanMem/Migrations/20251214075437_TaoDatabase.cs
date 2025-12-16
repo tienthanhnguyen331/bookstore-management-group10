@@ -100,6 +100,7 @@ namespace DoAnPhanMem.Migrations
                     MaSach = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     TenSach = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SoLuongTon = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    DonGia = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     MaTL = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
