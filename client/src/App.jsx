@@ -6,12 +6,12 @@ import InventoryPage from "./pages/InventoryPage";
 import PageNotFound from "./pages/PageNotFound";
 import CustomerDebtPage from "./pages/CustomerDebtPage";
 import CustomerListPage from "./pages/CustomerPage";
+import ReportPage from "./pages/ReportPage";
+
 function App() {
     return (
         <BrowserRouter>
-            
             <Routes>
-                
                 <Route index element={<DashboardPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/book" element={<BookPage />} />
@@ -19,6 +19,7 @@ function App() {
                 <Route path="/inventory" element={<InventoryPage />} />
                 <Route path="/finance" element={<CustomerDebtPage />} />
                 <Route path="/customer" element={<CustomerListPage />} />
+                <Route path="/report" element={<ReportPage />} />
                 <Route path="*" element={<PageNotFound />} />
             </Routes>
         </BrowserRouter>
