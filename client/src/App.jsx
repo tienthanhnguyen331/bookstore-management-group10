@@ -6,6 +6,7 @@ import InventoryPage from "./pages/InventoryPage";
 import PageNotFound from "./pages/PageNotFound";
 import CustomerDebtPage from "./pages/CustomerDebtPage";
 import CustomerListPage from "./pages/CustomerPage";
+import SettingsPage from "./pages/SettingsPage";
 function App() {
     return (
         <BrowserRouter>
@@ -19,6 +20,7 @@ function App() {
                 <Route path="/inventory" element={<InventoryPage />} />
                 <Route path="/finance" element={<CustomerDebtPage />} />
                 <Route path="/customer" element={<CustomerListPage />} />
+                <Route path="/setting" element={<SettingsPage />} />
                 <Route path="*" element={<PageNotFound />} />
             </Routes>
         </BrowserRouter>
