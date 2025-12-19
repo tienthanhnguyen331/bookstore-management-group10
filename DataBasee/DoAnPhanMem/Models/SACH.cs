@@ -15,6 +15,10 @@ namespace DoAnPhanMem.Models
         public string TenSach { get; set; }
        
         public int SoLuongTon {  get; set; }
+
+        [Column(TypeName = "decimal(18, 0)")]
+        public decimal DonGia { get; set; }
+
         [StringLength(100)]
         public string MaTL {  get; set; }
         [ForeignKey("MaTL")]

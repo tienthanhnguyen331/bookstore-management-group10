@@ -19,21 +19,46 @@ namespace DoAnPhanMem.Controllers
             _ruleService = ruleService;
         }
 
+        // API lay danh sach sach de hien thi trong dropdown
+        // GET: api/HoaDon/DanhSachSach
+        [HttpGet("DanhSachSach")]
+        public async Task<IActionResult> GetDanhSachSach()
+        {
+            var danhSachSach = await _context.SACH
+                .Include(s => s.TheLoai)
+                .Where(s => s.SoLuongTon > 0)
+                .Select(s => new SachResponseDto
+                {
+                    MaSach = s.MaSach,
+                    TenSach = s.TenSach,
+                    TenTheLoai = s.TheLoai != null ? s.TheLoai.TenTL : "",
+                    DonGia = s.DonGia,
+                    SoLuongTon = s.SoLuongTon
+                })
+                .ToListAsync();
+
+            return Ok(danhSachSach);
+        }
+
         // API tra cuu khach hang theo so dien thoai
         // GET: api/HoaDon/TraCuuKhachHang?sdt=0123456789
         [HttpGet("TraCuuKhachHang")]
-        public async Task<IActionResult> TraCuuKhachHang([FromQuery] string sdt)
+        public async Task<IActionResult> TraCuuKhachHang([FromQuery] string? sdt)
         {
+            decimal gioiHanNo = _ruleService.GetDecimalRule("QD2_NoToiDa");
+
             if (string.IsNullOrWhiteSpace(sdt))
             {
                 // Khach vang lai
                 return Ok(new KhachHangResponseDto
                 {
-                    MaKH = "KH_VANGLAI",
+                    MaKH = "",
                     HoTen = "Khach vang lai",
                     SDT = "",
                     CongNo = 0,
-                    IsKhachVangLai = true
+                    GioiHanNo = gioiHanNo,
+                    IsKhachVangLai = true,
+                    Message = null
                 });
             }
 
@@ -45,11 +70,13 @@ namespace DoAnPhanMem.Controllers
                 // Khong tim thay -> Khach vang lai
                 return Ok(new KhachHangResponseDto
                 {
-                    MaKH = "KH_VANGLAI",
+                    MaKH = "",
                     HoTen = "Khach vang lai",
                     SDT = sdt,
                     CongNo = 0,
-                    IsKhachVangLai = true
+                    GioiHanNo = gioiHanNo,
+                    IsKhachVangLai = true,
+                    Message = "Khong tim thay khach hang trong he thong"
                 });
             }
 
@@ -59,7 +86,9 @@ namespace DoAnPhanMem.Controllers
                 HoTen = khachHang.HoTen,
                 SDT = khachHang.SDT,
                 CongNo = khachHang.CongNo,
-                IsKhachVangLai = false
+                GioiHanNo = gioiHanNo,
+                IsKhachVangLai = false,
+                Message = null
             });
         }
 
@@ -99,15 +128,15 @@ namespace DoAnPhanMem.Controllers
             }
 
             // Tao ma hoa don
-            var maHoaDon = "HD" + DateTime.Now.ToString("yyyyMMddHHmmss");
-            var ngayLap = DateTime.Now;
+            var maHoaDon = "HD" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            var ngayLap = DateTime.UtcNow;
 
             // Tao hoa don
             var hoaDon = new HOA_DON
             {
                 MaHoaDon = maHoaDon,
                 MaKH = isKhachVangLai ? null : khachHang!.MaKH,
-                MaNV = null // Co the lay tu JWT token neu can
+                MaNV = null
             };
 
             _context.HOA_DON.Add(hoaDon);
@@ -146,8 +175,8 @@ namespace DoAnPhanMem.Controllers
                     return BadRequest(new { message = $"Sach '{sach.TenSach}': {ex.Message}" });
                 }
 
-                // Tinh don gia ban (co the lay tu bang gia hoac tinh theo quy dinh)
-                decimal donGiaBan = 100000; // Gia mac dinh, co the thay doi theo nghiep vu
+                // Lay don gia tu sach
+                decimal donGiaBan = sach.DonGia;
 
                 // Tao chi tiet hoa don
                 var chiTiet = new CHI_TIET_HOA_DON
@@ -174,7 +203,7 @@ namespace DoAnPhanMem.Controllers
                     STT = stt,
                     MaSach = sach.MaSach,
                     TenSach = sach.TenSach,
-                    TheLoai = sach.TheLoai?.MaTL ?? "",
+                    TheLoai = sach.TheLoai?.TenTL ?? "",
                     SoLuong = item.SoLuong,
                     DonGia = donGiaBan,
                     ThanhTien = thanhTien
@@ -195,6 +224,7 @@ namespace DoAnPhanMem.Controllers
                 NgayLap = ngayLap,
                 TenKhachHang = isKhachVangLai ? "Khach vang lai" : khachHang!.HoTen,
                 SDTKhachHang = dto.SDTKhachHang ?? "",
+                IsKhachVangLai = isKhachVangLai,
                 DanhSachSanPham = chiTietResponses,
                 TongTien = tongTien
             });
@@ -235,7 +265,7 @@ namespace DoAnPhanMem.Controllers
                 STT = index + 1,
                 MaSach = ct.MaSach,
                 TenSach = ct.Sach?.TenSach ?? "",
-                TheLoai = ct.Sach?.TheLoai?.MaTL ?? "",
+                TheLoai = ct.Sach?.TheLoai?.TenTL ?? "",
                 SoLuong = ct.SoLuong,
                 DonGia = ct.DonGiaBan,
                 ThanhTien = ct.DonGiaBan * ct.SoLuong
@@ -244,9 +274,10 @@ namespace DoAnPhanMem.Controllers
             return Ok(new HoaDonResponseDto
             {
                 MaHoaDon = hoaDon.MaHoaDon,
-                NgayLap = hoaDon.ChiTietHoaDon.FirstOrDefault()?.NgayLapHoaDon ?? DateTime.Now,
+                NgayLap = hoaDon.ChiTietHoaDon.FirstOrDefault()?.NgayLapHoaDon ?? DateTime.UtcNow,
                 TenKhachHang = hoaDon.KhachHang?.HoTen ?? "Khach vang lai",
                 SDTKhachHang = hoaDon.KhachHang?.SDT ?? "",
+                IsKhachVangLai = hoaDon.KhachHang == null,
                 DanhSachSanPham = chiTietResponses,
                 TongTien = chiTietResponses.Sum(ct => ct.ThanhTien)
             });
