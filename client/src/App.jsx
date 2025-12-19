@@ -8,6 +8,7 @@ import CustomerDebtPage from "./pages/CustomerDebtPage";
 import CustomerListPage from "./pages/CustomerPage";
 import ReportPage from "./pages/ReportPage";
 
+import SettingsPage from "./pages/SettingsPage";
 function App() {
     return (
         <BrowserRouter>
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/finance" element={<CustomerDebtPage />} />
                 <Route path="/customer" element={<CustomerListPage />} />
                 <Route path="/report" element={<ReportPage />} />
+                <Route path="/setting" element={<SettingsPage />} />
                 <Route path="*" element={<PageNotFound />} />
             </Routes>
         </BrowserRouter>
