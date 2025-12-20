@@ -249,6 +249,18 @@ namespace DoAnPhanMem.Migrations
                         .IsUnique();
 
                     b.ToTable("NHAN_VIEN");
+
+                    b.HasData(
+                        new
+                        {
+                            MaNV = "NV01",
+                            ChucVu = "Quản Lý",
+                            DiaChi = "HCM",
+                            Email = "admin@bookstore.com",
+                            HoTen = "Quản Trị Viên",
+                            SDT = "0909000111",
+                            TenDangNhap = "admin"
+                        });
                 });
 
             modelBuilder.Entity("DoAnPhanMem.Models.PHIEU_NHAP_SACH", b =>
@@ -322,6 +334,38 @@ namespace DoAnPhanMem.Migrations
                     b.HasIndex("MaNV");
 
                     b.ToTable("QUY_DINH");
+
+                    b.HasData(
+                        new
+                        {
+                            TenQuyDinh = "QD1_NhapToiThieu",
+                            GiaTri = "150",
+                            MaNV = "NV01"
+                        },
+                        new
+                        {
+                            TenQuyDinh = "QD1_TonToiDaTruocNhap",
+                            GiaTri = "300",
+                            MaNV = "NV01"
+                        },
+                        new
+                        {
+                            TenQuyDinh = "QD2_NoToiDa",
+                            GiaTri = "20000",
+                            MaNV = "NV01"
+                        },
+                        new
+                        {
+                            TenQuyDinh = "QD2_TonToiThieuSauBan",
+                            GiaTri = "20",
+                            MaNV = "NV01"
+                        },
+                        new
+                        {
+                            TenQuyDinh = "QD4_KiemTraTienThu",
+                            GiaTri = "1",
+                            MaNV = "NV01"
+                        });
                 });
 
             modelBuilder.Entity("DoAnPhanMem.Models.SACH", b =>
@@ -404,6 +448,13 @@ namespace DoAnPhanMem.Migrations
                     b.HasKey("TenDangNhap");
 
                     b.ToTable("TAI_KHOAN");
+
+                    b.HasData(
+                        new
+                        {
+                            TenDangNhap = "admin",
+                            MatKhau = "$2a$11$..."
+                        });
                 });
 
             modelBuilder.Entity("DoAnPhanMem.Models.THE_LOAI", b =>

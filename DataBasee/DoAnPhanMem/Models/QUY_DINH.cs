@@ -14,12 +14,14 @@ namespace DoAnPhanMem.Models
         [StringLength(100)]
         public string GiaTri {  get; set; }
 
+
         // Khóa ngoại chuẩn
         public string MaNV { get; set; }
 
         // --- QUAN TRỌNG: THÊM DÒNG NÀY ---
         [ForeignKey("MaNV")]
         public  NHAN_VIEN NhanVien { get; set; }
+
 
 
     }

@@ -15,6 +15,7 @@ namespace DoAnPhanMem.Models
         public string TenSach { get; set; }
        
         public int SoLuongTon {  get; set; }
+
         
         
         [Column(TypeName = "decimal(18, 0)")]
@@ -22,6 +23,7 @@ namespace DoAnPhanMem.Models
         [StringLength(100)]
         public string MaTL { get; set; }
         [ForeignKey("MaTL")]
+
         public THE_LOAI TheLoai { get; set; }
 
         public ICollection<CHI_TIET_PHIEU_NHAP> ChiTietPhieuNhap { get; set; }

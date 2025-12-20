@@ -13,7 +13,8 @@ namespace DoAnPhanMem.Models
         [StringLength(100)]
         public int Thang {  get; set; }
         public int Nam {  get; set; }
-       
+
+     
         [Column(TypeName = "decimal(18, 0)")]
         public decimal NoDau {  get; set; }
         [Column(TypeName = "decimal(18, 0)")]

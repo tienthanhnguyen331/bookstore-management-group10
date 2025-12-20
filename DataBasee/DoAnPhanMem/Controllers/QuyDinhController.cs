@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+
 using DoAnPhanMem.Services.Interfaces;
+
 using DoAnPhanMem.DTO;
 
 namespace DoAnPhanMem.Controllers
@@ -8,6 +10,7 @@ namespace DoAnPhanMem.Controllers
     [ApiController]
     public class QuyDinhController : ControllerBase
     {
+
         private readonly IQuyDinhService _quyDinhService;
 
         public QuyDinhController(IQuyDinhService quyDinhService)
@@ -15,10 +18,12 @@ namespace DoAnPhanMem.Controllers
             _quyDinhService = quyDinhService;
         }
 
+
         // GET: api/QuyDinh
         [HttpGet]
         public async Task<IActionResult> GetAllRules()
         {
+
             // Gọi Service để lấy cục JSON đẹp
             var data = await _quyDinhService.GetQuyDinhHienTaiAsync();
             return Ok(data);

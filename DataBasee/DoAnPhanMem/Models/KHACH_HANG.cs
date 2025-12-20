@@ -21,7 +21,6 @@ namespace DoAnPhanMem.Models
         [Column(TypeName = "decimal(18, 0)")]
         public decimal CongNo { get; set; }
 
-     
         public ICollection <HOA_DON> HoaDon { get; set; }
         public ICollection<PHIEU_THU_TIEN> PhieuThuTien { get; set; }
         public ICollection<BAO_CAO_CONG_NO> BaoCaoCongNo { get; set; }

@@ -14,9 +14,11 @@ namespace DoAnPhanMem.Models
         public string TenDangNhap {  get; set; }
         [StringLength(100)]
         public string MatKhau {  get; set; }
+
         
         public NHAN_VIEN NhanVien { get; set; }
         
 
     }
 }
+
