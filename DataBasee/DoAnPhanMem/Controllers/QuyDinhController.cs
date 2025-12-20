@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DoAnPhanMem.Data; 
-using DoAnPhanMem.Models;
+using DoAnPhanMem.Services.Interfaces;
+using DoAnPhanMem.DTO;
 
 namespace DoAnPhanMem.Controllers
 {
@@ -9,55 +8,29 @@ namespace DoAnPhanMem.Controllers
     [ApiController]
     public class QuyDinhController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IQuyDinhService _quyDinhService;
 
-        public QuyDinhController(DataContext context)
+        public QuyDinhController(IQuyDinhService quyDinhService)
         {
-            _context = context;
+            _quyDinhService = quyDinhService;
         }
 
-        // 1. API Lấy danh sách tất cả quy định
         // GET: api/QuyDinh
         [HttpGet]
         public async Task<IActionResult> GetAllRules()
         {
-            var rules = await _context.QUY_DINH.ToListAsync();
-            return Ok(rules);
+            // Gọi Service để lấy cục JSON đẹp
+            var data = await _quyDinhService.GetQuyDinhHienTaiAsync();
+            return Ok(data);
         }
 
-        // 2. API Cập nhật quy định (Thực hiện QĐ6)
-        // PUT: api/QuyDinh/QD2_NoToiDa
-        [HttpPut("{key}")]
-        public async Task<IActionResult> UpdateRule(string key, [FromBody] UpdateRuleDto input)
+        // PUT: api/QuyDinh/CapNhat (Giữ nguyên)
+        [HttpPut("CapNhat")]
+        public async Task<IActionResult> UpdateQuyDinh([FromBody] QuyDinhUpdateDto request)
         {
-            // Tìm quy định trong DB theo key (Ví dụ: "QD2_NoToiDa")
-            var rule = await _context.QUY_DINH.FindAsync(key);
-
-            if (rule == null)
-            {
-                return NotFound($"Không tìm thấy quy định có mã: {key}");
-            }
-
-            // Cập nhật giá trị mới
-            rule.GiaTri = input.GiaTri;    
-            rule.TrangThai = input.TrangThai; 
-
-            // Lưu xuống Database
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                message = "Cập nhật quy định thành công!",
-                data = rule
-            });
+            var result = await _quyDinhService.UpdateQuyDinhAsync(request);
+            if (result) return Ok(new { message = "Cập nhật thành công!" });
+            return StatusCode(500, new { message = "Lỗi hệ thống." });
         }
-    }
-
-    // Class DTO (Data Transfer Object) để hứng dữ liệu từ giao diện gửi lên
-    
-    public class UpdateRuleDto
-    {
-        public string GiaTri { get; set; }
-        public bool TrangThai { get; set; }
     }
 }

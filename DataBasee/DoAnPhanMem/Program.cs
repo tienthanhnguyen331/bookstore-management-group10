@@ -19,8 +19,9 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IRuleService, RuleService>();
-
+builder.Services.AddScoped<DoAnPhanMem.Services.Interfaces.IQuyDinhService, DoAnPhanMem.Services.Implementations.QuyDinhService>();
 builder.Services.AddScoped<ISachService, SachService>();
+builder.Services.AddScoped<DoAnPhanMem.Services.Interfaces.IPhieuNhapService, DoAnPhanMem.Services.Implementations.PhieuNhapService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

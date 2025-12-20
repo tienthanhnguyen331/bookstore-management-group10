@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoAnPhanMem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251214075437_TaoDatabase")]
-    partial class TaoDatabase
+    [Migration("20251220155224_taodatabase")]
+    partial class taodatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,9 +47,6 @@ namespace DoAnPhanMem.Migrations
                     b.Property<decimal>("NoPhatSinh")
                         .HasColumnType("decimal(18,0)");
 
-                    b.Property<int>("STT")
-                        .HasColumnType("int");
-
                     b.Property<int>("Thang")
                         .HasMaxLength(100)
                         .HasColumnType("int");
@@ -76,9 +73,6 @@ namespace DoAnPhanMem.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("PhatSinh")
-                        .HasColumnType("int");
-
-                    b.Property<int>("STT")
                         .HasColumnType("int");
 
                     b.Property<int>("Thang")
@@ -210,15 +204,7 @@ namespace DoAnPhanMem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("TenDangNhap")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.HasKey("MaKH");
-
-                    b.HasIndex("TenDangNhap")
-                        .IsUnique();
 
                     b.ToTable("KHACH_HANG");
                 });
@@ -330,50 +316,14 @@ namespace DoAnPhanMem.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MaNV")
-                        .HasMaxLength(100)
+                        .IsRequired()
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("TrangThai")
-                        .HasMaxLength(100)
-                        .HasColumnType("bit");
 
                     b.HasKey("TenQuyDinh");
 
                     b.HasIndex("MaNV");
 
                     b.ToTable("QUY_DINH");
-
-                    b.HasData(
-                        new
-                        {
-                            TenQuyDinh = "QD1_NhapToiThieu",
-                            GiaTri = "150",
-                            TrangThai = true
-                        },
-                        new
-                        {
-                            TenQuyDinh = "QD1_TonToiDaTruocNhap",
-                            GiaTri = "300",
-                            TrangThai = true
-                        },
-                        new
-                        {
-                            TenQuyDinh = "QD2_NoToiDa",
-                            GiaTri = "20000",
-                            TrangThai = true
-                        },
-                        new
-                        {
-                            TenQuyDinh = "QD2_TonToiThieuSauBan",
-                            GiaTri = "20",
-                            TrangThai = true
-                        },
-                        new
-                        {
-                            TenQuyDinh = "QD4_KiemTraTienThu",
-                            GiaTri = "1",
-                            TrangThai = true
-                        });
                 });
 
             modelBuilder.Entity("DoAnPhanMem.Models.SACH", b =>
@@ -448,17 +398,7 @@ namespace DoAnPhanMem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("LoaiTaiKhoan")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("MatKhau")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("TrangThai")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -563,17 +503,6 @@ namespace DoAnPhanMem.Migrations
                     b.Navigation("NhanVien");
                 });
 
-            modelBuilder.Entity("DoAnPhanMem.Models.KHACH_HANG", b =>
-                {
-                    b.HasOne("DoAnPhanMem.Models.TAI_KHOAN", "TaiKhoan")
-                        .WithOne("KhachHang")
-                        .HasForeignKey("DoAnPhanMem.Models.KHACH_HANG", "TenDangNhap")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TaiKhoan");
-                });
-
             modelBuilder.Entity("DoAnPhanMem.Models.NHAN_VIEN", b =>
                 {
                     b.HasOne("DoAnPhanMem.Models.TAI_KHOAN", "TaiKhoan")
@@ -619,7 +548,9 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.HasOne("DoAnPhanMem.Models.NHAN_VIEN", "NhanVien")
                         .WithMany("QuyDinh")
-                        .HasForeignKey("MaNV");
+                        .HasForeignKey("MaNV")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("NhanVien");
                 });
@@ -702,9 +633,6 @@ namespace DoAnPhanMem.Migrations
 
             modelBuilder.Entity("DoAnPhanMem.Models.TAI_KHOAN", b =>
                 {
-                    b.Navigation("KhachHang")
-                        .IsRequired();
-
                     b.Navigation("NhanVien")
                         .IsRequired();
                 });

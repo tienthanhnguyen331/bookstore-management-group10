@@ -5,10 +5,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DoAnPhanMem.Migrations
 {
-    public partial class TaoDatabase : Migration
+    public partial class taodatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "KHACH_HANG",
+                columns: table => new
+                {
+                    MaKH = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    HoTen = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DiaChi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SDT = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CongNo = table.Column<decimal>(type: "decimal(18,0)", nullable: false, defaultValue: 0m)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KHACH_HANG", x => x.MaKH);
+                });
+
             migrationBuilder.CreateTable(
                 name: "TAC_GIA",
                 columns: table => new
@@ -26,9 +42,7 @@ namespace DoAnPhanMem.Migrations
                 columns: table => new
                 {
                     TenDangNhap = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    MatKhau = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    LoaiTaiKhoan = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    TrangThai = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    MatKhau = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,25 +62,25 @@ namespace DoAnPhanMem.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "KHACH_HANG",
+                name: "BAO_CAO_CONG_NO",
                 columns: table => new
                 {
-                    MaKH = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    HoTen = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    DiaChi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    SDT = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CongNo = table.Column<decimal>(type: "decimal(18,0)", nullable: false, defaultValue: 0m),
-                    TenDangNhap = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    MaBCCN = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Thang = table.Column<int>(type: "int", maxLength: 100, nullable: false),
+                    Nam = table.Column<int>(type: "int", nullable: false),
+                    NoDau = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    NoPhatSinh = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    NoCuoi = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    MaKH = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_KHACH_HANG", x => x.MaKH);
+                    table.PrimaryKey("PK_BAO_CAO_CONG_NO", x => x.MaBCCN);
                     table.ForeignKey(
-                        name: "FK_KHACH_HANG_TAI_KHOAN_TenDangNhap",
-                        column: x => x.TenDangNhap,
-                        principalTable: "TAI_KHOAN",
-                        principalColumn: "TenDangNhap",
+                        name: "FK_BAO_CAO_CONG_NO_KHACH_HANG_MaKH",
+                        column: x => x.MaKH,
+                        principalTable: "KHACH_HANG",
+                        principalColumn: "MaKH",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -112,30 +126,6 @@ namespace DoAnPhanMem.Migrations
                         column: x => x.MaTL,
                         principalTable: "THE_LOAI",
                         principalColumn: "MaTL",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BAO_CAO_CONG_NO",
-                columns: table => new
-                {
-                    MaBCCN = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Thang = table.Column<int>(type: "int", maxLength: 100, nullable: false),
-                    Nam = table.Column<int>(type: "int", nullable: false),
-                    STT = table.Column<int>(type: "int", nullable: false),
-                    NoDau = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    NoPhatSinh = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    NoCuoi = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    MaKH = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BAO_CAO_CONG_NO", x => x.MaBCCN);
-                    table.ForeignKey(
-                        name: "FK_BAO_CAO_CONG_NO_KHACH_HANG_MaKH",
-                        column: x => x.MaKH,
-                        principalTable: "KHACH_HANG",
-                        principalColumn: "MaKH",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -216,8 +206,7 @@ namespace DoAnPhanMem.Migrations
                 {
                     TenQuyDinh = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     GiaTri = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    TrangThai = table.Column<bool>(type: "bit", maxLength: 100, nullable: false),
-                    MaNV = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    MaNV = table.Column<string>(type: "nvarchar(100)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -226,7 +215,8 @@ namespace DoAnPhanMem.Migrations
                         name: "FK_QUY_DINH_NHAN_VIEN_MaNV",
                         column: x => x.MaNV,
                         principalTable: "NHAN_VIEN",
-                        principalColumn: "MaNV");
+                        principalColumn: "MaNV",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -237,7 +227,6 @@ namespace DoAnPhanMem.Migrations
                     MaSach = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Thang = table.Column<int>(type: "int", maxLength: 100, nullable: false),
                     Nam = table.Column<int>(type: "int", nullable: false),
-                    STT = table.Column<int>(type: "int", nullable: false),
                     TonDau = table.Column<int>(type: "int", nullable: false),
                     PhatSinh = table.Column<int>(type: "int", nullable: false),
                     TonCuoi = table.Column<int>(type: "int", nullable: false)
@@ -333,18 +322,6 @@ namespace DoAnPhanMem.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "QUY_DINH",
-                columns: new[] { "TenQuyDinh", "GiaTri", "MaNV", "TrangThai" },
-                values: new object[,]
-                {
-                    { "QD1_NhapToiThieu", "150", null, true },
-                    { "QD1_TonToiDaTruocNhap", "300", null, true },
-                    { "QD2_NoToiDa", "20000", null, true },
-                    { "QD2_TonToiThieuSauBan", "20", null, true },
-                    { "QD4_KiemTraTienThu", "1", null, true }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_BAO_CAO_CONG_NO_MaKH",
                 table: "BAO_CAO_CONG_NO",
@@ -374,12 +351,6 @@ namespace DoAnPhanMem.Migrations
                 name: "IX_HOA_DON_MaNV",
                 table: "HOA_DON",
                 column: "MaNV");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_KHACH_HANG_TenDangNhap",
-                table: "KHACH_HANG",
-                column: "TenDangNhap",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NHAN_VIEN_TenDangNhap",

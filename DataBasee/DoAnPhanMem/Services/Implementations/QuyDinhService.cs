@@ -16,7 +16,36 @@ namespace DoAnPhanMem.Services.Implementations
         {
             _context = context;
         }
+        public async Task<QuyDinhUpdateDto> GetQuyDinhHienTaiAsync()
+        {
+            // 1. Lấy hết danh sách từ DB ra trước
+            var listQuyDinh = await _context.QUY_DINH.ToListAsync();
 
+            // 2. Tạo một object DTO mới và tự điền dữ liệu vào
+            var data = new QuyDinhUpdateDto
+            {
+                // Tìm dòng có tên "QD1_NhapToiThieu", lấy Giá trị, chuyển sang số int.
+                // (Nếu không tìm thấy hoặc lỗi thì mặc định là 0)
+                MinImportQuantity = int.Parse(GetVal(listQuyDinh, "QD1_NhapToiThieu") ?? "0"),
+
+                MinStockPreImport = int.Parse(GetVal(listQuyDinh, "QD1_TonToiDaTruocNhap") ?? "0"),
+
+                MinStockPostSell = int.Parse(GetVal(listQuyDinh, "QD2_TonToiThieuSauBan") ?? "0"),
+
+                MaxDebt = decimal.Parse(GetVal(listQuyDinh, "QD2_NoToiDa") ?? "0"),
+
+                // Với Bool: Nếu giá trị là "1" thì là True, ngược lại là False
+                CheckDebtRule = GetVal(listQuyDinh, "QD4_KiemTraTienThu") == "1"
+            };
+
+            return data;
+        }
+
+        // Hàm phụ nhỏ để tìm giá trị cho nhanh gọn (Viết ngay bên dưới hàm trên)
+        private string? GetVal(List<QUY_DINH> list, string keyName)
+        {
+            return list.FirstOrDefault(x => x.TenQuyDinh == keyName)?.GiaTri;
+        }
         // Hàm chính: Nhận DTO từ Controller gửi xuống
         public async Task<bool> UpdateQuyDinhAsync(QuyDinhUpdateDto request)
         {
@@ -80,7 +109,8 @@ namespace DoAnPhanMem.Services.Implementations
                 {
                     TenQuyDinh = keyName,
                     GiaTri = newValue,
-                    TrangThai = true // Mặc định là đang hoạt động
+                    MaNV = "NV01"
+
                     // Nếu bảng của bạn có cột MaNV, nhớ thêm vào đây (có thể để null hoặc fix cứng admin)
                 };
                 _context.QUY_DINH.Add(quyDinhMoi);

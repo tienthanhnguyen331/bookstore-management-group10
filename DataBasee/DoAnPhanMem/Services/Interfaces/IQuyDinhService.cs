@@ -10,5 +10,6 @@ namespace DoAnPhanMem.Services.Interfaces
         // 1. Không dùng từ khóa 'async' ở đây
         // 2. Kết thúc bằng dấu chấm phẩy ';' (không có ngoặc nhọn {})
         Task<bool> UpdateQuyDinhAsync(QuyDinhUpdateDto request);
+        Task<QuyDinhUpdateDto> GetQuyDinhHienTaiAsync();
     }
 }
