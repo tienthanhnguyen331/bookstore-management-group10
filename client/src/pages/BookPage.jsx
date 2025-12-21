@@ -108,7 +108,7 @@ const BookPage = () => {
                         Danh sách sách
                     </h1>
                     <div className="flex gap-1">
-                        <button className="bg-blue-400 text-white px-4 py-2 rounded-lg font-medium" onClick={() => setIsAddModalOpen(true)}>
+                        <button className="bg-blue-400 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-500" onClick={() => setIsAddModalOpen(true)}>
                             + Thêm sách
                         </button>
                     </div>

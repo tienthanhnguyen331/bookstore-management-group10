@@ -95,7 +95,7 @@ const SalesPage = () => {
     // Logic Functions
     const loadBooks = async () => {
         try {
-            const data = await bookService.getAllBooks();
+            const data = await bookService.getBooks();
             setBooks(data);
         } catch (error) {
             console.error(err);
@@ -180,12 +180,12 @@ const SalesPage = () => {
                                 {
                                     books.map(b => (
                                         <option 
-                                            key={b.id}
-                                            value={b.id}
-                                            disable={b.stock <= 0}
-                                            className={b.stock <= 0 ? 'text-red-400' : ''}
+                                            key={b.MaSach}
+                                            value={b.MaSach}
+                                            disable={b.SoLuongTon <= 0}
+                                            className={b.SoLuongTon <= 0 ? 'text-red-400' : ''}
                                         >
-                                        {b.title} - Giá: {b.price.toLocaleString()} - Kho: {b.stock} {b.stock<=0 ? '(HẾT)' : ''}
+                                        {b.TenSach} - Giá: {b.DonGia.toLocaleString()} - Kho: {b.SoLuongTon} {b.SoLuongTon<=0 ? '(HẾT)' : ''}
                                         </option>
                                     ))
                                 }

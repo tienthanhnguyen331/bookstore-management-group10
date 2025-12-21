@@ -121,9 +121,6 @@ export default function CustomerListPage() {
                         <h1 className="mb-2 text-xl font-semibold">
                             Danh sách khách hàng
                         </h1>
-                        <p className="text-gray-500">
-                            Quản lý thông tin khách hàng
-                        </p>
                     </div>
                     <button
                         onClick={handleAddCustomer}
