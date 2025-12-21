@@ -158,11 +158,11 @@ const SalesPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8 font-sans">
-            
-            <h1 className="text-3xl font-bold text-gray-800 mb-8">Lập Hóa Đơn</h1>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="min-h-screen bg-[#F5F5FA]">
+            <Header />
+    
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <h1 className="text-3xl font-bold text-gray-800 mb-8">Lập Hóa Đơn</h1>
                 <div className = "grid grid-cols-2 gap-8 mb-4">
                     <div className="space-y-4">
                         <div>
@@ -221,7 +221,7 @@ const SalesPage = () => {
                 <button onClick={handleAddToCart} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded mt-2">+ Thêm dòng</button>
             </div>
             {/* BẢNG HÓA ĐƠN */}
-            <div className="bg-white rounded shadow-sm border overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white rounded shadow-sm border overflow-hidden">
                 <h2 className="text-xl font-bold text-blue-600 p-4 border-b bg-blue-50">
                     CHI TIẾT HÓA ĐƠN
                 </h2>

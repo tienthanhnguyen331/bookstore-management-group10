@@ -1,6 +1,4 @@
-// client/src/services/bookService.js
-
-// Dữ liệu giả (Sau này xóa đi thay bằng gọi API thật)
+import api from './api';
 const MOCK_BOOKS = [
   { id: 1, title: 'Nhập môn lập trình', category: 'Giáo dục', price: 100000, stock: 50, author: 'Nguyễn Văn A' },
   { id: 2, title: 'Cơ sở trí tuệ nhân tạo', category: 'Khoa học', price: 120000, stock: 20, author: 'Trần Thị B' },
@@ -11,14 +9,20 @@ const MOCK_BOOKS = [
 
 export const bookService = {
   // Hàm lấy tất cả sách
-  getAllBooks: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(MOCK_BOOKS);
-      }, 500); // Giả lập mạng chậm 0.5s
-    });
+  getBooks: async () => {
+    const response = await api.get('/Sach');
+    return response.data;
   },
 
+  addBook: async (bookData) => {
+  const response = await api.post('/Sach/ThemSach', bookData);
+  return response.data;
+},
+
+  updateBook: async (bookData) => {
+  const response = await api.put(`/Sach/CapNhat`, bookData);
+  return response.data;
+},
   // Hàm lấy sách theo ID
   getBookById: async (id) => {
     return new Promise((resolve) => {

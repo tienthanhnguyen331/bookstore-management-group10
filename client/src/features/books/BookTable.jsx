@@ -35,26 +35,26 @@ const BookTable = ({ books, loading, onDelete, onOpenEditModal }) => {
                     ) : books.length > 0 ? (
                         books.map((book) => (
                             <tr
-                                key={book.id}
+                                key={book.MaSach}
                                 className="hover:bg-gray-50 transition-colors"
                             >
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    #{book.id}
+                                    {book.MaSach}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {book.title}
+                                    {book.TenSach}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {book.author}
+                                    {book.TenTacGia}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {book.category}
+                                    {book.TenTheLoai}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {book.price.toLocaleString("vi-VN")}đ
+                                    {book.DonGia.toLocaleString("vi-VN")}đ
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center pr-12">
-                                    {book.stockQuantity}
+                                    {book.SoLuongTon}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div className="flex gap-2">
@@ -67,7 +67,7 @@ const BookTable = ({ books, loading, onDelete, onOpenEditModal }) => {
                                             />
                                         </button>
                                         <button
-                                            onClick={() => onDelete(book.id)}
+                                            onClick={() => onDelete(book.MaSach)}
                                             className="p-2 bg-gray-200 hover:bg-red-100 hover:text-red-600 rounded text-gray-600 transition-colors"
                                         >
                                             <Trash2 size={16} />
