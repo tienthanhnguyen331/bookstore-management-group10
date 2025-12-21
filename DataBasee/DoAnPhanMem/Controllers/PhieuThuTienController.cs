@@ -101,6 +101,9 @@ namespace DoAnPhanMem.Controllers
             var maPhieu = "PTT" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             var ngayThuTien = DateTime.UtcNow;
 
+            // Lay nhan vien dau tien lam mac dinh (co the lay tu JWT token sau)
+            var nhanVien = await _context.NHAN_VIEN.FirstOrDefaultAsync();
+            
             // Tao phieu thu tien
             var phieuThuTien = new PHIEU_THU_TIEN
             {
@@ -108,7 +111,7 @@ namespace DoAnPhanMem.Controllers
                 NgayThuTien = ngayThuTien,
                 SoTienThu = dto.SoTienThu,
                 MaKH = khachHang.MaKH,
-                MaNV = null // Co the lay tu JWT token neu can
+                MaNV = nhanVien?.MaNV // Co the lay tu JWT token neu can
             };
 
             _context.PHIEU_THU_TIEN.Add(phieuThuTien);
@@ -221,6 +224,67 @@ namespace DoAnPhanMem.Controllers
                 .ToListAsync();
 
             return Ok(danhSach);
+        }
+
+        // API cap nhat phieu thu tien
+        // PUT: api/PhieuThuTien/CapNhat
+        [HttpPut("CapNhat")]
+        public async Task<IActionResult> UpdatePhieuThuTien([FromBody] UpdatePhieuThuTienDto dto)
+        {
+            var phieu = await _context.PHIEU_THU_TIEN
+                .Include(p => p.KhachHang)
+                .FirstOrDefaultAsync(p => p.MaPhieu == dto.MaPhieu);
+
+            if (phieu == null)
+            {
+                return NotFound(new { message = $"Khong tim thay phieu thu tien co ma: {dto.MaPhieu}" });
+            }
+
+            if (phieu.KhachHang == null)
+            {
+                return BadRequest(new { message = "Khong tim thay thong tin khach hang cua phieu thu" });
+            }
+
+            // Tinh so tien chenh lech
+            decimal soTienCu = phieu.SoTienThu;
+            decimal soTienMoi = dto.SoTienThu;
+
+            // Tinh cong no moi (cong no hien tai + chenh lech nguoc lai)
+            // Neu thu nhieu hon -> cong no giam, thu it hon -> cong no tang
+            decimal congNoMoi = phieu.KhachHang.CongNo + soTienCu - soTienMoi;
+
+            // Kiem tra cong no moi khong am
+            if (congNoMoi < 0)
+            {
+                return BadRequest(new { message = $"So tien thu vuot qua cong no. Cong no hien tai sau khi hoan: {phieu.KhachHang.CongNo + soTienCu}" });
+            }
+
+            // Luu cong no truoc khi cap nhat
+            decimal congNoTruoc = phieu.KhachHang.CongNo;
+
+            // Cap nhat phieu thu tien
+            phieu.SoTienThu = soTienMoi;
+            if (dto.NgayThuTien.HasValue)
+            {
+                phieu.NgayThuTien = dto.NgayThuTien.Value;
+            }
+
+            // Cap nhat cong no khach hang
+            phieu.KhachHang.CongNo = congNoMoi;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new PhieuThuTienResponseDto
+            {
+                MaPhieu = phieu.MaPhieu,
+                NgayThuTien = phieu.NgayThuTien,
+                MaKH = phieu.MaKH,
+                TenKhachHang = phieu.KhachHang.HoTen,
+                SDT = phieu.KhachHang.SDT,
+                SoTienThu = phieu.SoTienThu,
+                CongNoTruoc = congNoTruoc,
+                CongNoSau = phieu.KhachHang.CongNo
+            });
         }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DoAnPhanMem.Migrations
 {
-    public partial class TaoDatabase : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -320,28 +320,6 @@ namespace DoAnPhanMem.Migrations
                         principalTable: "SACH",
                         principalColumn: "MaSach",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "TAI_KHOAN",
-                columns: new[] { "TenDangNhap", "MatKhau" },
-                values: new object[] { "admin", "$2a$11$..." });
-
-            migrationBuilder.InsertData(
-                table: "NHAN_VIEN",
-                columns: new[] { "MaNV", "ChucVu", "DiaChi", "Email", "HoTen", "SDT", "TenDangNhap" },
-                values: new object[] { "NV01", "Quản Lý", "HCM", "admin@bookstore.com", "Quản Trị Viên", "0909000111", "admin" });
-
-            migrationBuilder.InsertData(
-                table: "QUY_DINH",
-                columns: new[] { "TenQuyDinh", "GiaTri", "MaNV" },
-                values: new object[,]
-                {
-                    { "QD1_NhapToiThieu", "150", "NV01" },
-                    { "QD1_TonToiDaTruocNhap", "300", "NV01" },
-                    { "QD2_NoToiDa", "20000", "NV01" },
-                    { "QD2_TonToiThieuSauBan", "20", "NV01" },
-                    { "QD4_KiemTraTienThu", "1", "NV01" }
                 });
 
             migrationBuilder.CreateIndex(

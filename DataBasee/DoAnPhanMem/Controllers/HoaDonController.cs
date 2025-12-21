@@ -131,12 +131,15 @@ namespace DoAnPhanMem.Controllers
             var maHoaDon = "HD" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             var ngayLap = DateTime.UtcNow;
 
+            // Lay nhan vien dau tien lam mac dinh (co the lay tu JWT token sau)
+            var nhanVien = await _context.NHAN_VIEN.FirstOrDefaultAsync();
+
             // Tao hoa don
             var hoaDon = new HOA_DON
             {
                 MaHoaDon = maHoaDon,
                 MaKH = isKhachVangLai ? null : khachHang!.MaKH,
-                MaNV = null
+                MaNV = nhanVien?.MaNV
             };
 
             _context.HOA_DON.Add(hoaDon);
@@ -280,6 +283,147 @@ namespace DoAnPhanMem.Controllers
                 IsKhachVangLai = hoaDon.KhachHang == null,
                 DanhSachSanPham = chiTietResponses,
                 TongTien = chiTietResponses.Sum(ct => ct.ThanhTien)
+            });
+        }
+
+        // API cap nhat hoa don
+        // PUT: api/HoaDon/CapNhat
+        [HttpPut("CapNhat")]
+        public async Task<IActionResult> UpdateHoaDon([FromBody] UpdateHoaDonDto dto)
+        {
+            if (dto.DanhSachSanPham == null || dto.DanhSachSanPham.Count == 0)
+            {
+                return BadRequest(new { message = "Danh sach san pham khong duoc de trong" });
+            }
+
+            var hoaDon = await _context.HOA_DON
+                .Include(hd => hd.KhachHang)
+                .Include(hd => hd.ChiTietHoaDon)
+                    .ThenInclude(ct => ct.Sach)
+                .FirstOrDefaultAsync(hd => hd.MaHoaDon == dto.MaHoaDon);
+
+            if (hoaDon == null)
+            {
+                return NotFound(new { message = $"Khong tim thay hoa don co ma: {dto.MaHoaDon}" });
+            }
+
+            // Tinh tong tien cu de hoan lai cong no
+            decimal tongTienCu = hoaDon.ChiTietHoaDon.Sum(ct => ct.DonGiaBan * ct.SoLuong);
+
+            // Hoan lai so luong ton kho cu
+            foreach (var chiTietCu in hoaDon.ChiTietHoaDon)
+            {
+                if (chiTietCu.Sach != null)
+                {
+                    chiTietCu.Sach.SoLuongTon += chiTietCu.SoLuong;
+                }
+            }
+
+            // Hoan lai cong no cu cho khach hang
+            if (hoaDon.KhachHang != null)
+            {
+                hoaDon.KhachHang.CongNo -= tongTienCu;
+            }
+
+            // Xoa chi tiet hoa don cu
+            _context.CHI_TIET_HOA_DON.RemoveRange(hoaDon.ChiTietHoaDon);
+
+            // Xu ly khach hang moi (neu thay doi)
+            KHACH_HANG? khachHangMoi = null;
+            bool isKhachVangLai = true;
+
+            if (!string.IsNullOrWhiteSpace(dto.SDTKhachHang))
+            {
+                khachHangMoi = await _context.KHACH_HANG
+                    .FirstOrDefaultAsync(kh => kh.SDT == dto.SDTKhachHang);
+
+                if (khachHangMoi != null)
+                {
+                    isKhachVangLai = false;
+                    hoaDon.MaKH = khachHangMoi.MaKH;
+                }
+                else
+                {
+                    hoaDon.MaKH = null;
+                }
+            }
+            else
+            {
+                hoaDon.MaKH = null;
+            }
+
+            // Tao chi tiet hoa don moi
+            var chiTietResponses = new List<ChiTietHoaDonResponseDto>();
+            decimal tongTienMoi = 0;
+            int stt = 0;
+            var ngayLap = DateTime.UtcNow;
+
+            foreach (var item in dto.DanhSachSanPham)
+            {
+                var sach = await _context.SACH
+                    .Include(s => s.TheLoai)
+                    .FirstOrDefaultAsync(s => s.MaSach == item.MaSach);
+
+                if (sach == null)
+                {
+                    return BadRequest(new { message = $"Khong tim thay sach co ma: {item.MaSach}" });
+                }
+
+                int tonSauBan = sach.SoLuongTon - item.SoLuong;
+
+                if (tonSauBan < 0)
+                {
+                    return BadRequest(new { message = $"Sach '{sach.TenSach}' khong du so luong ton. Hien con: {sach.SoLuongTon}" });
+                }
+
+                decimal donGiaBan = sach.DonGia;
+
+                var chiTietMoi = new CHI_TIET_HOA_DON
+                {
+                    MaHoaDon = dto.MaHoaDon,
+                    MaSach = item.MaSach,
+                    SoLuong = item.SoLuong,
+                    DonGiaBan = donGiaBan,
+                    NgayLapHoaDon = ngayLap
+                };
+
+                _context.CHI_TIET_HOA_DON.Add(chiTietMoi);
+
+                sach.SoLuongTon = tonSauBan;
+
+                decimal thanhTien = donGiaBan * item.SoLuong;
+                tongTienMoi += thanhTien;
+
+                stt++;
+                chiTietResponses.Add(new ChiTietHoaDonResponseDto
+                {
+                    STT = stt,
+                    MaSach = sach.MaSach,
+                    TenSach = sach.TenSach,
+                    TheLoai = sach.TheLoai?.TenTL ?? "",
+                    SoLuong = item.SoLuong,
+                    DonGia = donGiaBan,
+                    ThanhTien = thanhTien
+                });
+            }
+
+            // Cap nhat cong no cho khach hang moi
+            if (!isKhachVangLai && khachHangMoi != null)
+            {
+                khachHangMoi.CongNo += tongTienMoi;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new HoaDonResponseDto
+            {
+                MaHoaDon = dto.MaHoaDon,
+                NgayLap = ngayLap,
+                TenKhachHang = isKhachVangLai ? "Khach vang lai" : khachHangMoi!.HoTen,
+                SDTKhachHang = dto.SDTKhachHang ?? "",
+                IsKhachVangLai = isKhachVangLai,
+                DanhSachSanPham = chiTietResponses,
+                TongTien = tongTienMoi
             });
         }
     }

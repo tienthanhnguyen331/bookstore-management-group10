@@ -46,4 +46,17 @@ namespace DoAnPhanMem.DTO
         public string SDT { get; set; } = string.Empty;
         public decimal SoTienThu { get; set; }
     }
+
+    // DTO cap nhat phieu thu tien
+    public class UpdatePhieuThuTienDto
+    {
+        [Required(ErrorMessage = "Ma phieu khong duoc de trong")]
+        public string MaPhieu { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "So tien thu khong duoc de trong")]
+        [Range(1, double.MaxValue, ErrorMessage = "So tien thu phai lon hon 0")]
+        public decimal SoTienThu { get; set; }
+
+        public DateTime? NgayThuTien { get; set; }
+    }
 }

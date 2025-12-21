@@ -73,4 +73,27 @@ namespace DoAnPhanMem.DTO
         public decimal DonGia { get; set; }
         public decimal ThanhTien { get; set; }
     }
+
+    // DTO cap nhat chi tiet hoa don
+    public class UpdateChiTietHoaDonDto
+    {
+        [Required(ErrorMessage = "Ma sach khong duoc de trong")]
+        public string MaSach { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "So luong khong duoc de trong")]
+        [Range(1, int.MaxValue, ErrorMessage = "So luong phai lon hon 0")]
+        public int SoLuong { get; set; }
+    }
+
+    // DTO cap nhat hoa don
+    public class UpdateHoaDonDto
+    {
+        [Required(ErrorMessage = "Ma hoa don khong duoc de trong")]
+        public string MaHoaDon { get; set; } = string.Empty;
+
+        public string? SDTKhachHang { get; set; }
+
+        [Required(ErrorMessage = "Danh sach san pham khong duoc de trong")]
+        public List<UpdateChiTietHoaDonDto> DanhSachSanPham { get; set; } = new();
+    }
 }

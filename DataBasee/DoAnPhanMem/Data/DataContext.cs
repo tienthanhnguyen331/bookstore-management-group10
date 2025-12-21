@@ -89,46 +89,13 @@ namespace DoAnPhanMem.Data
             });
 
             modelBuilder.Entity<CHI_TIET_PHIEU_NHAP>(entity =>
-            {
-                // Số lượng nhập > 0
-                entity.HasCheckConstraint("CK_CTPN_SoLuong", "SoLuongNhap > 0");
-            });
-            // BƯỚC 1: Tạo Tài khoản trước (Vì Nhân viên cần Tài khoản)
-            modelBuilder.Entity<TAI_KHOAN>().HasData(
-                new TAI_KHOAN
                 {
-                    TenDangNhap = "admin",
-                    MatKhau = "$2a$11$...", // Hash password nếu cần
-                   
-                }
-            );
+                    // Số lượng nhập > 0
+                    entity.HasCheckConstraint("CK_CTPN_SoLuong", "SoLuongNhap > 0");
+                });
 
-            // BƯỚC 2: Tạo Nhân viên có mã NV01 (Vì Quy định cần NV01)
-            modelBuilder.Entity<NHAN_VIEN>().HasData(
-                new NHAN_VIEN
-                {
-                    MaNV = "NV01",
-                    TenDangNhap = "admin",
-                    HoTen = "Quản Trị Viên",
-                    ChucVu = "Quản Lý",
-                    DiaChi = "HCM",
-                    Email = "admin@bookstore.com",
-                    SDT = "0909000111"
-                }
-            );
-            //  Tạo dữ liệu quy định mãu
-            modelBuilder.Entity<QUY_DINH>().HasData(
-
-                new QUY_DINH { TenQuyDinh = "QD1_NhapToiThieu", GiaTri = "150", MaNV = "NV01" },
-                new QUY_DINH { TenQuyDinh = "QD1_TonToiDaTruocNhap", GiaTri = "300", MaNV = "NV01" },
-                new QUY_DINH { TenQuyDinh = "QD2_NoToiDa", GiaTri = "20000", MaNV = "NV01" },
-                new QUY_DINH { TenQuyDinh = "QD2_TonToiThieuSauBan", GiaTri = "20", MaNV = "NV01" },
-                new QUY_DINH { TenQuyDinh = "QD4_KiemTraTienThu", GiaTri = "1", MaNV = "NV01" }
-            );
-
-
-
-        }
+                // Không seed data - sử dụng script SQL để insert dữ liệu mẫu
+            }
 
 
     }

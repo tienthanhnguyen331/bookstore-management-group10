@@ -195,43 +195,37 @@ namespace DoAnPhanMem.Services.Implementations
         }
 
         // QĐ1: Kiểm tra khi nhập sách
-        public void CheckRule_NhapSach(int soLuongNhap, int tonKhoHienTai)
-        {
-            int minNhap = GetIntRule("QD1_NhapToiThieu");
-            int maxTon = GetIntRule("QD1_TonToiDaTruocNhap");
+                public void CheckRule_NhapSach(int soLuongNhap, int tonKhoHienTai)
+                {
+                    // Dùng key từ script SQL: QD_NhapToiThieu
+                    int minNhap = GetIntRule("QD_NhapToiThieu");
 
-            // Nếu quy định trả về 0 (tức là tắt quy định), ta có thể bỏ qua check
-            // Hoặc giữ nguyên logic tùy nghiệp vụ. Ở đây giữ nguyên logic cũ của bạn:
+                    if (minNhap > 0 && soLuongNhap < minNhap)
+                        throw new Exception($"Vi phạm QĐ1: Số lượng nhập phải ít nhất {minNhap}.");
+                }
 
-            if (minNhap > 0 && soLuongNhap < minNhap)
-                throw new Exception($"Vi phạm QĐ1: Số lượng nhập phải ít nhất {minNhap}.");
+                // QĐ2: Kiểm tra khi bán sách
+                public void CheckRule_BanSach(decimal noHienTai, int tonKhoSauBan)
+                {
+                    // Dùng key từ script SQL: QD_NoToiDa, QD_TonToiThieu
+                    decimal maxNo = GetDecimalRule("QD_NoToiDa");
+                    int minTon = GetIntRule("QD_TonToiThieu");
 
-            if (maxTon > 0 && tonKhoHienTai >= maxTon)
-                throw new Exception($"Vi phạm QĐ1: Chỉ nhập sách có lượng tồn ít hơn {maxTon}.");
-        }
+                    if (maxNo > 0 && noHienTai > maxNo)
+                        throw new Exception($"Vi phạm QĐ2: Khách đang nợ {noHienTai}, vượt quá mức cho phép {maxNo}.");
 
-        // QĐ2: Kiểm tra khi bán sách
-        public void CheckRule_BanSach(decimal noHienTai, int tonKhoSauBan)
-        {
-            decimal maxNo = GetDecimalRule("QD2_NoToiDa");
-            int minTon = GetIntRule("QD2_TonToiThieuSauBan");
+                    if (minTon > 0 && tonKhoSauBan < minTon)
+                        throw new Exception($"Vi phạm QĐ2: Lượng tồn sau khi bán phải còn ít nhất {minTon}.");
+                }
 
-            if (maxNo > 0 && noHienTai > maxNo)
-                throw new Exception($"Vi phạm QĐ2: Khách đang nợ {noHienTai}, vượt quá mức cho phép {maxNo}.");
-
-            if (minTon > 0 && tonKhoSauBan < minTon)
-                throw new Exception($"Vi phạm QĐ2: Lượng tồn sau khi bán phải còn ít nhất {minTon}.");
-        }
-
-        // QĐ4: Kiểm tra khi thu tiền
-        public void CheckRule_ThuTien(decimal soTienThu, decimal noHienTai)
-        {
-            bool isEnabled = IsRuleEnabled("QD4_KiemTraTienThu");
-
-            if (isEnabled && soTienThu > noHienTai)
-            {
-                throw new Exception($"Vi phạm QĐ4: Số tiền thu ({soTienThu}) không được vượt quá số nợ ({noHienTai}).");
+                // QĐ4: Kiểm tra khi thu tiền
+                public void CheckRule_ThuTien(decimal soTienThu, decimal noHienTai)
+                {
+                    // Số tiền thu không được vượt quá số nợ hiện tại
+                    if (soTienThu > noHienTai)
+                    {
+                        throw new Exception($"Vi phạm QĐ4: Số tiền thu ({soTienThu}) không được vượt quá số nợ ({noHienTai}).");
+                    }
+                }
             }
         }
-    }
-}
