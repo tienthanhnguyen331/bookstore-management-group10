@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoAnPhanMem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251221013131_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251221172552_taodatabase")]
+    partial class taodatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -155,12 +155,10 @@ namespace DoAnPhanMem.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MaKH")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MaNV")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -283,7 +281,6 @@ namespace DoAnPhanMem.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MaNV")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -489,14 +486,12 @@ namespace DoAnPhanMem.Migrations
                     b.HasOne("DoAnPhanMem.Models.KHACH_HANG", "KhachHang")
                         .WithMany("HoaDon")
                         .HasForeignKey("MaKH")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("DoAnPhanMem.Models.NHAN_VIEN", "NhanVien")
                         .WithMany("HoaDon")
                         .HasForeignKey("MaNV")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("KhachHang");
 
@@ -536,8 +531,7 @@ namespace DoAnPhanMem.Migrations
                     b.HasOne("DoAnPhanMem.Models.NHAN_VIEN", "NhanVien")
                         .WithMany("PhieuThuTien")
                         .HasForeignKey("MaNV")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("KhachHang");
 

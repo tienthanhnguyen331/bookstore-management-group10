@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DoAnPhanMem.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class taodatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -134,8 +134,8 @@ namespace DoAnPhanMem.Migrations
                 columns: table => new
                 {
                     MaHoaDon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    MaNV = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    MaKH = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    MaNV = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    MaKH = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -179,7 +179,7 @@ namespace DoAnPhanMem.Migrations
                     MaPhieu = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     NgayThuTien = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SoTienThu = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    MaNV = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MaNV = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     MaKH = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
