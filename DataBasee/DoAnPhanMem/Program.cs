@@ -55,6 +55,15 @@ builder.Services.AddScoped<DoAnPhanMem.Services.Interfaces.IPhieuNhapService, Do
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+//đăng ký dịch vụ KhachHangService
+builder.Services.AddScoped<IKhachHangService, KhachHangService>();
+//đăng ký dịch vụ Báo cáo công nợ
+builder.Services.AddScoped<IBaoCaoCongNoService, BaoCaoCongNoService>();
+//đăng ký dịch vụ Báo cáo tồn kho
+builder.Services.AddScoped<IBaoCaoTonService, BaoCaoTonService>();
+//đăng ký dịch vụ SaleService
+builder.Services.AddScoped<ISaleService, SaleService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
