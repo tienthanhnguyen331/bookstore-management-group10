@@ -41,7 +41,7 @@ function CustomerTableBody({
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className="px-3 py-1 bg-red-50 text-red-600 rounded-full">
-                                        {customer.debt?.toLocaleString("vi-VN")}{" "}
+                                        {customer.debt?.toLocaleString("vi-VN")}
                                         đ
                                     </span>
                                 </td>
