@@ -1,1 +1,0 @@
--- Script tạo bảng (PostgreSQL/MySQL)
