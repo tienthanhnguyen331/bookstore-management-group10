@@ -1,78 +1,33 @@
 import { Plus } from "lucide-react";
 import { Header } from "../components/Header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCustomerFilter } from "../components/finance/useCustomerFilter";
 import CustomerSearchForm from "../components/finance/CustomerSearchForm";
 import CustomerTable from "../components/customers/CustomerTable";
 import EditCustomerModal from "../components/shared/EditCustomerModal";
 import DeleteConfirmModal from "../components/customers/DeleteConfirmModal";
-
-const customersData = [
-    {
-        id: 1,
-        code: "#1",
-        name: "Nguyễn Văn A",
-        email: "abc1@gmail.com",
-        address: "Bình Tân",
-        phone: "01272301075",
-    },
-    {
-        id: 2,
-        code: "#2",
-        name: "Nguyễn Văn B",
-        email: "abc2@gmail.com",
-        address: "Long An",
-        phone: "01272301076",
-    },
-    {
-        id: 3,
-        code: "#3",
-        name: "Nguyễn Văn C",
-        email: "abc3@gmail.com",
-        address: "Vĩnh Long",
-        phone: "01272301077",
-    },
-    {
-        id: 4,
-        code: "#4",
-        name: "Nguyễn Văn D",
-        email: "abc4@gmail.com",
-        address: "Thanh Hóa",
-        phone: "01272301078",
-    },
-    {
-        id: 5,
-        code: "#5",
-        name: "Trần Văn A",
-        email: "abc5@gmail.com",
-        address: "Bình Định",
-        phone: "01272301079",
-    },
-    {
-        id: 6,
-        code: "#6",
-        name: "Lê Thị C",
-        email: "abc6@gmail.com",
-        address: "Gia Lai",
-        phone: "01272301070",
-    },
-    {
-        id: 7,
-        code: "#7",
-        name: "Dương Văn D",
-        email: "abc7@gmail.com",
-        address: "Đồng Tháp",
-        phone: "01272301071",
-    },
-];
+import { customerService } from "../services/customerService";
 
 export default function CustomerListPage() {
-    const [customers, setCustomers] = useState(customersData);
+    const [customers, setCustomers] = useState([]);
     const { searchForm, filteredCustomers, handleSearchChange } =
         useCustomerFilter(customers);
     const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+    const loadCustomers = async () => {
+        try{
+            const data = await customerService.getAll();
+            setCustomers(Array.isArray(data) ? data : []);
+        }catch(error){
+            console.error("Lỗi khi tải danh sách khách hàng:", error);
+        }
+    };
+
+    useEffect(() => {
+        loadCustomers();
+    }, []);
 
     const handleAddCustomer = () => {
         setSelectedCustomer(null);
@@ -89,28 +44,39 @@ export default function CustomerListPage() {
         setIsDeleteModalOpen((isOpen) => !isOpen);
     };
 
-    const handleSaveCustomer = (formData) => {
+    const handleSaveCustomer = async (formData) => {
+        const customerPayload = {
+            HoTen: formData.HoTen,
+            Email: formData.Email,
+            DiaChi: formData.DiaChi,
+            SDT: formData.SDT
+        };
         if (selectedCustomer) {
             setCustomers((prev) =>
                 prev.map((c) =>
-                    c.id === selectedCustomer.id ? { ...c, ...formData } : c
+                    c.MaKH === selectedCustomer.MaKH ? { ...c, ...formData } : c
                 )
             );
         } else {
             // this else code using for adding new customer
-            const newCustomer = {
-                id: customers.length + 1,
-                code: `#${customers.length + 1}`,
-                ...formData,
-            };
-            setCustomers((prev) => [...prev, newCustomer]);
+            try {
+                const newCustomer = await customerService.create(customerPayload);
+                if (newCustomer) {
+                    setCustomers((prev) => [...prev, newCustomer]);
+                    alert("Thêm mới thành công!");
+                }
+            } catch (error) {
+                console.error("Lỗi khi thêm khách hàng:", error);
+                alert("Thêm mới thất bại! Vui lòng kiểm tra lại thông tin.");
+            }
         }
         setSelectedCustomer(null);
     };
 
     const handleConfirmDeleteCustomer = (customerId) => {
-        setCustomers((prev) => prev.filter((c) => c.id !== customerId));
+        setCustomers((prev) => prev.filter((c) => c.MaKH !== customerId));
     };
+
 
     return (
         <div className="min-h-screen bg-gray-50">

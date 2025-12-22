@@ -2,23 +2,23 @@ import { useState } from "react";
 
 export function useCustomerFilter(customers) {
     const [searchForm, setSearchForm] = useState({
-        name: "",
-        email: "",
-        phone: "",
+        HoTen: "",
+        Email: "",
+        SDT: "",
     });
 
     const filteredCustomers = customers.filter((customer) => {
         const nameMatch =
-            searchForm.name === "" ||
-            customer.name.toLowerCase().includes(searchForm.name.toLowerCase());
+            searchForm.HoTen === "" ||
+            customer.HoTen?.toLowerCase().includes(searchForm.HoTen.toLowerCase());
         const emailMatch =
-            searchForm.email === "" ||
-            customer.email
-                .toLowerCase()
-                .includes(searchForm.email.toLowerCase());
+            searchForm.Email === "" ||
+            customer.Email
+                ?.toLowerCase()
+                .includes(searchForm.Email.toLowerCase());
         const phoneMatch =
-            searchForm.phone === "" ||
-            customer.phone.includes(searchForm.phone);
+            searchForm.SDT === "" ||
+            customer.SDT?.includes(searchForm.SDT);
         return nameMatch && emailMatch && phoneMatch;
     });
 

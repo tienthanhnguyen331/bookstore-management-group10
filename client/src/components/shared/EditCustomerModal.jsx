@@ -19,31 +19,31 @@ function EditCustomerModal({
     const defaultSubmitText = isEditMode ? "Lưu thay đổi" : "Thêm khách hàng";
 
     const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        address: "",
-        ...(showDebtField && { debt: 0 }),
+        HoTen: "",
+        Email: "",
+        SDT: "",
+        DiaChi: "",
+        ...(showDebtField && { CongNo: 0 }),
     });
 
     useEffect(() => {
         if (customer) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setFormData({
-                id: customer.id,
-                name: customer.name || "",
-                email: customer.email || "",
-                phone: customer.phone || "",
-                address: customer.address || "",
-                ...(showDebtField && { debt: customer.debt || 0 }),
+                MaKH: customer.MaKH,
+                HoTen: customer.HoTen || "",
+                Email: customer.Email || "",
+                SDT: customer.SDT || "",
+                DiaChi: customer.DiaChi || "",
+                ...(showDebtField && { CongNo: customer.CongNo || 0 }),
             });
         } else {
             setFormData({
-                name: "",
-                email: "",
-                phone: "",
-                address: "",
-                ...(showDebtField && { debt: 0 }),
+                HoTen: "",
+                Email: "",
+                SDT: "",
+                DiaChi: "",
+                ...(showDebtField && { CongNo: 0 }),
             });
         }
     }, [customer, isOpen, showDebtField]);
@@ -96,9 +96,9 @@ function EditCustomerModal({
                             </label>
                             <input
                                 type="text"
-                                value={formData.name}
+                                value={formData.HoTen}
                                 onChange={(e) =>
-                                    handleChange("name", e.target.value)
+                                    handleChange("HoTen", e.target.value)
                                 }
                                 required
                                 placeholder={
@@ -115,9 +115,9 @@ function EditCustomerModal({
                                 </label>
                                 <input
                                     type="email"
-                                    value={formData.email}
+                                    value={formData.Email}
                                     onChange={(e) =>
-                                        handleChange("email", e.target.value)
+                                        handleChange("Email", e.target.value)
                                     }
                                     required
                                     placeholder={
@@ -134,9 +134,9 @@ function EditCustomerModal({
                                 </label>
                                 <input
                                     type="tel"
-                                    value={formData.phone}
+                                    value={formData.SDT}
                                     onChange={(e) =>
-                                        handleChange("phone", e.target.value)
+                                        handleChange("SDT", e.target.value)
                                     }
                                     required
                                     placeholder={
@@ -153,9 +153,9 @@ function EditCustomerModal({
                             </label>
                             <input
                                 type="text"
-                                value={formData.address}
+                                value={formData.DiaChi}
                                 onChange={(e) =>
-                                    handleChange("address", e.target.value)
+                                    handleChange("DiaChi", e.target.value)
                                 }
                                 required
                                 placeholder={
@@ -173,7 +173,7 @@ function EditCustomerModal({
                                 <div className="relative">
                                     <input
                                         type="text"
-                                        value={`${formData.debt.toLocaleString(
+                                        value={`${formData.CongNo.toLocaleString(
                                             "vi-VN"
                                         )} đ`}
                                         disabled

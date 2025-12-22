@@ -31,7 +31,7 @@ function DeleteConfirmModal({ isOpen, onClose, customer, onConfirm }) {
                 <div className="p-6">
                     <p className="text-gray-600 mb-2">
                         Bạn có chắc chắn muốn xóa khách hàng{" "}
-                        <span className="text-gray-900">{customer.name}</span>?
+                        <span className="text-gray-900">{customer.HoTen}</span>?
                     </p>
                     <p className="text-gray-500">
                         Hành động này không thể hoàn tác.
@@ -47,7 +47,7 @@ function DeleteConfirmModal({ isOpen, onClose, customer, onConfirm }) {
                     </button>
                     <button
                         onClick={() => {
-                            onConfirm(customer.id);
+                            onConfirm(customer.MaKH);
                             onClose();
                         }}
                         className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"

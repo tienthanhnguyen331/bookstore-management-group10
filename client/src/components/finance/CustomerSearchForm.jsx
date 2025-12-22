@@ -16,8 +16,8 @@ function CustomerSearchForm({ searchForm, onSearchChange }) {
                     <input
                         type="text"
                         placeholder="Nguyễn Văn A"
-                        value={searchForm.name}
-                        onChange={(e) => onSearchChange("name", e.target.value)}
+                        value={searchForm.HoTen}
+                        onChange={(e) => onSearchChange("HoTen", e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition-colors"
                     />
                 </div>
@@ -27,9 +27,9 @@ function CustomerSearchForm({ searchForm, onSearchChange }) {
                     <input
                         type="email"
                         placeholder="nguyenvana@gmail.com"
-                        value={searchForm.email}
+                        value={searchForm.Email}
                         onChange={(e) =>
-                            onSearchChange("email", e.target.value)
+                            onSearchChange("Email", e.target.value)
                         }
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition-colors"
                     />
@@ -42,9 +42,9 @@ function CustomerSearchForm({ searchForm, onSearchChange }) {
                     <input
                         type="tel"
                         placeholder="0366548525"
-                        value={searchForm.phone}
+                        value={searchForm.SDT}
                         onChange={(e) =>
-                            onSearchChange("phone", e.target.value)
+                            onSearchChange("SDT", e.target.value)
                         }
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition-colors"
                     />

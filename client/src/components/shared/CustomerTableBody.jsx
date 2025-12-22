@@ -21,7 +21,7 @@ function CustomerTableBody({
             ) : (
                 customers.map((customer, index) => (
                     <tr
-                        key={useIndexAsKey ? index : customer.id}
+                        key={useIndexAsKey ? index : customer.MaKH}
                         className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                     >
                         {showDebtColumn ? (
@@ -29,19 +29,19 @@ function CustomerTableBody({
                                 <td className="px-6 py-4 text-gray-700">
                                     {index + 1}
                                 </td>
-                                <td className="px-6 py-4">{customer.name}</td>
+                                <td className="px-6 py-4">{customer.HoTen}</td>
                                 <td className="px-6 py-4 text-gray-600">
-                                    {customer.email}
+                                    {customer.Email}
                                 </td>
                                 <td className="px-6 py-4 text-gray-600">
-                                    {customer.phone}
+                                    {customer.SDT}
                                 </td>
                                 <td className="px-6 py-4 text-gray-600">
-                                    {customer.address}
+                                    {customer.DiaChi}
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className="px-3 py-1 bg-red-50 text-red-600 rounded-full">
-                                        {customer.debt?.toLocaleString("vi-VN")}
+                                        {customer.CongNo?.toLocaleString("vi-VN")}
                                         đ
                                     </span>
                                 </td>
@@ -58,17 +58,17 @@ function CustomerTableBody({
                         ) : (
                             <>
                                 <td className="px-6 py-4 text-gray-700">
-                                    {customer.id}
+                                    {customer.MaKH}
                                 </td>
-                                <td className="px-6 py-4">{customer.name}</td>
+                                <td className="px-6 py-4">{customer.HoTen}</td>
                                 <td className="px-6 py-4 text-gray-600">
-                                    {customer.email}
-                                </td>
-                                <td className="px-6 py-4 text-gray-600">
-                                    {customer.address}
+                                    {customer.Email}
                                 </td>
                                 <td className="px-6 py-4 text-gray-600">
-                                    {customer.phone}
+                                    {customer.DiaChi}
+                                </td>
+                                <td className="px-6 py-4 text-gray-600">
+                                    {customer.SDT}
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-2">
