@@ -1,0 +1,43 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Frontend",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder}/client"
+            },
+            "isBackground": true,
+            "problemMatcher": ["$eslint-compact"],
+            "presentation": {
+                "group": "group10"
+            }
+        },
+        {
+            "label": "Run Backend",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/DataBasee/DoAnPhanMem/DoAnPhanMem.csproj"
+            ],
+            "isBackground": true,
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "group": "group10"
+            }
+        },
+        {
+            "label": "Run Full Stack",
+            "dependsOn": ["Run Backend", "Run Frontend"],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

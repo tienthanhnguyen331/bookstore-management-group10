@@ -1,4 +1,8 @@
-// Format VND (100.000 ₫)
-export default function formatCurrency(amount) {
-    return amount.toLocaleString("vi-VN") + " ₫";
-}
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+    }).format(value);
+};
+
+export default formatCurrency;

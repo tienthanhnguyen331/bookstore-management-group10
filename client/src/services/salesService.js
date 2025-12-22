@@ -1,3 +1,5 @@
+import api from "./api";
+import { bookService } from "./bookService";
 // MOCK DATA
 const MOCK_BOOKS = [
   { id: 1, title: 'Nhập môn lập trình', category: 'Giáo dục', price: 100000, stock: 50 },
@@ -11,6 +13,10 @@ const MOCK_CUSTOMERS = [
     { phone: '0909000222', fullName: 'Trần Thị B', totalDebt: 0 },
     { phone: '0909000333', fullName: 'Lê Văn C', totalDebt: 2500000 }, // Nợ quá hạn
 ];
+export const salesService = {
+    // Hàm tra cứu khách hàng
+    
+};
 
 export const getBooks = async () => {
   return new Promise(() => {

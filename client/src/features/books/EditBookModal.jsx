@@ -3,7 +3,7 @@ import { useState } from "react";
 
 // Form sửa giá
 function EditBookModal({ selectedBook, onClose, onSave }) {
-    const [price, setPrice] = useState(selectedBook.price);
+    const [price, setPrice] = useState(selectedBook.DonGia);
 
     const handlePriceChange = function (e) {
         e.preventDefault();
@@ -18,7 +18,7 @@ function EditBookModal({ selectedBook, onClose, onSave }) {
 
     const handleSubmit = function (e) {
         e.preventDefault();
-        onSave(selectedBook.id, Number(price));
+        onSave({ ...selectedBook, DonGia: Number(price) });
         onClose();
     };
 
@@ -49,7 +49,7 @@ function EditBookModal({ selectedBook, onClose, onSave }) {
                             </label>
                             <input
                                 type="text"
-                                value={selectedBook.title}
+                                value={selectedBook.TenSach}
                                 disabled
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
                             />
@@ -60,7 +60,7 @@ function EditBookModal({ selectedBook, onClose, onSave }) {
                                 Giá bán hiện tại
                             </label>
                             <div className="px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600">
-                                {selectedBook.price.toLocaleString("vi-VN")}đ
+                                {selectedBook.DonGia.toLocaleString("vi-VN")}đ
                             </div>
                         </div>
 
