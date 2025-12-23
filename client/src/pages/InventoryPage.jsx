@@ -4,104 +4,12 @@ import { EntryFormTable } from "../components/EntryFormTable";
 import { EntryHistory } from "../components/EntryHistory";
 import { useState } from "react";
 
-const tempData = [
-    {
-        id: 1,
-        bookName: "Sách 01",
-        category: "TL01",
-        author: "Nguyễn Văn A",
-        quantity: 1000,
-        unitPrice: 50000,
-    },
-    {
-        id: 2,
-        bookName: "Sách 02",
-        category: "TL02",
-        author: "Nguyễn Văn C",
-        quantity: 2000,
-        unitPrice: 50000,
-    },
-    {
-        id: 3,
-        bookName: "Sách 03",
-        category: "TL03",
-        author: "Nguyễn Văn C",
-        quantity: 3000,
-        unitPrice: 50000,
-    },
-    {
-        id: 4,
-        bookName: "Sách 04",
-        category: "TL04",
-        author: "Nguyễn Văn D",
-        quantity: 4000,
-        unitPrice: 50000,
-    },
-];
-
-const initialHistory = [
-    {
-        id: 1,
-        date: "15/11/2025",
-        bookTypes: 2,
-        totalQuantity: 2000,
-        bookList: tempData,
-    },
-    {
-        id: 2,
-        date: "15/11/2025",
-        bookTypes: 3,
-        totalQuantity: 3000,
-        bookList: tempData,
-    },
-    {
-        id: 3,
-        date: "15/11/2025",
-        bookTypes: 4,
-        totalQuantity: 4000,
-        bookList: tempData,
-    },
-    {
-        id: 4,
-        date: "15/11/2025",
-        bookTypes: 5,
-        totalQuantity: 5000,
-        bookList: tempData,
-    },
-    {
-        id: 5,
-        date: "15/11/2025",
-        bookTypes: 5,
-        totalQuantity: 5000,
-        bookList: tempData,
-    },
-    {
-        id: 6,
-        date: "15/11/2025",
-        bookTypes: 5,
-        totalQuantity: 5000,
-        bookList: tempData,
-    },
-    {
-        id: 7,
-        date: "15/11/2025",
-        bookTypes: 5,
-        totalQuantity: 5000,
-        bookList: tempData,
-    },
-    {
-        id: 8,
-        date: "15/11/2025",
-        bookTypes: 5,
-        totalQuantity: 5000,
-        bookList: tempData,
-    },
-];
-
 export default function InventoryPage() {
-    const [entries, setEntries] = useState(tempData);
-
-    const [histories, setHistories] = useState(initialHistory);
+    const [entries, setEntries] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(() =>
+        new Date().toISOString().slice(0, 10)
+    );
+    const [histories, setHistories] = useState([]);
 
     // this function will save entry into history, when user click 'Lưu phiếu nhập' at EntryFormTable
     const handleSaveEntry = function (newHistory) {
@@ -122,12 +30,27 @@ export default function InventoryPage() {
             <Header />
             <main className="max-w-7xl mx-auto px-6 py-8 ">
                 <h1 className="mb-8 text-xl font-semibold">Nhập kho</h1>
-                <StockEntryForm entries={entries} setEntries={setEntries} />
+                <div className="mb-6">
+                    <label className="block mb-2 font-semibold">
+                        Ngày nhập<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
+                    />
+                </div>
+                <StockEntryForm
+                    entries={entries}
+                    setEntries={setEntries}
+                />
                 <EntryFormTable
                     history={histories}
                     entries={entries}
                     setEntries={setEntries}
                     handleSaveEntry={handleSaveEntry}
+                    selectedDate={selectedDate}
                 />
                 <EntryHistory history={histories} />
             </main>

@@ -1,43 +1,90 @@
 import BodyFormTable from "./BodyFormTable";
+import { createImportReceipt } from "../services/inventoryService";
+import { useState, useEffect } from "react";
+import formatDate from "../utils/formatDate";
 
 export function EntryFormTable({
     entries,
     setEntries,
     handleSaveEntry,
     history,
+    selectedDate,
 }) {
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
+
+    // Auto-dismiss success message after 3 seconds
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => setSuccess(false), 1500);
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
+
     const handleDelete = (id) => {
         setEntries(entries.filter((entry) => entry.id !== id));
     };
 
-    // convert a form into a history to save in historyList
-    // a history includes: id, date, bookTypes, totalQuantity, bookList
-    const convertEntryFormIntoHistory = function () {
-        // date (temp curdate)
-        const date = new Date().toLocaleDateString();
+    const handleSave = async () => {
+        // Clear previous messages
+        setError(null);
+        setSuccess(false);
 
-        // id
-        const id = history[history.length - 1]?.id + 1 || 1;
+        // Validation
+        if (entries.length === 0) {
+            setError("Vui lòng thêm ít nhất một sách vào phiếu nhập");
+            return;
+        }
 
-        //bookTypes
-        const bookTypes = entries.length;
+        if (!selectedDate) {
+            setError("Vui lòng chọn ngày nhập");
+            return;
+        }
 
-        // totalQuantity
-        const totalQuantity = entries.reduce(
-            (total, entry) => total + entry.quantity,
-            0
-        );
+        try {
+            setSaving(true);
 
-        const bookList = [...entries];
+            // Build payload for API
+            const payload = {
+                NgayNhap: new Date(selectedDate).toISOString(),
+                DanhSachSach: entries.map((entry) => ({
+                    MaSach: entry.MaSach,
+                    SoLuong: entry.quantity,
+                    DonGiaNhap: entry.unitPrice,
+                })),
+            };
 
-        return { id, date, bookTypes, totalQuantity, bookList };
+            // POST to API
+            await createImportReceipt(payload);
+
+            // Convert to history format for UI
+            const newHistory = {
+                id: history[history.length - 1]?.id + 1 || 1,
+                date: formatDate(selectedDate),
+                bookTypes: entries.length,
+                totalQuantity: entries.reduce((sum, e) => sum + e.quantity, 0),
+                bookList: [...entries],
+            };
+
+            handleSaveEntry(newHistory);
+            setSuccess(true);
+        } catch (err) {
+            console.error("Error saving import receipt:", err);
+            setError(err.response?.data?.message || "Không thể lưu phiếu nhập");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
         <div className="mb-8">
             <h2 className="mb-4 text-xl font-semibold">Phiếu nhập</h2>
             <div className="bg-white rounded-lg p-6 shadow-sm">
-                <p className="text-gray-500 mb-6">Ngày: 16/11/2025</p>
+                <p className="text-gray-500 mb-6">
+                    Ngày:{" "}
+                    {selectedDate ? formatDate(selectedDate) : "Chưa chọn"}
+                </p>
 
                 <div className="mb-6 overflow-auto max-h-96">
                     <table className="w-full">
@@ -68,14 +115,23 @@ export function EntryFormTable({
                     </table>
                 </div>
 
-                <div className="flex justify-center">
+                <div className="flex flex-col items-center gap-3">
+                    {error && (
+                        <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm w-full max-w-md text-center">
+                            {error}
+                        </div>
+                    )}
+                    {success && (
+                        <div className="px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm w-full max-w-md text-center">
+                            Lưu phiếu nhập thành công!
+                        </div>
+                    )}
                     <button
-                        onClick={() =>
-                            handleSaveEntry(convertEntryFormIntoHistory())
-                        }
-                        className="px-8 py-3 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors"
+                        onClick={handleSave}
+                        disabled={saving || entries.length === 0}
+                        className="px-8 py-3 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                     >
-                        Lưu phiếu nhập
+                        {saving ? "Đang lưu..." : "Lưu phiếu nhập"}
                     </button>
                 </div>
             </div>
