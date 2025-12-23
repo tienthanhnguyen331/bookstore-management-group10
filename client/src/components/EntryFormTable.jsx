@@ -2,6 +2,7 @@ import BodyFormTable from "./BodyFormTable";
 import { createImportReceipt } from "../services/inventoryService";
 import { useState, useEffect } from "react";
 import formatDate from "../utils/formatDate";
+import StateMessage from "./shared/StateMessage";
 
 export function EntryFormTable({
     entries,
@@ -116,16 +117,11 @@ export function EntryFormTable({
                 </div>
 
                 <div className="flex flex-col items-center gap-3">
-                    {error && (
-                        <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm w-full max-w-md text-center">
-                            {error}
-                        </div>
-                    )}
-                    {success && (
-                        <div className="px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm w-full max-w-md text-center">
-                            Lưu phiếu nhập thành công!
-                        </div>
-                    )}
+                    <StateMessage
+                        error={error}
+                        success={success ? "Lưu phiếu nhập thành công!" : null}
+                        className="w-full max-w-md"
+                    />
                     <button
                         onClick={handleSave}
                         disabled={saving || entries.length === 0}
