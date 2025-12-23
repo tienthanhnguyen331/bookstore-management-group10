@@ -1,65 +1,30 @@
+import { useState, useEffect } from "react";
 import { CSVLink } from "react-csv";
-
-const inventoryData = [
-    {
-        id: 1,
-        bookName: "Calculus 1",
-        openingStock: 147,
-        changes: -59,
-        closingStock: 206,
-    },
-    {
-        id: 2,
-        bookName: "Đế Mèn Phiêu Lưu Ký",
-        openingStock: 198,
-        changes: 94,
-        closingStock: 292,
-    },
-    {
-        id: 3,
-        bookName: "Sách mới",
-        openingStock: 0,
-        changes: 308,
-        closingStock: 308,
-    },
-    {
-        id: 4,
-        bookName: "Toán Cao Cấp A1",
-        openingStock: 120,
-        changes: 30,
-        closingStock: 150,
-    },
-    {
-        id: 5,
-        bookName: "Vật Lý Đại Cương",
-        openingStock: 85,
-        changes: -25,
-        closingStock: 60,
-    },
-    {
-        id: 6,
-        bookName: "Lập Trình C++",
-        openingStock: 200,
-        changes: 50,
-        closingStock: 250,
-    },
-    {
-        id: 7,
-        bookName: "Tiếng Anh Giao Tiếp",
-        openingStock: 175,
-        changes: -45,
-        closingStock: 130,
-    },
-    {
-        id: 8,
-        bookName: "Marketing Căn Bản",
-        openingStock: 90,
-        changes: 110,
-        closingStock: 200,
-    },
-];
+import { reportService } from "../../services/reportService";
+import TableStateRow from "../shared/TableStateRow";
 
 function InventoryReport({ month, year }) {
+    const [inventoryData, setInventoryData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchInventoryData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const data = await reportService.getStockReport(month, year);
+                setInventoryData(data);
+            } catch (err) {
+                setError("Không thể tải dữ liệu báo cáo tồn kho");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchInventoryData();
+    }, [month, year]);
     const csvHeaders = [
         { label: "STT", key: "stt" },
         { label: "SÁCH", key: "bookName" },
@@ -70,10 +35,10 @@ function InventoryReport({ month, year }) {
 
     const csvData = inventoryData.map((item, index) => ({
         stt: index + 1,
-        bookName: item.bookName,
-        openingStock: item.openingStock,
-        changes: item.changes,
-        closingStock: item.closingStock,
+        bookName: item.TenSach,
+        openingStock: item.TonDau,
+        changes: item.PhatSinh,
+        closingStock: item.TonCuoi,
     }));
 
     return (
@@ -119,34 +84,47 @@ function InventoryReport({ month, year }) {
                     </thead>
                     {/* BODY */}
                     <tbody className="divide-y divide-gray-200">
-                        {inventoryData.map((item, index) => (
-                            <tr key={item.id} className="hover:bg-gray-50">
-                                <td className="px-4 py-3 text-gray-900">
-                                    {index + 1}
-                                </td>
-                                <td className="px-4 py-3 text-gray-900">
-                                    {item.bookName}
-                                </td>
-                                <td className="px-4 py-3 text-center text-gray-900">
-                                    {item.openingStock}
-                                </td>
-                                <td className="px-4 py-3 text-center">
-                                    <span
-                                        className={
-                                            item.changes >= 0
-                                                ? "text-blue-500"
-                                                : "text-red-500"
-                                        }
-                                    >
-                                        {item.changes >= 0 ? "+" : ""}
-                                        {item.changes}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-center text-gray-900">
-                                    {item.closingStock}
-                                </td>
-                            </tr>
-                        ))}
+                        {/* reusable notice component */}
+                        <TableStateRow
+                            colSpan={5}
+                            loading={loading}
+                            error={error}
+                            isEmpty={inventoryData.length === 0}
+                        />
+                        {!loading &&
+                            !error &&
+                            inventoryData.length > 0 &&
+                            inventoryData.map((item, index) => (
+                                <tr
+                                    key={item.MaBCT}
+                                    className="hover:bg-gray-50"
+                                >
+                                    <td className="px-4 py-3 text-gray-900">
+                                        {index + 1}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-900">
+                                        {item.TenSach}
+                                    </td>
+                                    <td className="px-4 py-3 text-center text-gray-900">
+                                        {item.TonDau}
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span
+                                            className={
+                                                item.PhatSinh >= 0
+                                                    ? "text-blue-500"
+                                                    : "text-red-500"
+                                            }
+                                        >
+                                            {item.PhatSinh >= 0 ? "+" : ""}
+                                            {item.PhatSinh}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center text-gray-900">
+                                        {item.TonCuoi}
+                                    </td>
+                                </tr>
+                            ))}
                     </tbody>
                 </table>
             </div>

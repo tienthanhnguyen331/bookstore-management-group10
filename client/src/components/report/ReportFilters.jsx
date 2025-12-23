@@ -20,6 +20,8 @@ function ReportFilters({
     onYearChange,
 }) {
     const currentYear = new Date().getFullYear();
+
+    // generate array of years from currentYear - 2 to currentYear + 2, range of 5 years
     const years = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 
     return (

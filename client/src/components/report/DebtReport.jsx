@@ -1,45 +1,31 @@
+import { useState, useEffect } from "react";
 import formatCurrency from "../../utils/formatCurrency";
 import { CSVLink } from "react-csv";
-
-const debtReportData = [
-    {
-        id: 1,
-        customerName: "Nguyễn Tiến Thành",
-        openingDebt: 0,
-        changes: 500000,
-        closingDebt: 500000,
-    },
-    {
-        id: 2,
-        customerName: "Trần Thị Bích",
-        openingDebt: 150000,
-        changes: 300000,
-        closingDebt: 450000,
-    },
-    {
-        id: 3,
-        customerName: "Lê Minh Công",
-        openingDebt: 500000,
-        changes: 0,
-        closingDebt: 500000,
-    },
-    {
-        id: 4,
-        customerName: "Phạm Thị Diệu",
-        openingDebt: 100000,
-        changes: 50000,
-        closingDebt: 150000,
-    },
-    {
-        id: 5,
-        customerName: "Hoàng Văn Em",
-        openingDebt: 200000,
-        changes: 120000,
-        closingDebt: 320000,
-    },
-];
+import { reportService } from "../../services/reportService";
+import TableStateRow from "../shared/TableStateRow";
 
 function DebtReport({ month, year }) {
+    const [debtReportData, setDebtReportData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchDebtData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const data = await reportService.getDebtReport(month, year);
+                setDebtReportData(data);
+            } catch (err) {
+                setError("Không thể tải dữ liệu báo cáo công nợ");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDebtData();
+    }, [month, year]);
     const csvHeaders = [
         { label: "STT", key: "stt" },
         { label: "KHÁCH HÀNG", key: "customerName" },
@@ -50,10 +36,10 @@ function DebtReport({ month, year }) {
 
     const csvData = debtReportData.map((item, index) => ({
         stt: index + 1,
-        customerName: item.customerName,
-        openingDebt: item.openingDebt,
-        changes: item.changes,
-        closingDebt: item.closingDebt,
+        customerName: item.HoTen,
+        openingDebt: item.NoDau,
+        changes: item.NoPhatSinh,
+        closingDebt: item.NoCuoi,
     }));
 
     return (
@@ -97,58 +83,73 @@ function DebtReport({ month, year }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                        {debtReportData.map((item, index) => (
-                            <tr key={item.id} className="hover:bg-gray-50">
-                                <td className="px-4 py-3 text-gray-900">
-                                    {index + 1}
-                                </td>
-                                <td className="px-4 py-3">
-                                    <div className="text-gray-900">
-                                        {item.customerName}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                        {item.customerId}
-                                    </div>
-                                </td>
-                                <td className="px-4 py-3 text-center">
-                                    <span
-                                        className={
-                                            item.openingDebt > 0
-                                                ? "text-red-500"
-                                                : "text-gray-900"
-                                        }
-                                    >
-                                        {item.openingDebt > 0
-                                            ? formatCurrency(item.openingDebt)
-                                            : "0 ₫"}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-center">
-                                    <span
-                                        className={
-                                            item.changes > 0
-                                                ? "text-blue-500"
-                                                : "text-gray-900"
-                                        }
-                                    >
-                                        {item.changes > 0
-                                            ? "+" + formatCurrency(item.changes)
-                                            : "0 ₫"}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 text-center">
-                                    <span
-                                        className={
-                                            item.closingDebt > 0
-                                                ? "text-red-500"
-                                                : "text-gray-900"
-                                        }
-                                    >
-                                        {formatCurrency(item.closingDebt)}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))}
+                        <TableStateRow
+                            colSpan={5}
+                            loading={loading}
+                            error={error}
+                            isEmpty={debtReportData.length === 0}
+                        />
+                        {!loading &&
+                            !error &&
+                            debtReportData.length > 0 &&
+                            debtReportData.map((item, index) => (
+                                <tr
+                                    key={item.MaBCCN}
+                                    className="hover:bg-gray-50"
+                                >
+                                    <td className="px-4 py-3 text-gray-900">
+                                        {index + 1}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <div className="text-gray-900">
+                                            {item.HoTen}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            {item.MaKH} - {item.SDT}
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span
+                                            className={
+                                                item.NoDau > 0
+                                                    ? "text-red-500"
+                                                    : "text-gray-900"
+                                            }
+                                        >
+                                            {item.NoDau > 0
+                                                ? formatCurrency(item.NoDau)
+                                                : "0 ₫"}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span
+                                            className={
+                                                item.NoPhatSinh > 0
+                                                    ? "text-blue-500"
+                                                    : "text-gray-900"
+                                            }
+                                        >
+                                            {item.NoPhatSinh > 0
+                                                ? "+" +
+                                                  formatCurrency(
+                                                      item.NoPhatSinh
+                                                  )
+                                                : "0 ₫"}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span
+                                            className={
+                                                item.NoCuoi > 0
+                                                    ? "text-red-500"
+                                                    : "text-gray-900"
+                                            }
+                                        >
+                                            {formatCurrency(item.NoCuoi)}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
                     </tbody>
                 </table>
             </div>
