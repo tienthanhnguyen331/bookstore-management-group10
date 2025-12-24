@@ -94,9 +94,10 @@ namespace DoAnPhanMem.Data
                     entity.HasCheckConstraint("CK_CTPN_SoLuong", "SoLuongNhap > 0");
                 });
 
-                // Không seed data - sử dụng script SQL để insert dữ liệu mẫu
-            }
-
-
+           
+        }
+            
+           
+            
     }
 }
