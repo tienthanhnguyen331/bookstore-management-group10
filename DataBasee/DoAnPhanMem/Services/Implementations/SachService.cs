@@ -32,9 +32,6 @@ namespace DoAnPhanMem.Services.Implementations
                             DonGia = s.DonGia,
 
 
-
-
-
                             SoLuongTon = s.SoLuongTon,
 
                             // --- KHẮC PHỤC LỖI TẠI ĐÂY ---

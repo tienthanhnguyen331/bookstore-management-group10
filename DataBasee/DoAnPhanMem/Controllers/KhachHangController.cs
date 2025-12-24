@@ -81,6 +81,35 @@ namespace DoAnPhanMem.Controllers
             return Ok(dto); // Trả về dữ liệu khách hàng
         }
 
+        [HttpPut("update-info/{id}")] // API dạng PUT: api/customer/update-info/5
+        public async Task<IActionResult> UpdateCustomerInfo(string id, [FromBody] UpdateCustomerDto request)
+        {
+            // 1. Tìm khách hàng trong database theo ID
+            var customer = await _context.KHACH_HANG.FindAsync(id);
+           
+            // 2. Nếu không tìm thấy thì báo lỗi 404
+            if (customer == null)
+            {
+                return NotFound("Không tìm thấy khách hàng này!");
+            }
+
+            // 3. Cập nhật thông tin mới từ form vào database
+            customer.HoTen = request.HoTen;     
+            customer.Email = request.Email;          
+            customer.SDT = request.SDT; 
+            customer.DiaChi = request.DiaChi;       
+
+            // 4. Lưu thay đổi
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Cập nhật thành công!", data = customer });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi khi lưu dữ liệu: " + ex.Message);
+            }
+        }
     }
 }
 
