@@ -44,19 +44,23 @@ namespace DoAnPhanMem.Services.Implementations
                 public void CheckRule_NhapSach(int soLuongNhap, int tonKhoHienTai)
                 {
                     // Dùng key từ script SQL: QD_NhapToiThieu
-                    int minNhap = GetIntRule("QD_NhapToiThieu");
-
+                    int minNhap = GetIntRule("QD1_NhapToiThieu");
+                     int maxTon = GetIntRule("QD1_TonToiDaTruocNhap");
+                    if (maxTon > 0 && tonKhoHienTai >= maxTon)
+                    {
+                        throw new Exception($"Vi phạm QĐ1: Sách này còn tồn {tonKhoHienTai} (quy định tối đa {maxTon} mới được nhập). Không được phép nhập thêm!");
+                    }
                     if (minNhap > 0 && soLuongNhap < minNhap)
-                        throw new Exception($"Vi phạm QĐ1: Số lượng nhập phải ít nhất {minNhap}.");
-                }
+                                throw new Exception($"Vi phạm QĐ1: Số lượng nhập phải ít nhất {minNhap}.");
+                        }
 
                 // QĐ2: Kiểm tra khi bán sách
                 public void CheckRule_BanSach(decimal noHienTai, int tonKhoSauBan)
                 {
                     // Dùng key từ script SQL: QD_NoToiDa, QD_TonToiThieu
-                    decimal maxNo = GetDecimalRule("QD_NoToiDa");
-                    int minTon = GetIntRule("QD_TonToiThieu");
-
+                    decimal maxNo = GetDecimalRule("QD2_NoToiDa");
+                    int minTon = GetIntRule("QD2_TonToiThieuSauBan");
+                    
                     if (maxNo > 0 && noHienTai > maxNo)
                         throw new Exception($"Vi phạm QĐ2: Khách đang nợ {noHienTai}, vượt quá mức cho phép {maxNo}.");
 
