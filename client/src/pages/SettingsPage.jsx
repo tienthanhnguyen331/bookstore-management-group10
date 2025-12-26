@@ -1,41 +1,27 @@
 import { Header } from "../components/Header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { settingsService } from "../services/settingsService";
-import { useEffect } from "react";
+import StateMessage from "./../components/shared/StateMessage";
 
-export default function SettingsPage() {
+export default function SettingsPage({rules, setRules, onRulesUpdate}) {
     const [activeTab, setActiveTab] = useState("rules");
-    const [rules, setRules] = useState([]);
-    const [formData, setFormData] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [formData, setFormData] = useState(rules);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [success, setSuccess] = useState(null);
 
-    // Load rules from backend on component mount
     useEffect(() => {
-        loadRules();
-    }, []);
+        setFormData(rules);
+    }, [rules]);
 
-    const loadRules = async () => {
-        try {
-            setLoading(true);
-            const data = await settingsService.getRulesWithConfig();
-            setRules(data);
-            
-            // Map rules to formData
-            const initialFormData = {};
-            data.forEach(rule => {
-                initialFormData[rule.tenQuyDinh] = rule.giaTri;
-            });
-            setFormData(initialFormData);
-            setError(null);
-        } catch (err) {
-            setError("Không thể tải dữ liệu quy định");
-            console.error(err);
-        } finally {
-            setLoading(false);
+    // Auto-dismiss success message after 1.5 seconds
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => setSuccess(null), 1500);
+            return () => clearTimeout(timer);
         }
-    };
+    }, [success]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -48,14 +34,17 @@ export default function SettingsPage() {
     const handleSaveSettings = async () => {
         try {
             setSaving(true);
-            // Update each rule
-            for (const [key, value] of Object.entries(formData)) {
-                await settingsService.updateRule(key, value);
-            }
-            alert("Cài đặt quy định đã được lưu thành công!");
-            await loadRules(); // Reload to confirm
+            setError(null);
+            setSuccess(null);
+            await settingsService.updateRules(formData);
+            setRules(formData); // Update parent state
+            setSuccess("Cài đặt quy định đã được lưu thành công!");
+            await onRulesUpdate(); // Refresh from api to confirm
         } catch (err) {
-            alert("Lỗi khi lưu cài đặt: " + err.message);
+            const errorMsg =
+                err.response?.data?.message ||
+                "Lỗi khi lưu cài đặt. Vui lòng thử lại";
+            setError(errorMsg);
             console.error(err);
         } finally {
             setSaving(false);
@@ -106,129 +95,117 @@ export default function SettingsPage() {
                                     </p>
                                 </div>
 
-                                {error && (
-                                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                                        {error}
-                                    </div>
-                                )}
+                                <StateMessage
+                                    loading={loading}
+                                    error={error}
+                                    success={success}
+                                    loadingMessage="Đang tải dữ liệu..."
+                                    className="mb-6"
+                                />
 
-                                {loading ? (
-                                    <div className="flex items-center justify-center min-h-96">
-                                        <p className="text-gray-500">Đang tải dữ liệu...</p>
-                                    </div>
-                                ) : (
+                                {!loading && (
                                     <>
                                         <div className="grid grid-cols-2 gap-6 mb-6">
-                                            {/* QD1_NhapToiThieu */}
-                                            {formData.QD1_NhapToiThieu !== undefined && (
+                                            {/* MinImportQuantity */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    SỐ LƯỢNG NHẬP TỐI THIỂU (CUỐN)
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    name="MinImportQuantity"
+                                                    value={formData.MinImportQuantity || ""}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                    disabled={saving}
+                                                />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Số lượng tối thiểu khi nhập sách vào kho
+                                                </p>
+                                            </div>
+
+                                            {/* MinStockPreImport */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    TỒN TỐI ĐA TRƯỚC NHẬP (CUỐN)
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    name="MinStockPreImport"
+                                                    value={formData.MinStockPreImport || ""}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                    disabled={saving}
+                                                />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Số lượng tối đa trong kho trước khi nhập
+                                                </p>
+                                            </div>
+
+                                            {/* MaxDebt */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    NỢ TỐI ĐA CỦA KHÁCH (VND)
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    name="MaxDebt"
+                                                    value={formData.MaxDebt || ""}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                    disabled={saving}
+                                                />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Ví dụ: 30000000 (30 triệu)
+                                                </p>
+                                            </div>
+
+                                            {/* MinStockPostSell */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    TỒN TỐI THIỂU SAU BÁN (CUỐN)
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    name="MinStockPostSell"
+                                                    value={formData.MinStockPostSell || ""}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                    disabled={saving}
+                                                />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Số lượng tối thiểu trong kho sau khi bán
+                                                </p>
+                                            </div>
+
+                                            {/* CheckDebtRule */}
+                                            <div className="flex items-start gap-3 pt-8">
+                                                <input
+                                                    type="checkbox"
+                                                    id="CheckDebtRule"
+                                                    name="CheckDebtRule"
+                                                    checked={formData.CheckDebtRule || false}
+                                                    onChange={(e) => {
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            CheckDebtRule: e.target.checked
+                                                        }));
+                                                    }}
+                                                    className="w-5 h-5 text-blue-400 border-gray-300 rounded focus:ring-blue-400 cursor-pointer mt-1"
+                                                    disabled={saving}
+                                                />
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        SỐ LƯỢNG NHẬP TỐI THIỂU (CUỐN)
+                                                    <label
+                                                        htmlFor="CheckDebtRule"
+                                                        className="text-sm font-medium text-gray-700 cursor-pointer"
+                                                    >
+                                                        Áp dụng quy định thu tiền không vượt nợ
                                                     </label>
-                                                    <input
-                                                        type="number"
-                                                        name="QD1_NhapToiThieu"
-                                                        value={formData.QD1_NhapToiThieu || ""}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                        disabled={saving}
-                                                    />
                                                     <p className="text-xs text-gray-500 mt-1">
-                                                        Số lượng tối thiểu khi nhập sách vào kho
+                                                        Số tiền thu không được vượt quá số nợ của khách hàng
                                                     </p>
                                                 </div>
-                                            )}
-
-                                            {/* QD1_TonToiDaTruocNhap */}
-                                            {formData.QD1_TonToiDaTruocNhap !== undefined && (
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        TỒN TỐI ĐA TRƯỚC NHẬP (CUỐN)
-                                                    </label>
-                                                    <input
-                                                        type="number"
-                                                        name="QD1_TonToiDaTruocNhap"
-                                                        value={formData.QD1_TonToiDaTruocNhap || ""}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                        disabled={saving}
-                                                    />
-                                                    <p className="text-xs text-gray-500 mt-1">
-                                                        Số lượng tối đa trong kho trước khi nhập
-                                                    </p>
-                                                </div>
-                                            )}
-
-                                            {/* QD2_NoToiDa */}
-                                            {formData.QD2_NoToiDa !== undefined && (
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        NỢ TỐI ĐA CỦA KHÁCH (VND)
-                                                    </label>
-                                                    <input
-                                                        type="number"
-                                                        name="QD2_NoToiDa"
-                                                        value={formData.QD2_NoToiDa || ""}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                        disabled={saving}
-                                                    />
-                                                    <p className="text-xs text-gray-500 mt-1">
-                                                        Ví dụ: 30000000 (30 triệu)
-                                                    </p>
-                                                </div>
-                                            )}
-
-                                            {/* QD2_TonToiThieuSauBan */}
-                                            {formData.QD2_TonToiThieuSauBan !== undefined && (
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        TỒN TỐI THIỂU SAU BÁN (CUỐN)
-                                                    </label>
-                                                    <input
-                                                        type="number"
-                                                        name="QD2_TonToiThieuSauBan"
-                                                        value={formData.QD2_TonToiThieuSauBan || ""}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                        disabled={saving}
-                                                    />
-                                                    <p className="text-xs text-gray-500 mt-1">
-                                                        Số lượng tối thiểu trong kho sau khi bán
-                                                    </p>
-                                                </div>
-                                            )}
-
-                                            {/* QD4_ThuKhongVuotNo */}
-                                            {formData.QD4_ThuKhongVuotNo !== undefined && (
-                                                <div className="flex items-start gap-3 pt-8">
-                                                    <input
-                                                        type="checkbox"
-                                                        id="QD4_ThuKhongVuotNo"
-                                                        name="QD4_ThuKhongVuotNo"
-                                                        checked={formData.QD4_ThuKhongVuotNo === "true" || formData.QD4_ThuKhongVuotNo === true}
-                                                        onChange={(e) => {
-                                                            setFormData(prev => ({
-                                                                ...prev,
-                                                                QD4_ThuKhongVuotNo: e.target.checked
-                                                            }));
-                                                        }}
-                                                        className="w-5 h-5 text-blue-400 border-gray-300 rounded focus:ring-blue-400 cursor-pointer mt-1"
-                                                        disabled={saving}
-                                                    />
-                                                    <div>
-                                                        <label
-                                                            htmlFor="QD4_ThuKhongVuotNo"
-                                                            className="text-sm font-medium text-gray-700 cursor-pointer"
-                                                        >
-                                                            Áp dụng quy định thu tiền không vượt nợ
-                                                        </label>
-                                                        <p className="text-xs text-gray-500 mt-1">
-                                                            Số tiền thu không được vượt quá số nợ của khách hàng
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            )}
+                                            </div>
                                         </div>
 
                                         {/* Save Button */}
