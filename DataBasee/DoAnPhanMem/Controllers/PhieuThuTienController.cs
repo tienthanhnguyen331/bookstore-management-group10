@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DoAnPhanMem.Data;
 using DoAnPhanMem.Models;
@@ -103,7 +103,7 @@ namespace DoAnPhanMem.Controllers
 
             // Lay nhan vien dau tien lam mac dinh (co the lay tu JWT token sau)
             var nhanVien = await _context.NHAN_VIEN.FirstOrDefaultAsync();
-            
+
             // Tao phieu thu tien
             var phieuThuTien = new PHIEU_THU_TIEN
             {
@@ -118,6 +118,35 @@ namespace DoAnPhanMem.Controllers
 
             // Cap nhat cong no khach hang
             khachHang.CongNo -= dto.SoTienThu;
+
+            // CAP NHAT BAO CAO CONG NO (BCCN)
+            var thang = ngayThuTien.Month;
+            var nam = ngayThuTien.Year;
+
+            var baoCaoCongNo = await _context.BAO_CAO_CONG_NO
+                .FirstOrDefaultAsync(bc => bc.MaKH == khachHang.MaKH && bc.Thang == thang && bc.Nam == nam);
+
+            if (baoCaoCongNo != null)
+            {
+             
+                baoCaoCongNo.NoPhatSinh -= dto.SoTienThu;
+             
+                baoCaoCongNo.NoCuoi -= dto.SoTienThu;
+            }
+            else
+            {
+                var baoCaoMoi = new BAO_CAO_CONG_NO
+                {
+                    MaBCCN = "BCCN" + maPhieu, 
+                    Thang = thang,
+                    Nam = nam,
+                    MaKH = khachHang.MaKH,
+                    NoDau = congNoTruoc, 
+                    NoPhatSinh = -dto.SoTienThu,
+                    NoCuoi = khachHang.CongNo 
+                };
+                _context.BAO_CAO_CONG_NO.Add(baoCaoMoi);
+            }
 
             await _context.SaveChangesAsync();
 
@@ -251,7 +280,9 @@ namespace DoAnPhanMem.Controllers
 
             // Tinh cong no moi (cong no hien tai + chenh lech nguoc lai)
             // Neu thu nhieu hon -> cong no giam, thu it hon -> cong no tang
-            decimal congNoMoi = phieu.KhachHang.CongNo + soTienCu - soTienMoi;
+            decimal chenhLechNo = soTienCu - soTienMoi;
+
+            decimal congNoMoi = phieu.KhachHang.CongNo + chenhLechNo;
 
             // Kiem tra cong no moi khong am
             if (congNoMoi < 0)
@@ -261,16 +292,29 @@ namespace DoAnPhanMem.Controllers
 
             // Luu cong no truoc khi cap nhat
             decimal congNoTruoc = phieu.KhachHang.CongNo;
+            phieu.KhachHang.CongNo = congNoMoi;
+
+            DateTime ngayHieuLuc = phieu.NgayThuTien;
 
             // Cap nhat phieu thu tien
             phieu.SoTienThu = soTienMoi;
             if (dto.NgayThuTien.HasValue)
             {
                 phieu.NgayThuTien = dto.NgayThuTien.Value;
+                // Cap nhat lai thang nam neu ngay thay doi de tim bao cao dung
+                ngayHieuLuc = dto.NgayThuTien.Value;
             }
 
-            // Cap nhat cong no khach hang
-            phieu.KhachHang.CongNo = congNoMoi;
+            // CAP NHAT BAO CAO CONG NO
+            var baoCao = await _context.BAO_CAO_CONG_NO
+                .FirstOrDefaultAsync(bc => bc.MaKH == phieu.MaKH && bc.Thang == ngayHieuLuc.Month && bc.Nam == ngayHieuLuc.Year);
+
+            if (baoCao != null)
+            {
+                // Cong vao NoCuoi phan chenh lech
+                baoCao.NoPhatSinh += chenhLechNo;
+                baoCao.NoCuoi += chenhLechNo;
+            }
 
             await _context.SaveChangesAsync();
 
