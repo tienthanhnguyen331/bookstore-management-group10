@@ -201,6 +201,10 @@ function PaymentReceiptModal({ isOpen, onClose, customer, onSave }) {
                         {/* Error Messages */}
                         <StateMessage
                             error={validationError || error}
+                            onClose={() => {
+                                setValidationError(null);
+                                setError(null);
+                            }}
                             className="mt-4"
                         />
                     </div>

@@ -51,6 +51,8 @@ export default function InventoryPage({ rules, rulesLoading }) {
                     saving={saving}
                     error={error}
                     success={success}
+                    setError={setError}
+                    setSuccess={setSuccess}
                 />
                 <EntryFormTable
                     history={histories}

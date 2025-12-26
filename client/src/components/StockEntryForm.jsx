@@ -7,7 +7,7 @@ import StateMessage from "./shared/StateMessage";
 
 // Books will be fetched from API when dropdown opens
 
-export function StockEntryForm({ entries, setEntries, rules, saving, error, success }) {
+export function StockEntryForm({ entries, setEntries, rules, saving, error, success, setError, setSuccess }) {
     const [formData, setFormData] = useState({
         selectedBook: null,
         quantity: "",
@@ -118,7 +118,7 @@ export function StockEntryForm({ entries, setEntries, rules, saving, error, succ
                         loading={loadingBooks}
                         rules={rules}
                     />
-                    <StateMessage error={booksError} className="mt-2" />
+                    <StateMessage error={booksError} onClose={() => setBooksError(null)} className="mt-2" />
                 </div>
 
                 {/* Book Details (shown after selection) */}
@@ -169,6 +169,10 @@ export function StockEntryForm({ entries, setEntries, rules, saving, error, succ
                 <StateMessage
                     error={error}
                     success={success ? "Lưu phiếu nhập thành công!" : null}
+                    onClose={() => {
+                        setError(null);
+                        setSuccess(false);
+                    }}
                     className="mt-2"
                 />
 

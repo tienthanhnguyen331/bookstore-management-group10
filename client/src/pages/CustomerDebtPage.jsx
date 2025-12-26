@@ -74,6 +74,7 @@ function CustomerDebtPage() {
 
                 <StateMessage
                     success={successMessage}
+                    onClose={() => setSuccessMessage(null)}
                     className="mb-6 w-full"
                 />
 

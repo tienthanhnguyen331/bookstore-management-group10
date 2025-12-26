@@ -99,6 +99,10 @@ export default function SettingsPage({rules, setRules, onRulesUpdate}) {
                                     loading={loading}
                                     error={error}
                                     success={success}
+                                    onClose={() => {
+                                        setError(null);
+                                        setSuccess(null);
+                                    }}
                                     loadingMessage="Đang tải dữ liệu..."
                                     className="mb-6"
                                 />
