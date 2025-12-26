@@ -109,13 +109,7 @@ function DebtReport({ month, year }) {
                                         </div>
                                     </td>
                                     <td className="px-4 py-3 text-center">
-                                        <span
-                                            className={
-                                                item.NoDau > 0
-                                                    ? "text-red-500"
-                                                    : "text-gray-900"
-                                            }
-                                        >
+                                        <span className={"text-gray-900"}>
                                             {item.NoDau > 0
                                                 ? formatCurrency(item.NoDau)
                                                 : "0 ₫"}
@@ -126,6 +120,8 @@ function DebtReport({ month, year }) {
                                             className={
                                                 item.NoPhatSinh > 0
                                                     ? "text-blue-500"
+                                                    : item.NoPhatSinh < 0
+                                                    ? "text-green-500"
                                                     : "text-gray-900"
                                             }
                                         >
@@ -134,17 +130,16 @@ function DebtReport({ month, year }) {
                                                   formatCurrency(
                                                       item.NoPhatSinh
                                                   )
+                                                : item.NoPhatSinh < 0
+                                                ? "-" +
+                                                  formatCurrency(
+                                                      item.NoPhatSinh * -1
+                                                  )
                                                 : "0 ₫"}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 text-center">
-                                        <span
-                                            className={
-                                                item.NoCuoi > 0
-                                                    ? "text-red-500"
-                                                    : "text-gray-900"
-                                            }
-                                        >
+                                        <span className={"text-gray-900"}>
                                             {formatCurrency(item.NoCuoi)}
                                         </span>
                                     </td>
