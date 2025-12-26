@@ -1,8 +1,6 @@
 import BodyFormTable from "./BodyFormTable";
 import { createImportReceipt } from "../services/inventoryService";
-import { useState, useEffect } from "react";
 import formatDate from "../utils/formatDate";
-import StateMessage from "./shared/StateMessage";
 
 export function EntryFormTable({
     entries,
@@ -10,18 +8,10 @@ export function EntryFormTable({
     handleSaveEntry,
     history,
     selectedDate,
+    setSaving,
+    setError,
+    setSuccess,
 }) {
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-
-    // Auto-dismiss success message after 3 seconds
-    useEffect(() => {
-        if (success) {
-            const timer = setTimeout(() => setSuccess(false), 1500);
-            return () => clearTimeout(timer);
-        }
-    }, [success]);
 
     const handleDelete = (id) => {
         setEntries(entries.filter((entry) => entry.id !== id));
@@ -116,18 +106,13 @@ export function EntryFormTable({
                     </table>
                 </div>
 
-                <div className="flex flex-col items-center gap-3">
-                    <StateMessage
-                        error={error}
-                        success={success ? "Lưu phiếu nhập thành công!" : null}
-                        className="w-full max-w-md"
-                    />
+                <div className="flex justify-center">
                     <button
                         onClick={handleSave}
-                        disabled={saving || entries.length === 0}
+                        disabled={entries.length === 0}
                         className="px-8 py-3 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                     >
-                        {saving ? "Đang lưu..." : "Lưu phiếu nhập"}
+                        Lưu phiếu nhập
                     </button>
                 </div>
             </div>

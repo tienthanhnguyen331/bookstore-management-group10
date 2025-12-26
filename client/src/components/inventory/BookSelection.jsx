@@ -11,6 +11,7 @@ export default function BookSelection({
     books,
     onSelect,
     loading = false,
+    rules,
 }) {
     const filtered = (books || []).filter((b) => {
         const q = (searchQuery || "").toLowerCase();
@@ -63,7 +64,7 @@ export default function BookSelection({
                             className="px-4 py-6"
                         />
                     ) : (
-                        <BookList books={filtered} onSelect={onSelect} />
+                        <BookList books={filtered} onSelect={onSelect} rules={rules} />
                     )}
                 </div>
             )}

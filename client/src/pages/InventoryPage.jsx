@@ -4,12 +4,15 @@ import { EntryFormTable } from "../components/EntryFormTable";
 import { EntryHistory } from "../components/EntryHistory";
 import { useState } from "react";
 
-export default function InventoryPage() {
+export default function InventoryPage({ rules, rulesLoading }) {
     const [entries, setEntries] = useState([]);
     const [selectedDate, setSelectedDate] = useState(() =>
         new Date().toISOString().slice(0, 10)
     );
     const [histories, setHistories] = useState([]);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
 
     // this function will save entry into history, when user click 'Lưu phiếu nhập' at EntryFormTable
     const handleSaveEntry = function (newHistory) {
@@ -44,6 +47,10 @@ export default function InventoryPage() {
                 <StockEntryForm
                     entries={entries}
                     setEntries={setEntries}
+                    rules={rules}
+                    saving={saving}
+                    error={error}
+                    success={success}
                 />
                 <EntryFormTable
                     history={histories}
@@ -51,6 +58,9 @@ export default function InventoryPage() {
                     setEntries={setEntries}
                     handleSaveEntry={handleSaveEntry}
                     selectedDate={selectedDate}
+                    setSaving={setSaving}
+                    setError={setError}
+                    setSuccess={setSuccess}
                 />
                 <EntryHistory history={histories} />
             </main>

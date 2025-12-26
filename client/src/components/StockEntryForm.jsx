@@ -7,7 +7,7 @@ import StateMessage from "./shared/StateMessage";
 
 // Books will be fetched from API when dropdown opens
 
-export function StockEntryForm({ entries, setEntries }) {
+export function StockEntryForm({ entries, setEntries, rules, saving, error, success }) {
     const [formData, setFormData] = useState({
         selectedBook: null,
         quantity: "",
@@ -19,9 +19,29 @@ export function StockEntryForm({ entries, setEntries }) {
     const [books, setBooks] = useState([]);
     const [loadingBooks, setLoadingBooks] = useState(false);
     const [booksError, setBooksError] = useState(null);
+    const [quantityError, setQuantityError] = useState(null);
+
+    // Auto-dismiss success message after 1.5 seconds
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => setSuccess(false), 1500);
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
 
     const handleChange = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
+        
+        // Validate quantity against MinImportQuantity
+        if (field === 'quantity') {
+            if (value <= 0) {
+                setQuantityError('Số lượng phải lớn hơn 0');
+            } else if (rules && value < rules.MinImportQuantity) {
+                setQuantityError(`Số lượng nhập tối thiểu là ${rules.MinImportQuantity} cuốn`);
+            } else {
+                setQuantityError(null);
+            }
+        }
     };
 
     const handleBookSelect = (book) => {
@@ -96,6 +116,7 @@ export function StockEntryForm({ entries, setEntries }) {
                         books={books}
                         onSelect={handleBookSelect}
                         loading={loadingBooks}
+                        rules={rules}
                     />
                     <StateMessage error={booksError} className="mt-2" />
                 </div>
@@ -110,6 +131,11 @@ export function StockEntryForm({ entries, setEntries }) {
                     <label className="block mb-2">
                         Số lượng nhập<span className="text-red-500">*</span>
                     </label>
+                    {quantityError && (
+                        <div className="mb-2 text-sm text-red-600">
+                            {quantityError}
+                        </div>
+                    )}
                     <input
                         type="number"
                         min={1}
@@ -117,7 +143,9 @@ export function StockEntryForm({ entries, setEntries }) {
                         onChange={(e) =>
                             handleChange("quantity", +e.target.value)
                         }
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
+                        className={`w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-400 ${
+                            quantityError ? 'border-red-500' : 'border-gray-300'
+                        }`}
                         placeholder="Nhập số lượng"
                     />
                 </div>
@@ -138,9 +166,16 @@ export function StockEntryForm({ entries, setEntries }) {
                     />
                 </div>
 
+                <StateMessage
+                    error={error}
+                    success={success ? "Lưu phiếu nhập thành công!" : null}
+                    className="mt-2"
+                />
+
                 <div className="flex justify-center pt-2">
                     <button
                         onClick={handleClick}
+                        disabled={quantityError || saving}
                         className="flex items-center gap-2 px-10 py-2 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                     >
                         <Plus className="w-4 h-4" />
