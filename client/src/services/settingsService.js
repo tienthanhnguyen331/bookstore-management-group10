@@ -1,57 +1,83 @@
-// Mock data cho Settings
-const mockRulesData = {
-    minImportQuantity: 30,
-    minStockBefore: 300,
-    minStockAfter: 100,
-    maxDebt: 10000000,
-    applyPaymentLimit: false,
+import api from "./api";
+
+// Mapping các quy định để hiển thị
+const ruleConfig = {
+    QD1_NhapToiThieu: {
+        label: "Số lượng nhập tối thiểu",
+        description: "Số lượng tối thiểu khi nhập sách vào kho",
+        type: "number"
+    },
+    QD1_TonToiDaTruocNhap: {
+        label: "Tồn tối đa trước nhập",
+        description: "Số lượng tối đa trong kho trước khi nhập",
+        type: "number"
+    },
+    QD2_NoToiDa: {
+        label: "Nợ tối đa của khách",
+        description: "Tổng số tiền khách hàng được phép nợ tối đa",
+        type: "number"
+    },
+    QD2_TonToiThieuSauBan: {
+        label: "Tồn tối thiểu sau bán",
+        description: "Số lượng tối thiểu trong kho sau khi bán",
+        type: "number"
+    },
+    QD4_ThuKhongVuotNo: {
+        label: "Thu tiền không vượt nợ",
+        description: "Số tiền thu không được vượt quá số nợ của khách",
+        type: "boolean"
+    }
 };
 
 export const settingsService = {
-    // Lấy toàn bộ quy định cài đặt
+    // Lấy toàn bộ quy định
     getRules: async () => {
-        return new Promise((resolve) => {
-            // TODO: Thay bằng API khi backend xong
-            // return api.get('/api/settings/rules');
-            setTimeout(() => {
-                resolve(mockRulesData);
-            }, 300);
-        });
+        try {
+            const response = await api.get("/quydinh");
+            return response.data || [];
+        } catch (error) {
+            console.error("Error fetching rules:", error);
+            throw error;
+        }
     },
 
-    // Lưu quy định cài đặt
-    saveRules: async (data) => {
-        return new Promise((resolve) => {
-            // TODO: Thay bằng API khi backend xong
-            // return api.post('/api/settings/rules', data);
-            setTimeout(() => {
-                console.log("Settings saved:", data);
-                resolve({ success: true, message: "Cài đặt đã được lưu thành công" });
-            }, 300);
-        });
+    // Lấy danh sách quy định với metadata
+    getRulesWithConfig: async () => {
+        try {
+            const rules = await settingsService.getRules();
+            return rules
+                .filter(rule => ruleConfig[rule.tenQuyDinh])
+                .map(rule => ({
+                    ...rule,
+                    ...ruleConfig[rule.tenQuyDinh]
+                }));
+        } catch (error) {
+            console.error("Error fetching rules with config:", error);
+            throw error;
+        }
     },
 
-    // Lấy từng quy định cụ thể
-    getRule: async (ruleKey) => {
-        return new Promise((resolve) => {
-            // TODO: Thay bằng API khi backend xong
-            // return api.get(`/api/settings/rules/${ruleKey}`);
-            setTimeout(() => {
-                resolve(mockRulesData[ruleKey] || null);
-            }, 200);
-        });
+    // Cập nhật quy định
+    updateRule: async (key, giaTri, trangThai = true) => {
+        try {
+            const response = await api.put(`/quydinh/${key}`, {
+                giaTri: giaTri.toString(),
+                trangThai
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating rule ${key}:`, error);
+            throw error;
+        }
     },
 
-    // Cập nhật từng quy định cụ thể
-    updateRule: async (ruleKey, value) => {
-        return new Promise((resolve) => {
-            // TODO: Thay bằng API khi backend xong
-            // return api.patch(`/api/settings/rules/${ruleKey}`, { value });
-            setTimeout(() => {
-                mockRulesData[ruleKey] = value;
-                console.log(`Rule ${ruleKey} updated to:`, value);
-                resolve({ success: true, message: `${ruleKey} đã được cập nhật` });
-            }, 200);
-        });
+    // Lấy config của một quy định
+    getRuleConfig: (key) => {
+        return ruleConfig[key];
     },
+
+    // Lấy tất cả config
+    getAllRuleConfigs: () => {
+        return ruleConfig;
+    }
 };
