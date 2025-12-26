@@ -1,5 +1,6 @@
 import { Edit2, Trash2 } from "lucide-react";
 import EmptyState from "../EmptyState";
+import formatCurrency from "../../utils/formatCurrency";
 
 function CustomerTableBody({
     customers,
@@ -41,15 +42,14 @@ function CustomerTableBody({
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className="px-3 py-1 bg-red-50 text-red-600 rounded-full">
-                                        {customer.CongNo?.toLocaleString("vi-VN")}
-                                        đ
+                                        {formatCurrency(customer.CongNo)}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4">
+                                <td className="px-6 py-4 text-center">
                                     <button
                                         onClick={() => onEdit(customer)}
                                         className="p-2 text-blue-400 hover:bg-blue-50 rounded-full transition-colors"
-                                        title="Chỉnh sửa"
+                                        title="Lập phiếu thu"
                                     >
                                         <Edit2 className="w-4 h-4" />
                                     </button>
@@ -70,8 +70,8 @@ function CustomerTableBody({
                                 <td className="px-6 py-4 text-gray-600">
                                     {customer.SDT}
                                 </td>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-2">
+                                <td className="px-6 py-4 text-center">
+                                    <div className="flex items-center justify-center gap-2">
                                         <button
                                             onClick={() => onEdit(customer)}
                                             className="p-2 text-blue-400 hover:bg-blue-50 rounded-full transition-colors"

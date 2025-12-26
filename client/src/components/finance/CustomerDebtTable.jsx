@@ -1,6 +1,7 @@
 import CustomerTableHead from "../shared/CustomerTableHead";
 import CustomerTableBody from "../shared/CustomerTableBody";
-import EditCustomerModal from "../shared/EditCustomerModal";
+import PaymentReceiptModal from "./PaymentReceiptModal";
+import TableStateRow from "../shared/TableStateRow";
 import { useState } from "react";
 
 const debtTableHeaders = [
@@ -10,14 +11,19 @@ const debtTableHeaders = [
     "Số điện thoại",
     "Địa chỉ",
     "Số tiền nợ",
-    "Thao tác",
+    "Lập phiếu thu",
 ];
 
-export default function CustomerDebtTable({ customers, onUpdateCustomer }) {
+export default function CustomerDebtTable({
+    customers,
+    onPaymentReceipt,
+    loading = false,
+    error = null,
+}) {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleEditClick = (customer) => {
+    const handlePaymentClick = (customer) => {
         setSelectedCustomer(customer);
         setIsModalOpen(true);
     };
@@ -27,20 +33,18 @@ export default function CustomerDebtTable({ customers, onUpdateCustomer }) {
         setSelectedCustomer(null);
     };
 
-    const handleSaveCustomer = (updatedCustomer) => {
-        onUpdateCustomer(updatedCustomer);
+    const handleSaveReceipt = (receiptData) => {
+        onPaymentReceipt(receiptData);
         handleCloseModal();
     };
 
     return (
         <>
-            <EditCustomerModal
+            <PaymentReceiptModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 customer={selectedCustomer}
-                onSave={handleSaveCustomer}
-                showDebtField={true}
-                title="Chỉnh sửa thông tin khách hàng"
+                onSave={handleSaveReceipt}
             />
 
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -54,13 +58,25 @@ export default function CustomerDebtTable({ customers, onUpdateCustomer }) {
                     <div className="min-h-[500px] overflow-y-auto">
                         <table className="w-full">
                             <CustomerTableHead headers={debtTableHeaders} />
-                            <CustomerTableBody
-                                customers={customers}
-                                onEdit={handleEditClick}
-                                showDebtColumn={true}
-                                colSpan={7}
-                                useIndexAsKey={false}
-                            />
+                            {loading || error || customers.length === 0 ? (
+                                <tbody>
+                                    <TableStateRow
+                                        colSpan={7}
+                                        loading={loading}
+                                        error={error}
+                                        isEmpty={customers.length === 0}
+                                        emptyMessage="Không có khách hàng nào đang nợ"
+                                    />
+                                </tbody>
+                            ) : (
+                                <CustomerTableBody
+                                    customers={customers}
+                                    onEdit={handlePaymentClick}
+                                    showDebtColumn={true}
+                                    colSpan={7}
+                                    useIndexAsKey={false}
+                                />
+                            )}
                         </table>
                     </div>
                 </div>

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import BookSelection from "./inventory/BookSelection";
 import BookDetails from "./inventory/BookDetails";
 import { getBooks } from "../services/inventoryService";
+import StateMessage from "./shared/StateMessage";
 
 // Books will be fetched from API when dropdown opens
 
@@ -96,11 +97,7 @@ export function StockEntryForm({ entries, setEntries }) {
                         onSelect={handleBookSelect}
                         loading={loadingBooks}
                     />
-                    {booksError && (
-                        <div className="text-sm text-red-500 mt-2">
-                            {booksError}
-                        </div>
-                    )}
+                    <StateMessage error={booksError} className="mt-2" />
                 </div>
 
                 {/* Book Details (shown after selection) */}

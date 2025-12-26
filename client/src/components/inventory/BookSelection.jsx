@@ -1,5 +1,5 @@
 import { ChevronDown, Search } from "lucide-react";
-import Spinner from "../shared/Spinner";
+import StateMessage from "../shared/StateMessage";
 import BookList from "./BookList";
 
 export default function BookSelection({
@@ -57,10 +57,11 @@ export default function BookSelection({
 
                     {/* Loading & Books list */}
                     {loading ? (
-                        <div className="px-4 py-6 flex items-center justify-center gap-2 text-gray-500">
-                            <Spinner />
-                            Đang tải danh sách sách...
-                        </div>
+                        <StateMessage
+                            loading={loading}
+                            loadingMessage="Đang tải danh sách sách..."
+                            className="px-4 py-6"
+                        />
                     ) : (
                         <BookList books={filtered} onSelect={onSelect} />
                     )}
