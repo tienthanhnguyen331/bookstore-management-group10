@@ -7,6 +7,8 @@ export default function BookList({ books = [], onSelect }) {
                     const name = book.TenSach ?? book.name;
                     const category = book.TenTheLoai ?? book.category;
                     const author = book.TenTacGia ?? book.author;
+                    const stock = book.SoLuongTon || 0;
+
                     return (
                         <button
                             key={key}
@@ -14,7 +16,7 @@ export default function BookList({ books = [], onSelect }) {
                             onClick={() => onSelect(book)}
                             className="w-full px-4 py-3 hover:bg-gray-50 transition-colors text-left border-b border-gray-100 last:border-b-0"
                         >
-                            <div className="text-gray-900">{name}</div>
+                            <div className="text-gray-900">{`${name} (Tồn: ${stock})`}</div>
                             <div className="text-sm text-gray-500 mt-1">
                                 {category} • {author}
                             </div>
