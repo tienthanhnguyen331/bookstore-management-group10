@@ -1,62 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CustomerDebtTable from "../components/finance/CustomerDebtTable";
 import CustomerSearchForm from "../components/finance/CustomerSearchForm";
 import DebtStatistics from "../components/finance/DebtStatistics";
 import { useCustomerFilter } from "../components/finance/useCustomerFilter";
 import { Header } from "../components/Header";
-
-const initialCustomers = [
-    {
-        id: 1,
-        name: "Nguyễn Văn An",
-        email: "nva@gmail.com",
-        phone: "036252148215",
-        address: "227 Nguyễn Văn Cừ, Q5, TP. HCM",
-        debt: 100000,
-    },
-    {
-        id: 2,
-        name: "Trần Thị Bích",
-        email: "ttbich@gmail.com",
-        phone: "0987654321",
-        address: "123 Lê Lợi, Q1, TP. HCM",
-        debt: 250000,
-    },
-    {
-        id: 3,
-        name: "Lê Minh Công",
-        email: "lmcong@gmail.com",
-        phone: "0912345678",
-        address: "456 Trần Hưng Đạo, Q5, TP. HCM",
-        debt: 500000,
-    },
-    {
-        id: 4,
-        name: "Phạm Thị Diệu",
-        email: "ptdieu@gmail.com",
-        phone: "0923456789",
-        address: "789 Hai Bà Trưng, Q3, TP. HCM",
-        debt: 150000,
-    },
-    {
-        id: 5,
-        name: "Hoàng Văn Em",
-        email: "hvem@gmail.com",
-        phone: "0934567890",
-        address: "321 Nguyễn Thị Minh Khai, Q1, TP. HCM",
-        debt: 320000,
-    },
-];
+import { paymentReceiptService } from "../services/paymentReceiptService";
+import StateMessage from "../components/shared/StateMessage";
 
 function CustomerDebtPage() {
-    const [customers, setCustomers] = useState(initialCustomers);
+    const [customers, setCustomers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
+
     const { searchForm, filteredCustomers, handleSearchChange } =
         useCustomerFilter(customers);
 
-    const handleUpdateCustomer = function (updatedCustomer) {
-        // Update customer in the state
+    // Fetch customers with debt on mount
+    useEffect(() => {
+        fetchCustomersWithDebt();
+    }, []);
+
+    // Auto-dismiss success message after 3 seconds
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => setSuccessMessage(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage]);
+
+    const fetchCustomersWithDebt = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const data = await paymentReceiptService.getCustomersWithDebt();
+            setCustomers(data);
+        } catch (err) {
+            console.error("Error fetching customers:", err);
+            setError("Không thể tải danh sách khách hàng. Vui lòng thử lại");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePaymentReceipt = function (receiptData) {
+        // Update customer debt using the response from API
         setCustomers((prev) =>
-            prev.map((c) => (c.id === updatedCustomer.id ? updatedCustomer : c))
+            prev.map((c) =>
+                c.MaKH === receiptData.MaKH
+                    ? { ...c, CongNo: receiptData.CongNoSau }
+                    : c
+            )
+        );
+        setSuccessMessage(
+            `Lưu phiếu thu thành công! Mã phiếu: ${receiptData.MaPhieu}`
         );
     };
 
@@ -73,7 +70,12 @@ function CustomerDebtPage() {
                     </p>
                 </div>
 
-                <DebtStatistics customers={customers} />
+                {/* <DebtStatistics customers={customers} /> */}
+
+                <StateMessage
+                    success={successMessage}
+                    className="mb-6 w-full"
+                />
 
                 <CustomerSearchForm
                     searchForm={searchForm}
@@ -82,7 +84,9 @@ function CustomerDebtPage() {
 
                 <CustomerDebtTable
                     customers={filteredCustomers}
-                    onUpdateCustomer={handleUpdateCustomer}
+                    onPaymentReceipt={handlePaymentReceipt}
+                    loading={loading}
+                    error={error}
                 />
             </div>
         </div>

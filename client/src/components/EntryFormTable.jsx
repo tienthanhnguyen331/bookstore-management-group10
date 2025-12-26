@@ -51,8 +51,8 @@ export function EntryFormTable({
                 NgayNhap: new Date(selectedDate).toISOString(),
                 DanhSachSach: entries.map((entry) => ({
                     MaSach: entry.MaSach,
-                    SoLuong: entry.quantity,
-                    DonGiaNhap: entry.unitPrice,
+                    SoLuong: Number(entry.quantity),
+                    DonGiaNhap: Number(entry.unitPrice),
                 })),
             };
 
