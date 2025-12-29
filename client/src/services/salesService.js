@@ -1,59 +1,26 @@
-import api from "./api";
-import { bookService } from "./bookService";
-// MOCK DATA
-const MOCK_BOOKS = [
-  { id: 1, title: 'Nhập môn lập trình', category: 'Giáo dục', price: 100000, stock: 50 },
-  { id: 2, title: 'Cơ sở trí tuệ nhân tạo', category: 'Khoa học', price: 120000, stock: 20 },
-  { id: 3, title: 'Đắc nhân tâm', category: 'Kỹ năng sống', price: 80000, stock: 15 },
-  { id: 4, title: 'Truyện kinh dị', category: 'Giải trí', price: 50000, stock: 100 },
-];
+import api from "./api"; // Đảm bảo bạn đã cấu hình axios trong file api.js
 
-const MOCK_CUSTOMERS = [
-    { phone: '0909000111', fullName: 'Nguyễn Văn A', totalDebt: 500000 },
-    { phone: '0909000222', fullName: 'Trần Thị B', totalDebt: 0 },
-    { phone: '0909000333', fullName: 'Lê Văn C', totalDebt: 2500000 }, // Nợ quá hạn
-];
-export const salesService = {
-    // Hàm tra cứu khách hàng
-    
-};
-
-export const getBooks = async () => {
-  return new Promise(() => {
-    setTimeout(() => {resolve
-      resolve(MOCK_BOOKS);
-    }, 500);
-  });
-};
-
+// 1. Hàm tra cứu khách hàng & công nợ
 export const getCustomerDebt = async (phone) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const customer = MOCK_CUSTOMERS.find(c => c.phone === phone);
-            if (customer) {
-                resolve(customer);
-            } else {
-                // Giả lập không tìm thấy khách
-                reject({ response: { status: 404 } });
-            }
-        }, 300);
+    // Gọi API: GET /api/HoaDon/TraCuuKhachHang?sdt=...
+    // Backend trả về: { MaKH, HoTen, CongNo, ... }
+    const response = await api.get('/HoaDon/TraCuuKhachHang', { 
+        params: { sdt: phone } 
     });
+    return response.data;
 };
 
+// 2. Hàm lập hóa đơn (Thanh toán)
 export const createInvoice = async (payload) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            // Giả lập logic check nợ/tồn kho đơn giản
-            
-            const totalAmount = payload.items.reduce((sum, item) => {
-                const book = MOCK_BOOKS.find(b => b.id === item.bookId);
-                return sum + (book ? book.price * item.quantity : 0);
-            }, 0);
+    // Gọi API: POST /api/HoaDon/LapHoaDon
+    // Payload nhận vào từ SalesPage: { SDTKhachHang, IsDebt, DanhSachSanPham }
+    const response = await api.post('/HoaDon/LapHoaDon', payload);
+    return response.data; 
+    // Backend trả về: { message, totalAmount, ... }
+};
 
-            resolve({
-                message: "Thanh toán thành công (MOCK)!",
-                totalAmount: totalAmount
-            });
-        }, 1000);
-    });
+// 3. Export gom nhóm (để tương thích nếu bạn import dạng salesService.method)
+export const salesService = {
+    getCustomerDebt,
+    createInvoice
 };
