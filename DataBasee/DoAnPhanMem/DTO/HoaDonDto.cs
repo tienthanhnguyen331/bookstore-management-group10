@@ -47,6 +47,8 @@ namespace DoAnPhanMem.DTO
     {
         public string? SDTKhachHang { get; set; }
 
+        public bool IsDebt { get; set; } //Ghi nhận mua nợ 
+
         [Required(ErrorMessage = "Danh sach san pham khong duoc de trong")]
         public List<ChiTietHoaDonDto> DanhSachSanPham { get; set; } = new();
     }
@@ -96,4 +98,5 @@ namespace DoAnPhanMem.DTO
         [Required(ErrorMessage = "Danh sach san pham khong duoc de trong")]
         public List<UpdateChiTietHoaDonDto> DanhSachSanPham { get; set; } = new();
     }
+    
 }

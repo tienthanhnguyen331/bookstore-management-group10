@@ -97,140 +97,189 @@ namespace DoAnPhanMem.Controllers
         [HttpPost("LapHoaDon")]
         public async Task<IActionResult> LapHoaDon([FromBody] LapHoaDonDto dto)
         {
+            // 1. Validate cơ bản
             if (dto.DanhSachSanPham == null || dto.DanhSachSanPham.Count == 0)
-            {
                 return BadRequest(new { message = "Danh sach san pham khong duoc de trong" });
-            }
 
-            // Tim khach hang theo SDT
-            KHACH_HANG? khachHang = null;
-            bool isKhachVangLai = true;
-
-            if (!string.IsNullOrWhiteSpace(dto.SDTKhachHang))
+            // 2. Bắt đầu Transaction (An toàn dữ liệu tuyệt đối)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                khachHang = await _context.KHACH_HANG
-                    .FirstOrDefaultAsync(kh => kh.SDT == dto.SDTKhachHang);
+                // --- A. XỬ LÝ KHÁCH HÀNG ---
+                KHACH_HANG? khachHang = null;
+                bool isKhachVangLai = true;
 
-                if (khachHang != null)
+                if (!string.IsNullOrWhiteSpace(dto.SDTKhachHang))
                 {
-                    isKhachVangLai = false;
-
-                    // Kiem tra quy dinh QD2: No toi da
-                    try
-                    {
-                        _ruleService.CheckRule_BanSach(khachHang.CongNo, int.MaxValue);
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(new { message = ex.Message });
-                    }
-                }
-            }
-
-            // Tao ma hoa don
-            var maHoaDon = "HD" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-            var ngayLap = DateTime.UtcNow;
-
-            // Lay nhan vien dau tien lam mac dinh (co the lay tu JWT token sau)
-            var nhanVien = await _context.NHAN_VIEN.FirstOrDefaultAsync();
-
-            // Tao hoa don
-            var hoaDon = new HOA_DON
-            {
-                MaHoaDon = maHoaDon,
-                MaKH = isKhachVangLai ? null : khachHang!.MaKH,
-                MaNV = nhanVien?.MaNV
-            };
-
-            _context.HOA_DON.Add(hoaDon);
-
-            var chiTietResponses = new List<ChiTietHoaDonResponseDto>();
-            decimal tongTien = 0;
-            int stt = 0;
-
-            foreach (var item in dto.DanhSachSanPham)
-            {
-                // Lay thong tin sach
-                var sach = await _context.SACH
-                    .Include(s => s.TheLoai)
-                    .FirstOrDefaultAsync(s => s.MaSach == item.MaSach);
-
-                if (sach == null)
-                {
-                    return BadRequest(new { message = $"Khong tim thay sach co ma: {item.MaSach}" });
+                    khachHang = await _context.KHACH_HANG.FirstOrDefaultAsync(kh => kh.SDT == dto.SDTKhachHang);
+                    if (khachHang != null) isKhachVangLai = false;
                 }
 
-                // Kiem tra ton kho
-                int tonSauBan = sach.SoLuongTon - item.SoLuong;
-
-                if (tonSauBan < 0)
+                // Validate logic nợ
+                if (dto.IsDebt && isKhachVangLai)
                 {
-                    return BadRequest(new { message = $"Sach '{sach.TenSach}' khong du so luong ton. Hien con: {sach.SoLuongTon}" });
+                    return BadRequest(new { message = "Khach vang lai khong duoc phep ghi no!" });
                 }
 
-                // Kiem tra quy dinh QD2: Ton toi thieu sau khi ban
-                try
-                {
-                    _ruleService.CheckRule_BanSach(0, tonSauBan);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(new { message = $"Sach '{sach.TenSach}': {ex.Message}" });
-                }
+                // --- B. TẠO HÓA ĐƠN ---
+                // Format mã: HD + yyyyMMddHHmmss
+                var maHoaDon = "HD" + DateTime.UtcNow.AddHours(7).ToString("yyyyMMddHHmmss");
+                var ngayLap = DateTime.UtcNow.AddHours(7);
+                var nhanVien = await _context.NHAN_VIEN.FirstOrDefaultAsync(); // Lấy tạm NV đầu tiên
 
-                // Lay don gia tu sach
-                decimal donGiaBan = sach.DonGia;
-
-                // Tao chi tiet hoa don
-                var chiTiet = new CHI_TIET_HOA_DON
+                var hoaDon = new HOA_DON
                 {
                     MaHoaDon = maHoaDon,
-                    MaSach = item.MaSach,
-                    SoLuong = item.SoLuong,
-                    DonGiaBan = donGiaBan,
-                    NgayLapHoaDon = ngayLap
+                    MaKH = isKhachVangLai ? "KH00": khachHang!.MaKH,
+                    MaNV = nhanVien?.MaNV
+                    // TongTien sẽ tính sau
                 };
+                _context.HOA_DON.Add(hoaDon);
+                await _context.SaveChangesAsync(); // Lưu để có MaHoaDon dùng cho chi tiết
 
-                _context.CHI_TIET_HOA_DON.Add(chiTiet);
+                decimal tongTien = 0;
+                var chiTietResponses = new List<ChiTietHoaDonResponseDto>();
+                int stt = 0;
+                int thang = ngayLap.Month;
+                int nam = ngayLap.Year;
 
-                // Cap nhat ton kho
-                sach.SoLuongTon = tonSauBan;
-
-                // Tinh thanh tien
-                decimal thanhTien = donGiaBan * item.SoLuong;
-                tongTien += thanhTien;
-
-                stt++;
-                chiTietResponses.Add(new ChiTietHoaDonResponseDto
+                // --- C. XỬ LÝ SẢN PHẨM & KHO & BÁO CÁO TỒN ---
+                foreach (var item in dto.DanhSachSanPham)
                 {
-                    STT = stt,
-                    MaSach = sach.MaSach,
-                    TenSach = sach.TenSach,
-                    TheLoai = sach.TheLoai?.TenTL ?? "",
-                    SoLuong = item.SoLuong,
-                    DonGia = donGiaBan,
-                    ThanhTien = thanhTien
+                    var sach = await _context.SACH.Include(s => s.TheLoai).FirstOrDefaultAsync(s => s.MaSach == item.MaSach);
+                    if (sach == null) throw new Exception($"Khong tim thay sach: {item.MaSach}");
+
+                    // 1. Kiểm tra tồn kho
+                    if (sach.SoLuongTon < item.SoLuong)
+                        throw new Exception($"Sach '{sach.TenSach}' khong du ton kho (Con: {sach.SoLuongTon})");
+
+                    // 2. Kiểm tra quy định tồn tối thiểu sau bán
+                    int tonSauBan = sach.SoLuongTon - item.SoLuong;
+                    try { _ruleService.CheckRule_BanSach(0, tonSauBan); }
+                    catch (Exception ex) { throw new Exception($"Sach '{sach.TenSach}': {ex.Message}"); }
+
+                    // 3. Cập nhật tồn kho
+                    int tonDau = sach.SoLuongTon; // Lưu lại để ghi báo cáo nếu cần
+                    sach.SoLuongTon = tonSauBan;
+
+                    // 4. Tạo chi tiết hóa đơn
+                    var chiTiet = new CHI_TIET_HOA_DON
+                    {
+                        MaHoaDon = maHoaDon,
+                        MaSach = item.MaSach,
+                        SoLuong = item.SoLuong,
+                        DonGiaBan = sach.DonGia,
+                        NgayLapHoaDon = ngayLap
+                    };
+                    _context.CHI_TIET_HOA_DON.Add(chiTiet);
+
+                    // 5. CẬP NHẬT BÁO CÁO TỒN (BAO_CAO_TON)
+                    // Logic: Tìm báo cáo tháng này. Nếu chưa có thì tạo mới. Nếu có rồi thì cộng dồn.
+                    var baoCaoTon = await _context.BAO_CAO_TON
+                        .FirstOrDefaultAsync(b => b.MaSach == sach.MaSach && b.Thang == thang && b.Nam == nam);
+
+                    if (baoCaoTon == null)
+                    {
+                        // Chưa có báo cáo tháng này -> Tạo mới
+                        // Tồn đầu của tháng này = Tồn cuối tháng trước (hoặc lấy tồn hiện tại + đã bán nếu là giao dịch đầu tiên)
+                        // Để đơn giản cho Side A: Tồn đầu = Tồn hiện tại + Số lượng bán (Logic tương đối)
+                        baoCaoTon = new BAO_CAO_TON
+                        {
+                            MaBCT = $"BCT_{thang}_{nam}_{sach.MaSach}",
+                            Thang = thang,
+                            Nam = nam,
+                            MaSach = sach.MaSach,
+                            TonDau = tonDau, 
+                            PhatSinh = item.SoLuong,
+                            TonCuoi = tonSauBan
+                        };
+                        _context.BAO_CAO_TON.Add(baoCaoTon);
+                    }
+                    else
+                    {
+                        // Đã có -> Cộng dồn phát sinh bán
+                        baoCaoTon.PhatSinh += item.SoLuong;
+                        baoCaoTon.TonCuoi = tonSauBan; // Cập nhật lại tồn cuối thực tế
+                    }
+
+                    // Tính tiền
+                    decimal thanhTien = sach.DonGia * item.SoLuong;
+                    tongTien += thanhTien;
+
+                    stt++;
+                    chiTietResponses.Add(new ChiTietHoaDonResponseDto
+                    {
+                        STT = stt,
+                        MaSach = sach.MaSach,
+                        TenSach = sach.TenSach,
+                        TheLoai = sach.TheLoai?.TenTL ?? "",
+                        SoLuong = item.SoLuong,
+                        DonGia = sach.DonGia,
+                        ThanhTien = thanhTien
+                    });
+                }
+
+                // --- D. XỬ LÝ CÔNG NỢ & BÁO CÁO CÔNG NỢ ---
+                // Chỉ xử lý nếu KHÔNG PHẢI khách vãng lai VÀ có chọn Ghi Nợ (IsDebt = true)
+                if (!isKhachVangLai && dto.IsDebt)
+                {
+                    decimal noDau = khachHang!.CongNo;
+                    decimal noMoi = noDau + tongTien;
+
+                    // Kiểm tra quy định nợ tối đa
+                    try { _ruleService.CheckRule_BanSach(noMoi, int.MaxValue); }
+                    catch (Exception ex) { throw new Exception(ex.Message); }
+
+                    // Cập nhật nợ khách
+                    khachHang.CongNo = noMoi;
+
+                    // CẬP NHẬT BÁO CÁO CÔNG NỢ (BAO_CAO_CONG_NO)
+                    var baoCaoNo = await _context.BAO_CAO_CONG_NO
+                        .FirstOrDefaultAsync(b => b.MaKH == khachHang.MaKH && b.Thang == thang && b.Nam == nam);
+
+                    if (baoCaoNo == null)
+                    {
+                        baoCaoNo = new BAO_CAO_CONG_NO
+                        {
+                            MaBCCN = $"BCCN_{thang}_{nam}_{khachHang.MaKH}",
+                            Thang = thang,
+                            Nam = nam,
+                            MaKH = khachHang.MaKH,
+                            NoDau = noDau,
+                            NoPhatSinh = tongTien, // Phát sinh tăng nợ
+                            NoCuoi = noMoi
+                        };
+                        _context.BAO_CAO_CONG_NO.Add(baoCaoNo);
+                    }
+                    else
+                    {
+                        baoCaoNo.NoPhatSinh += tongTien;
+                        baoCaoNo.NoCuoi = noMoi;
+                    }
+                }
+                // Lưu ý: Nếu trả tiền mặt (IsDebt = false), ta KHÔNG cộng nợ, KHÔNG cập nhật báo cáo nợ.
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync(); // Xác nhận giao dịch thành công
+
+                return Ok(new HoaDonResponseDto
+                {
+                    MaHoaDon = maHoaDon,
+                    NgayLap = ngayLap,
+                    TenKhachHang = isKhachVangLai ? "Khach vang lai" : khachHang!.HoTen,
+                    SDTKhachHang = dto.SDTKhachHang ?? "",
+                    IsKhachVangLai = isKhachVangLai,
+                    DanhSachSanPham = chiTietResponses,
+                    TongTien = tongTien
                 });
             }
-
-            // Cap nhat cong no cho khach hang (neu khong phai khach vang lai)
-            if (!isKhachVangLai && khachHang != null)
+            catch (Exception ex)
             {
-                khachHang.CongNo += tongTien;
+                await transaction.RollbackAsync(); // Hoàn tác tất cả nếu có lỗi
+                // Lấy inner message cho rõ ràng
+                var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return BadRequest(new { message = msg });
             }
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new HoaDonResponseDto
-            {
-                MaHoaDon = maHoaDon,
-                NgayLap = ngayLap,
-                TenKhachHang = isKhachVangLai ? "Khach vang lai" : khachHang!.HoTen,
-                SDTKhachHang = dto.SDTKhachHang ?? "",
-                IsKhachVangLai = isKhachVangLai,
-                DanhSachSanPham = chiTietResponses,
-                TongTien = tongTien
-            });
         }
 
         // API lay danh sach hoa don

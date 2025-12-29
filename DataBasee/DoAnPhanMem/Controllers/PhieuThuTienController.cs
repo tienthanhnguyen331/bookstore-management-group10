@@ -129,7 +129,7 @@ namespace DoAnPhanMem.Controllers
             if (baoCaoCongNo != null)
             {
              
-                baoCaoCongNo.NoPhatSinh -= dto.SoTienThu;
+                baoCaoCongNo.NoPhatSinh -= dto.SoTienThu; //baoCaoCongNo.SoTienDaTra -= dto.SoTienThu
              
                 baoCaoCongNo.NoCuoi -= dto.SoTienThu;
             }

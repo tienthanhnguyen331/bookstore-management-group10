@@ -1,10 +1,7 @@
-
-﻿using DoAnPhanMem.Data;
+using DoAnPhanMem.Data;
 using Microsoft.EntityFrameworkCore;
 using DoAnPhanMem.Services.Interfaces;
 using DoAnPhanMem.Services.Implementations;
-
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -12,21 +9,37 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// --- 1. CẤU HÌNH DB ---
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// --- 2. CẤU HÌNH CORS (MỚI THÊM) ---
+// Cho phép React (localhost:5173) gọi vào API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // Đổi port nếu React chạy port khác
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+// --- 3. CẤU HÌNH CONTROLLERS & JSON ---
+// (Đã gộp 2 phần AddControllers của bạn lại thành 1 để tránh lỗi)
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Dòng này nghĩa là: "Đừng tự ý đổi tên biến của tôi, hãy giữ nguyên gốc"
+        // Giữ nguyên tên biến (không viết hoa/thường tự động)
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        // Bỏ qua lỗi vòng lặp (Circular Reference)
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
-
-// Configure JWT Authentication
+// --- 4. CẤU HÌNH JWT ---
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -43,35 +56,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-/*builder.Services.AddControllers();*/
-builder.Services.AddControllers().AddJsonOptions(x =>
-{
-    // Dòng lệnh thần thánh giúp bỏ qua lỗi vòng lặp
-    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// --- 5. SWAGGER & SERVICES ---
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddScoped<IRuleService, RuleService>();
-
-builder.Services.AddScoped<DoAnPhanMem.Services.Interfaces.IQuyDinhService, DoAnPhanMem.Services.Implementations.QuyDinhService>();
+builder.Services.AddScoped<IQuyDinhService, QuyDinhService>();
 builder.Services.AddScoped<ISachService, SachService>();
-builder.Services.AddScoped<DoAnPhanMem.Services.Interfaces.IPhieuNhapService, DoAnPhanMem.Services.Implementations.PhieuNhapService>();
-
+builder.Services.AddScoped<IPhieuNhapService, PhieuNhapService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
-//đăng ký dịch vụ KhachHangService
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
-//đăng ký dịch vụ Báo cáo công nợ
 builder.Services.AddScoped<IBaoCaoCongNoService, BaoCaoCongNoService>();
-//đăng ký dịch vụ Báo cáo tồn kho
 builder.Services.AddScoped<IBaoCaoTonService, BaoCaoTonService>();
-//đăng ký dịch vụ SaleService
 builder.Services.AddScoped<ISaleService, SaleService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- 6. HTTP PIPELINE ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -80,9 +81,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// ---> KÍCH HOẠT CORS TẠI ĐÂY (MỚI THÊM) <---
+// Phải đặt TRƯỚC Authentication/Authorization
+app.UseCors("AllowReactApp"); 
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();
