@@ -57,7 +57,12 @@ namespace DoAnPhanMem.Services.Implementations
         public async Task<CustomerDto> CreateAsync(DoAnPhanMem.DTO.CreateCustomerDto dto)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
-
+            //Check trùng số điện thoại, đảm bảo nợ ai nấy trả
+            bool isDuplicate = await _context.KHACH_HANG.AnyAsync(k => k.SDT == dto.SDT);
+            if (isDuplicate)
+                {
+                    throw new InvalidOperationException($"Số điện thoại {dto.SDT} đã tồn tại trong hệ thống!");
+                }
             // Only accept basic customer info from client
             var hoTen = string.IsNullOrWhiteSpace(dto.HoTen) ? null : dto.HoTen.Trim();
             var email = string.IsNullOrWhiteSpace(dto.Email) ? null : dto.Email.Trim();

@@ -86,12 +86,20 @@ namespace DoAnPhanMem.Controllers
         {
             // 1. Tìm khách hàng trong database theo ID
             var customer = await _context.KHACH_HANG.FindAsync(id);
-           
+
             // 2. Nếu không tìm thấy thì báo lỗi 404
             if (customer == null)
             {
                 return NotFound("Không tìm thấy khách hàng này!");
             }
+
+            // 2.1: Kiểm tra số điện thoại trùng. Để đảm bảo nợ ai người nấy trả
+            var isDuplicatePhoneNumber = await _context.KHACH_HANG.AnyAsync(k => k.SDT == request.SDT &&  k.MaKH != id);
+            if(isDuplicatePhoneNumber)
+            {
+                return BadRequest(new { message = "Số điện thoại này đã được sử dụng bởi khách hàng khác!" });
+            }
+
 
             // 3. Cập nhật thông tin mới từ form vào database
             customer.HoTen = request.HoTen;     
