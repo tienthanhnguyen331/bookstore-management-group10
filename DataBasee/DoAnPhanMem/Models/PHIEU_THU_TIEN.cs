@@ -14,13 +14,15 @@ namespace DoAnPhanMem.Models
         [Column(TypeName = "decimal(18, 0)")]
         public decimal SoTienThu { get; set; }
         [StringLength(100)]
-        public string MaNV {  get; set; }
+        public string? MaNV {  get; set; }
         [ForeignKey("MaNV")]
-        public NHAN_VIEN NhanVien { get; set; }
+        [JsonIgnore]
+        public NHAN_VIEN? NhanVien { get; set; }
 
         [StringLength(100)]
         public string MaKH {  get; set; }
         [ForeignKey("MaKH")]
+        [JsonIgnore]
         public KHACH_HANG KhachHang { get; set; }
 
 

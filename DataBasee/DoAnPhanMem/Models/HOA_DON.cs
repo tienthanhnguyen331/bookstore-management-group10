@@ -16,15 +16,17 @@ namespace DoAnPhanMem.Models
         [StringLength(100)]
         public string? MaNV { get; set; }
         [ForeignKey("MaNV")]
-        public NHAN_VIEN NhanVien { get; set; }
+        [JsonIgnore]
+        public NHAN_VIEN? NhanVien { get; set; }
 
 
         [StringLength(100)]
-        public string MaKH { get; set; }
+        public string? MaKH { get; set; }
         [ForeignKey("MaKH")]
-        public KHACH_HANG KhachHang { get; set; }
+        [JsonIgnore]
+        public KHACH_HANG? KhachHang { get; set; }
 
-        public ICollection<CHI_TIET_HOA_DON> ChiTietHoaDon { get; set; }
+        public ICollection<CHI_TIET_HOA_DON>? ChiTietHoaDon { get; set; }
 
     }
 }
