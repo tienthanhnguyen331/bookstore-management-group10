@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\DEADLINE\\CNPM\\PROJECT\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj": {}
+    "F:\\HDH3\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj": {}
   },
   "projects": {
-    "D:\\DEADLINE\\CNPM\\PROJECT\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj": {
+    "F:\\HDH3\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DEADLINE\\CNPM\\PROJECT\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
+        "projectUniqueName": "F:\\HDH3\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
         "projectName": "DoAnPhanMem",
-        "projectPath": "D:\\DEADLINE\\CNPM\\PROJECT\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
-        "packagesPath": "C:\\Users\\Asus TUF\\.nuget\\packages\\",
-        "outputPath": "D:\\DEADLINE\\CNPM\\PROJECT\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\obj\\",
+        "projectPath": "F:\\HDH3\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
+        "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
+        "outputPath": "F:\\HDH3\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Asus TUF\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\pc\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -38,13 +39,7 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.300"
+        }
       },
       "frameworks": {
         "net7.0": {
@@ -102,7 +97,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }

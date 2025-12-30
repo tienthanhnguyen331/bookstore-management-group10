@@ -49,6 +49,9 @@ namespace DoAnPhanMem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("int");
 
+                    b.Property<decimal>("TraNo")
+                        .HasColumnType("decimal(18,0)");
+
                     b.HasKey("MaBCCN");
 
                     b.HasIndex("MaKH");
@@ -61,6 +64,9 @@ namespace DoAnPhanMem.Migrations
                     b.Property<string>("MaBCT")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DaBan")
+                        .HasColumnType("int");
 
                     b.Property<string>("MaSach")
                         .IsRequired()
@@ -153,12 +159,10 @@ namespace DoAnPhanMem.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MaKH")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MaNV")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -281,7 +285,6 @@ namespace DoAnPhanMem.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MaNV")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -487,14 +490,12 @@ namespace DoAnPhanMem.Migrations
                     b.HasOne("DoAnPhanMem.Models.KHACH_HANG", "KhachHang")
                         .WithMany("HoaDon")
                         .HasForeignKey("MaKH")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("DoAnPhanMem.Models.NHAN_VIEN", "NhanVien")
                         .WithMany("HoaDon")
                         .HasForeignKey("MaNV")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("KhachHang");
 
@@ -534,8 +535,7 @@ namespace DoAnPhanMem.Migrations
                     b.HasOne("DoAnPhanMem.Models.NHAN_VIEN", "NhanVien")
                         .WithMany("PhieuThuTien")
                         .HasForeignKey("MaNV")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("KhachHang");
 

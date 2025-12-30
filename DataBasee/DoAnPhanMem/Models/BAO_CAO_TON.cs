@@ -25,8 +25,12 @@ namespace DoAnPhanMem.Models
         public int TonDau { get; set; }
        
         public int PhatSinh { get; set; }
-      
+        public int DaBan { get; set; }
+
         public int TonCuoi { get; set; }
-        public int DaBan { get; internal set; }
+
+        
+
+    
     }
 }

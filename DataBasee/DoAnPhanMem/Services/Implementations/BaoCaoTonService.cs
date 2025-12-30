@@ -19,65 +19,102 @@ namespace DoAnPhanMem.Services.Implementations
             _context = context;
         }
 
-        public async Task UpdateInventoryReportAsync(string maSach, int delta, DateTime? at = null) // Hàm cập nhật báo cáo tồn kho
+        /// <summary>
+        /// Cập nhật báo cáo tồn
+        /// </summary>
+        /// <param name="maSach">Mã sách</param>
+        /// <param name="amount">Số lượng thay đổi (Luôn là số dương)</param>
+        /// <param name="isBanHang">True nếu là Bán hàng, False nếu là Nhập kho</param>
+        /// <param name="at">Thời gian</param>
+        public async Task UpdateInventoryReportAsync(string maSach, int amount, bool isBanHang, DateTime? at = null)
         {
-            var when = at ?? DateTime.Now; // sử dụng thời gian hiện tại nếu không có
-            var thang = when.Month; // lấy tháng/năm từ ngày
-            var nam = when.Year; // lấy tháng/năm từ ngày
+            var when = at ?? DateTime.Now;
+            var thang = when.Month;
+            var nam = when.Year;
 
-            var report = await _context.BAO_CAO_TON 
-                .FirstOrDefaultAsync(r => r.MaSach == maSach && r.Thang == thang && r.Nam == nam); // tìm báo cáo theo mã sách, tháng, năm
+            // 1. Tìm báo cáo của tháng này
+            var report = await _context.BAO_CAO_TON
+                .FirstOrDefaultAsync(r => r.MaSach == maSach && r.Thang == thang && r.Nam == nam);
 
-            if (report == null) // nếu chưa có báo cáo cho tháng/năm này --> Tạo 1 bao cáo mới(Mã báo cáo mới)
+            if (report == null)
             {
-                // lấy báo cáo trước đó để lấy TonDau 
-                var prev = await _context.BAO_CAO_TON // tìm báo cáo tồn trước đó
-                    .Where(r => r.MaSach == maSach && (r.Nam < nam || (r.Nam == nam && r.Thang < thang))) // lọc theo mã sách và thời gian trước đó
-                    .OrderByDescending(r => r.Nam).ThenByDescending(r => r.Thang) // sắp xếp giảm dần theo năm, tháng
-                    .FirstOrDefaultAsync(); // lấy báo cáo gần nhất
+                // --- TRƯỜNG HỢP CHƯA CÓ BÁO CÁO THÁNG NÀY (TẠO MỚI) ---
 
-                int tonDau; // số tồn đầu kỳ
-                if (prev != null) tonDau = prev.TonCuoi; // nếu có báo cáo trước, lấy TonCuoi của báo cáo đó làm TonDau
-                
-                
-                else // nếu không có báo cáo trước (Sách này ch từng đc tạo báo cáo tồn), tính TonDau dựa trên tồn hiện tại trước khi áp delta 
+                // Tìm báo cáo gần nhất trước đó để lấy Tồn Cuối làm Tồn Đầu tháng này
+                var prev = await _context.BAO_CAO_TON
+                    .Where(r => r.MaSach == maSach && (r.Nam < nam || (r.Nam == nam && r.Thang < thang)))
+                    .OrderByDescending(r => r.Nam).ThenByDescending(r => r.Thang)
+                    .FirstOrDefaultAsync();
+
+                int tonDau;
+                if (prev != null)
                 {
-                    
-                    var sach = await _context.SACH.AsNoTracking().FirstOrDefaultAsync(s => s.MaSach == maSach); // tìm sách theo mã
-                    if (sach == null) throw new InvalidOperationException($"Sách {maSach} không tồn tại"); // ném lỗi nếu không tìm thấy sách
-                    // Lưu ý: trước khi gọi service, stock đã được cập nhật; do đó tonDau = currentStock - delta
-                    tonDau = sach.SoLuongTon - delta; // tính tồn đầu kỳ
+                    tonDau = prev.TonCuoi;
                 }
-                // Ở API bán hàng, ta chỉ cập nhật `DaBan` (số lượng đã bán).
-                // Không chạm `PhatSinh` ở đây; nhập kho (phát sinh) do API khác xử lý.
-                var phatSinh = 0;
-                var daBan = Math.Abs(delta);
-                var tonCuoi = tonDau + phatSinh - daBan;
-                //sau khi có đủ thông tin thì tạo báo cáo mới
+                else
+                {
+                    // Nếu không có báo cáo cũ, tính Tồn Đầu dựa trên Tồn Kho Thực Tế hiện tại trong bảng SACH
+                    var sach = await _context.SACH.AsNoTracking().FirstOrDefaultAsync(s => s.MaSach == maSach);
+                    if (sach == null) throw new InvalidOperationException($"Sách {maSach} không tồn tại");
 
-                    var newReport = new BAO_CAO_TON // tạo báo cáo mới
+                    // Logic hồi quy: 
+                    // Vì transaction nhập/bán đã chạy rồi (đã cộng/trừ vào kho tổng), nên muốn tìm Tồn Đầu ta phải làm ngược lại.
+                    if (isBanHang)
                     {
-                        MaBCT = $"BCT-{when:yyyyMMddHHmmss}-{Guid.NewGuid().ToString("N").Substring(0,6)}", // mã báo cáo theo định dạng BCT-yyyymmddHHMMSS-xxxxxx
+                        // Nếu vừa Bán xong thì Tồn Đầu = Tồn Hiện Tại + Số Lượng Bán
+                        tonDau = sach.SoLuongTon + amount;
+                    }
+                    else
+                    {
+                        // Nếu vừa Nhập xong thì Tồn Đầu = Tồn Hiện Tại - Số Lượng Nhập
+                        tonDau = sach.SoLuongTon - amount;
+                    }
+                }
+
+                // Khởi tạo các giá trị
+                int phatSinh = isBanHang ? 0 : amount; // Nếu nhập thì cộng vào Phát Sinh
+                int daBan = isBanHang ? amount : 0;    // Nếu bán thì cộng vào Đã Bán
+
+                // Tính Tồn Cuối theo công thức chuẩn
+                int tonCuoi = tonDau + phatSinh - daBan;
+
+                // Tạo Entity mới
+                var newReport = new BAO_CAO_TON
+                {
+                    // Logic sinh mã BCT (như bạn đã làm)
+                    MaBCT = $"BCT_{thang}_{maSach}", // Hoặc dùng logic Guid cũ của bạn nếu muốn
                     MaSach = maSach,
-                    Thang = thang, // tháng của báo cáo (hiện tại)
-                    Nam = nam, // năm của báo cáo (hiện tại)
-                    TonDau = tonDau, // tồn đầu kỳ
-                    PhatSinh = phatSinh, // phát sinh (không cập nhật từ bán hàng)
-                    DaBan = daBan,
-                    TonCuoi = tonCuoi // tồn cuối kỳ
+                    Thang = thang,
+                    Nam = nam,
+
+                    TonDau = tonDau,
+                    PhatSinh = phatSinh,
+                    DaBan = daBan, // <--- Cột Mới
+                    TonCuoi = tonCuoi
                 };
 
                 _context.BAO_CAO_TON.Add(newReport);
-                await _context.SaveChangesAsync();
             }
-            else // nếu đã có báo cáo cho tháng/năm này (k tạo báo cáo mới mà chỉ cập nhật)
+            else
             {
-                // Bán hàng: cập nhật DaBan; nhập kho (PhatSinh) được xử lý bởi API nhập kho riêng
-                report.DaBan += Math.Abs(delta);
-                report.TonCuoi = report.TonDau + report.PhatSinh - report.DaBan; // cập nhật tồn cuối
-                _context.BAO_CAO_TON.Update(report); // đánh dấu là đã thay đổi
-                await _context.SaveChangesAsync(); // lưu thay đổi
+                // --- TRƯỜNG HỢP ĐÃ CÓ BÁO CÁO (CẬP NHẬT) ---
+
+                if (isBanHang)
+                {
+                    report.DaBan += amount; // Cộng dồn vào Đã Bán
+                }
+                else
+                {
+                    report.PhatSinh += amount; // Cộng dồn vào Phát Sinh
+                }
+
+                // Tính lại Tồn Cuối
+                report.TonCuoi = report.TonDau + report.PhatSinh - report.DaBan;
+
+                _context.BAO_CAO_TON.Update(report);
             }
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task<List<StockReportDto>> GetStockReportAsync(int month, int year)
@@ -93,6 +130,7 @@ namespace DoAnPhanMem.Services.Implementations
                     TenSach = r.Sach != null ? r.Sach.TenSach : null,
                     TonDau = r.TonDau,
                     PhatSinh = r.PhatSinh,
+                    DaBan = r.DaBan, // <--- Lấy thêm cột Đã Bán ra DTO
                     TonCuoi = r.TonCuoi
                 })
                 .ToListAsync();

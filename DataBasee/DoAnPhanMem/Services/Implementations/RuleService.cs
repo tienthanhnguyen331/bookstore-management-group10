@@ -19,21 +19,21 @@ namespace DoAnPhanMem.Services.Implementations
     {
         var rule = _context.QUY_DINH.Find(key);
         // Nếu không tìm thấy hoặc tắt quy định -> Trả về giá trị mặc định an toàn
-        if (rule == null || !rule.TrangThai) return 0;
+        if (rule == null ) return 0;
         return int.Parse(rule.GiaTri);
     }
 
     public decimal GetDecimalRule(string key)
     {
         var rule = _context.QUY_DINH.Find(key);
-        if (rule == null || !rule.TrangThai) return 0;
+        if (rule == null ) return 0;
         return decimal.Parse(rule.GiaTri);
     }
 
     public bool IsRuleEnabled(string key)
     {
         var rule = _context.QUY_DINH.Find(key);
-        return rule != null && rule.TrangThai && rule.GiaTri == "1";
+        return rule != null  && rule.GiaTri == "1";
     }
 
 
