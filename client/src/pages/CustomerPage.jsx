@@ -51,12 +51,21 @@ export default function CustomerListPage() {
             DiaChi: formData.DiaChi,
             SDT: formData.SDT
         };
+        //
         if (selectedCustomer) {
             setCustomers((prev) =>
                 prev.map((c) =>
                     c.MaKH === selectedCustomer.MaKH ? { ...c, ...formData } : c
+    
                 )
             );
+            try {
+                await customerService.update(selectedCustomer.MaKH, customerPayload);
+                alert("Cập nhật thành công!");
+            } catch (error) {
+                console.error("Lỗi khi cập nhật khách hàng:", error);
+                alert("Cập nhật thất bại! Vui lòng kiểm tra lại thông tin.");
+            }
         } else {
             // this else code using for adding new customer
             try {

@@ -8,5 +8,9 @@ export const customerService = {
     create: async (customerData) => {
       const response = await api.post('/KhachHang', customerData);
       return response.data;
-  }
+    }, 
+    update: async (customerId, data) => {
+      const response = await api.put(`/KhachHang/update-info/${customerId}`, data);
+      return response.data;
+    }
 };
