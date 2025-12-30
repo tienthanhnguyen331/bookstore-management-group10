@@ -51,21 +51,22 @@ export default function CustomerListPage() {
             DiaChi: formData.DiaChi,
             SDT: formData.SDT
         };
-        //
         if (selectedCustomer) {
-            setCustomers((prev) =>
-                prev.map((c) =>
-                    c.MaKH === selectedCustomer.MaKH ? { ...c, ...formData } : c
-    
-                )
-            );
             try {
                 await customerService.update(selectedCustomer.MaKH, customerPayload);
-                alert("Cập nhật thành công!");
-            } catch (error) {
-                console.error("Lỗi khi cập nhật khách hàng:", error);
-                alert("Cập nhật thất bại! Vui lòng kiểm tra lại thông tin.");
-            }
+                setCustomers((prev) =>
+                prev.map((c) =>
+                    c.MaKH === selectedCustomer.MaKH ? { ...c, ...formData } : c
+                )
+                
+            );
+            alert("Cập nhật thành công!");
+            setSelectedCustomer(null);
+        } catch (error) {
+                console.error("Lỗi update:", error);
+                const message = error.response?.data?.message || "Có lỗi xảy ra khi cập nhật!";
+                alert("LỖI CẬP NHẬT:\n" + message);
+        }
         } else {
             // this else code using for adding new customer
             try {
@@ -73,13 +74,15 @@ export default function CustomerListPage() {
                 if (newCustomer) {
                     setCustomers((prev) => [...prev, newCustomer]);
                     alert("Thêm mới thành công!");
+                    setSelectedCustomer(null);
                 }
             } catch (error) {
-                console.error("Lỗi khi thêm khách hàng:", error);
-                alert("Thêm mới thất bại! Vui lòng kiểm tra lại thông tin.");
+
+                console.error("Lỗi tạo khách mới:", error);
+                const message = error.response?.data?.message || "Có lỗi xảy ra khi thêm mới!";
+                alert("KHÔNG THỂ LƯU:\n" + message);
             }
         }
-        setSelectedCustomer(null);
     };
 
     const handleConfirmDeleteCustomer = (customerId) => {
