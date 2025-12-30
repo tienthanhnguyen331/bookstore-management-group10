@@ -1,11 +1,11 @@
-﻿
-using DoAnPhanMem.Data;
+﻿using DoAnPhanMem.Data;
 using DoAnPhanMem.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 public class AuthService : IAuthService
 {

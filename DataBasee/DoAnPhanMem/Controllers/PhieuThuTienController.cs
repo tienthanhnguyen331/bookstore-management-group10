@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using DoAnPhanMem.Data;
 using DoAnPhanMem.Models;
 using DoAnPhanMem.DTO;
+using DoAnPhanMem.Services.Interfaces;
 
 namespace DoAnPhanMem.Controllers
 {
@@ -11,7 +12,7 @@ namespace DoAnPhanMem.Controllers
     public class PhieuThuTienController : ControllerBase
     {
         private readonly DataContext _context;
-        private readonly IRuleService _ruleService;
+        private readonly Services.Interfaces.IRuleService _ruleService;
 
         public PhieuThuTienController(DataContext context, IRuleService ruleService)
         {

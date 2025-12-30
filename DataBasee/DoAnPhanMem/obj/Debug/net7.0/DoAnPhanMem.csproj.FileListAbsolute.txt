@@ -203,3 +203,4 @@ D:\DEADLINE\CNPM\PROJECT\bookstore-management-group10\DataBasee\DoAnPhanMem\obj\
 D:\DEADLINE\CNPM\PROJECT\bookstore-management-group10\DataBasee\DoAnPhanMem\obj\Debug\net7.0\DoAnPhanMem.pdb
 D:\DEADLINE\CNPM\PROJECT\bookstore-management-group10\DataBasee\DoAnPhanMem\obj\Debug\net7.0\DoAnPhanMem.genruntimeconfig.cache
 D:\DEADLINE\CNPM\PROJECT\bookstore-management-group10\DataBasee\DoAnPhanMem\obj\Debug\net7.0\ref\DoAnPhanMem.dll
+D:\DEADLINE\CNPM\PROJECT\bookstore-management-group10\DataBasee\DoAnPhanMem\obj\Debug\net7.0\staticwebassets.upToDateCheck.txt

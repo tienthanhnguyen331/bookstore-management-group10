@@ -25,6 +25,6 @@ namespace DoAnPhanMem.Models
         public string MaKH { get; set;}
         [ForeignKey("MaKH")]
         public KHACH_HANG KhachHang { get; set; }
-
+        public decimal TraNo { get; internal set; }
     }
 }

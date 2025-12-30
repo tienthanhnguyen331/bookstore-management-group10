@@ -49,6 +49,7 @@ namespace DoAnPhanMem.DTO
 
         [Required(ErrorMessage = "Danh sach san pham khong duoc de trong")]
         public List<ChiTietHoaDonDto> DanhSachSanPham { get; set; } = new();
+        public bool IsDebt { get; internal set; }
     }
 
     // Response sau khi lap hoa don thanh cong
