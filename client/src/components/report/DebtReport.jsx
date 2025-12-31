@@ -123,7 +123,10 @@ function DebtReport({ month, year }) {
                                     <td className="px-4 py-3 text-center">
                                         <span className="text-red-500">
                                             {item.NoPhatSinh > 0
-                                                ? "+" + formatCurrency(item.NoPhatSinh)
+                                                ? "+" +
+                                                  formatCurrency(
+                                                      item.NoPhatSinh
+                                                  )
                                                 : "0 ₫"}
                                         </span>
                                     </td>
@@ -135,8 +138,21 @@ function DebtReport({ month, year }) {
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 text-center">
-                                        <span className={"text-gray-900"}>
-                                            {formatCurrency(item.NoCuoi)}
+                                        <span
+                                            className={
+                                                item.NoCuoi < 0
+                                                    ? "text-blue-500"
+                                                    : "text-gray-900"
+                                            }
+                                        >
+                                            {formatCurrency(
+                                                Math.abs(item.NoCuoi)
+                                            )}
+                                            {item.NoCuoi < 0 && (
+                                                <span className="text-xs ml-1">
+                                                    (Dư)
+                                                </span>
+                                            )}
                                         </span>
                                     </td>
                                 </tr>
