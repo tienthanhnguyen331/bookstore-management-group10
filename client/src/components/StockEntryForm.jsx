@@ -7,7 +7,16 @@ import StateMessage from "./shared/StateMessage";
 
 // Books will be fetched from API when dropdown opens
 
-export function StockEntryForm({ entries, setEntries, rules, saving, error, success, setError, setSuccess }) {
+export function StockEntryForm({
+    entries,
+    setEntries,
+    rules,
+    saving,
+    error,
+    success,
+    setError,
+    setSuccess,
+}) {
     const [formData, setFormData] = useState({
         selectedBook: null,
         quantity: "",
@@ -20,6 +29,7 @@ export function StockEntryForm({ entries, setEntries, rules, saving, error, succ
     const [loadingBooks, setLoadingBooks] = useState(false);
     const [booksError, setBooksError] = useState(null);
     const [quantityError, setQuantityError] = useState(null);
+    const [unitPriceError, setUnitPriceError] = useState(null);
 
     // Auto-dismiss success message after 1.5 seconds
     useEffect(() => {
@@ -31,15 +41,35 @@ export function StockEntryForm({ entries, setEntries, rules, saving, error, succ
 
     const handleChange = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
-        
+
         // Validate quantity against MinImportQuantity
-        if (field === 'quantity') {
+        if (field === "quantity") {
             if (value <= 0) {
-                setQuantityError('Số lượng phải lớn hơn 0');
+                setQuantityError("Số lượng phải lớn hơn 0");
             } else if (rules && value < rules.MinImportQuantity) {
-                setQuantityError(`Số lượng nhập tối thiểu là ${rules.MinImportQuantity} cuốn`);
+                setQuantityError(
+                    `Số lượng nhập tối thiểu là ${rules.MinImportQuantity} cuốn`
+                );
             } else {
                 setQuantityError(null);
+            }
+        }
+
+        // Validate unit price against book's DonGia (max allowed price)
+        if (field === "unitPrice") {
+            if (value <= 0) {
+                setUnitPriceError("Đơn giá phải lớn hơn 0");
+            } else if (
+                formData.selectedBook &&
+                value > formData.selectedBook.DonGia
+            ) {
+                setUnitPriceError(
+                    `Đơn giá nhập không được vượt quá ${formData.selectedBook.DonGia.toLocaleString(
+                        "vi-VN"
+                    )} ₫`
+                );
+            } else {
+                setUnitPriceError(null);
             }
         }
     };
@@ -118,7 +148,11 @@ export function StockEntryForm({ entries, setEntries, rules, saving, error, succ
                         loading={loadingBooks}
                         rules={rules}
                     />
-                    <StateMessage error={booksError} onClose={() => setBooksError(null)} className="mt-2" />
+                    <StateMessage
+                        error={booksError}
+                        onClose={() => setBooksError(null)}
+                        className="mt-2"
+                    />
                 </div>
 
                 {/* Book Details (shown after selection) */}
@@ -144,7 +178,7 @@ export function StockEntryForm({ entries, setEntries, rules, saving, error, succ
                             handleChange("quantity", +e.target.value)
                         }
                         className={`w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-400 ${
-                            quantityError ? 'border-red-500' : 'border-gray-300'
+                            quantityError ? "border-red-500" : "border-gray-300"
                         }`}
                         placeholder="Nhập số lượng"
                     />
@@ -152,16 +186,27 @@ export function StockEntryForm({ entries, setEntries, rules, saving, error, succ
 
                 {/* Unit Price (Auto-filled from API) */}
                 <div>
-                    <label className="block mb-2">
-                        Đơn giá nhập<span className="text-red-500">*</span>
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                        <label>
+                            Đơn giá nhập<span className="text-red-500">*</span>
+                        </label>
+                        {unitPriceError && (
+                            <span className="text-xs text-red-600">
+                                {unitPriceError}
+                            </span>
+                        )}
+                    </div>
                     <input
                         type="number"
                         value={formData.unitPrice}
                         onChange={(e) =>
                             handleChange("unitPrice", +e.target.value)
                         }
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
+                        className={`w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-400 ${
+                            unitPriceError
+                                ? "border-red-500"
+                                : "border-gray-300"
+                        }`}
                         placeholder="Tự động điền từ dữ liệu sách"
                     />
                 </div>
@@ -179,7 +224,7 @@ export function StockEntryForm({ entries, setEntries, rules, saving, error, succ
                 <div className="flex justify-center pt-2">
                     <button
                         onClick={handleClick}
-                        disabled={quantityError || saving}
+                        disabled={quantityError || unitPriceError || saving}
                         className="flex items-center gap-2 px-10 py-2 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                     >
                         <Plus className="w-4 h-4" />
