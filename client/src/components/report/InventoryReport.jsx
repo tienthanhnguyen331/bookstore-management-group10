@@ -14,6 +14,7 @@ function InventoryReport({ month, year }) {
                 setLoading(true);
                 setError(null);
                 const data = await reportService.getStockReport(month, year);
+                console.log("Inventory Report Data:", data);
                 setInventoryData(data);
             } catch (err) {
                 setError("Không thể tải dữ liệu báo cáo tồn kho");
@@ -30,6 +31,7 @@ function InventoryReport({ month, year }) {
         { label: "SÁCH", key: "bookName" },
         { label: "TỒN ĐẦU", key: "openingStock" },
         { label: "PHÁT SINH", key: "changes" },
+        { label: "ĐÃ BÁN", key: "sold" },
         { label: "TỒN CUỐI", key: "closingStock" },
     ];
 
@@ -38,6 +40,7 @@ function InventoryReport({ month, year }) {
         bookName: item.TenSach,
         openingStock: item.TonDau,
         changes: item.PhatSinh,
+        sold: item.DaBan,
         closingStock: item.TonCuoi,
     }));
 
@@ -78,6 +81,9 @@ function InventoryReport({ month, year }) {
                                 PHÁT SINH
                             </th>
                             <th className="text-center px-4 py-3 text-gray-700">
+                                ĐÃ BÁN
+                            </th>
+                            <th className="text-center px-4 py-3 text-gray-700">
                                 TỒN CUỐI
                             </th>
                         </tr>
@@ -86,7 +92,7 @@ function InventoryReport({ month, year }) {
                     <tbody className="divide-y divide-gray-200">
                         {/* reusable notice component */}
                         <TableStateRow
-                            colSpan={5}
+                            colSpan={6}
                             loading={loading}
                             error={error}
                             isEmpty={inventoryData.length === 0}
@@ -109,15 +115,14 @@ function InventoryReport({ month, year }) {
                                         {item.TonDau}
                                     </td>
                                     <td className="px-4 py-3 text-center">
-                                        <span
-                                            className={
-                                                item.PhatSinh >= 0
-                                                    ? "text-blue-500"
-                                                    : "text-red-500"
-                                            }
-                                        >
+                                        <span className="text-blue-500">
                                             {item.PhatSinh >= 0 ? "+" : ""}
                                             {item.PhatSinh}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span className="text-green-500">
+                                            {item.DaBan}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 text-center text-gray-900">

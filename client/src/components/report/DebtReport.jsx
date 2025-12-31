@@ -31,6 +31,7 @@ function DebtReport({ month, year }) {
         { label: "KHÁCH HÀNG", key: "customerName" },
         { label: "NỢ ĐẦU", key: "openingDebt" },
         { label: "PHÁT SINH", key: "changes" },
+        { label: "TRẢ NỢ", key: "payment" },
         { label: "NỢ CUỐI", key: "closingDebt" },
     ];
 
@@ -39,6 +40,7 @@ function DebtReport({ month, year }) {
         customerName: item.HoTen,
         openingDebt: item.NoDau,
         changes: item.NoPhatSinh,
+        payment: item.TraNo,
         closingDebt: item.NoCuoi,
     }));
 
@@ -78,13 +80,16 @@ function DebtReport({ month, year }) {
                                 PHÁT SINH
                             </th>
                             <th className="text-center px-4 py-3 text-gray-700">
+                                TRẢ NỢ
+                            </th>
+                            <th className="text-center px-4 py-3 text-gray-700">
                                 NỢ CUỐI
                             </th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                         <TableStateRow
-                            colSpan={5}
+                            colSpan={6}
                             loading={loading}
                             error={error}
                             isEmpty={debtReportData.length === 0}
@@ -116,25 +121,16 @@ function DebtReport({ month, year }) {
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 text-center">
-                                        <span
-                                            className={
-                                                item.NoPhatSinh > 0
-                                                    ? "text-blue-500"
-                                                    : item.NoPhatSinh < 0
-                                                    ? "text-green-500"
-                                                    : "text-gray-900"
-                                            }
-                                        >
+                                        <span className="text-red-500">
                                             {item.NoPhatSinh > 0
-                                                ? "+" +
-                                                  formatCurrency(
-                                                      item.NoPhatSinh
-                                                  )
-                                                : item.NoPhatSinh < 0
-                                                ? "-" +
-                                                  formatCurrency(
-                                                      item.NoPhatSinh * -1
-                                                  )
+                                                ? "+" + formatCurrency(item.NoPhatSinh)
+                                                : "0 ₫"}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <span className="text-green-500">
+                                            {item.TraNo > 0
+                                                ? formatCurrency(item.TraNo)
                                                 : "0 ₫"}
                                         </span>
                                     </td>
