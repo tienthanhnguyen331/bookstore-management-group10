@@ -72,7 +72,11 @@ namespace DoAnPhanMem.Controllers
             // Tim khach hang theo SDT
             var khachHang = await _context.KHACH_HANG
                 .FirstOrDefaultAsync(kh => kh.SDT == dto.SDTKhachHang);
-
+            
+      
+            var rule = await _context.QUY_DINH.FirstOrDefaultAsync(r => r.TenQuyDinh == "QD4_KiemTraTienThu");
+            bool isCheckDebtRuleEnabled = (rule != null && rule.GiaTri == "1");
+           
             if (khachHang == null)
             {
                 return BadRequest(new { message = "Khong tim thay khach hang voi so dien thoai nay" });
@@ -87,7 +91,11 @@ namespace DoAnPhanMem.Controllers
             // Kiem tra QD4: So tien thu khong vuot qua so no hien tai
             try
             {
-                _ruleService.CheckRule_ThuTien(dto.SoTienThu, khachHang.CongNo);
+                if(isCheckDebtRuleEnabled)
+                {
+                    _ruleService.CheckRule_ThuTien(dto.SoTienThu, khachHang.CongNo);
+                }
+                
             }
             catch (Exception ex)
             {
