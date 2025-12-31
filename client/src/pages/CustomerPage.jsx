@@ -13,7 +13,6 @@ export default function CustomerListPage() {
     const { searchForm, filteredCustomers, handleSearchChange } =
         useCustomerFilter(customers);
     const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
 
     const loadCustomers = async () => {
@@ -37,11 +36,6 @@ export default function CustomerListPage() {
     const handleEditCustomer = (customer) => {
         setSelectedCustomer(customer);
         setIsAddEditModalOpen((isOpen) => !isOpen);
-    };
-
-    const handleDeleteCustomer = function (customer) {
-        setSelectedCustomer(customer);
-        setIsDeleteModalOpen((isOpen) => !isOpen);
     };
 
     const handleSaveCustomer = async (formData) => {
@@ -85,10 +79,6 @@ export default function CustomerListPage() {
         }
     };
 
-    const handleConfirmDeleteCustomer = (customerId) => {
-        setCustomers((prev) => prev.filter((c) => c.MaKH !== customerId));
-    };
-
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -117,7 +107,6 @@ export default function CustomerListPage() {
                 <CustomerTable
                     customers={filteredCustomers}
                     onEdit={handleEditCustomer}
-                    onDelete={handleDeleteCustomer}
                 />
             </div>
 
@@ -132,13 +121,6 @@ export default function CustomerListPage() {
                 onSave={handleSaveCustomer}
             />
 
-            {/* Modal for deleting */}
-            <DeleteConfirmModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen((isOpen) => !isOpen)}
-                customer={selectedCustomer}
-                onConfirm={handleConfirmDeleteCustomer}
-            />
         </div>
     );
 }

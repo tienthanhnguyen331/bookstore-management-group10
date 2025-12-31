@@ -5,7 +5,6 @@ import formatCurrency from "../../utils/formatCurrency";
 function CustomerTableBody({
     customers,
     onEdit,
-    onDelete = null,
     showDebtColumn = false,
     emptyMessage = "Không tìm thấy khách hàng nào",
     colSpan = 7,
@@ -79,17 +78,6 @@ function CustomerTableBody({
                                         >
                                             <Edit2 className="w-4 h-4" />
                                         </button>
-                                        {onDelete && (
-                                            <button
-                                                onClick={() =>
-                                                    onDelete(customer)
-                                                }
-                                                className="p-2 text-red-400 hover:bg-red-50 rounded-full transition-colors"
-                                                title="Xóa"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        )}
                                     </div>
                                 </td>
                             </>

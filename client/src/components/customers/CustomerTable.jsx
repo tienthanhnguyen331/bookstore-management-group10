@@ -10,7 +10,7 @@ const customerTableHeaders = [
     "Thao tác",
 ];
 
-export default function CustomerTable({ customers, onEdit, onDelete }) {
+export default function CustomerTable({ customers, onEdit }) {
     return (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
@@ -19,7 +19,6 @@ export default function CustomerTable({ customers, onEdit, onDelete }) {
                     <CustomerTableBody
                         customers={customers}
                         onEdit={onEdit}
-                        onDelete={onDelete}
                         showDebtColumn={false}
                         colSpan={6}
                     />
