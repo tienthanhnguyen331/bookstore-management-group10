@@ -102,7 +102,7 @@ namespace DoAnPhanMem.Services
 
             decimal congNoTruoc = khachHang.CongNo;
             var maPhieu = "PTT" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-            var ngayThuTien = DateTime.UtcNow;
+            var ngayThuTien = DateTime.Now;
 
             var phieuThuTien = new PHIEU_THU_TIEN
             {
@@ -217,18 +217,6 @@ namespace DoAnPhanMem.Services
                     NoCuoi = noCuoiKy         // Nợ cuối = Nợ đầu - Trả
                 };
                 _context.BAO_CAO_CONG_NO.Add(baoCaoMoi);
-            }
-        }
-
-        private async Task UpdateBaoCaoCongNo_EditPhieu(string maKH, DateTime ngayHieuLuc, decimal chenhLechNo)
-        {
-            var baoCao = await _context.BAO_CAO_CONG_NO
-                .FirstOrDefaultAsync(bc => bc.MaKH == maKH && bc.Thang == ngayHieuLuc.Month && bc.Nam == ngayHieuLuc.Year);
-
-            if (baoCao != null)
-            {
-                baoCao.TraNo -= chenhLechNo;
-                baoCao.NoCuoi += chenhLechNo;
             }
         }
     }

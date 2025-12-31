@@ -1,10 +1,9 @@
 ﻿using DoAnPhanMem.Data;
-using Microsoft.EntityFrameworkCore;
-using DoAnPhanMem.Services.Interfaces;
+using DoAnPhanMem.Services;
 using DoAnPhanMem.Services.Implementations;
-
-
+using DoAnPhanMem.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -54,6 +53,7 @@ builder.Services.AddScoped<IRuleService, RuleService>();
 builder.Services.AddScoped<DoAnPhanMem.Services.Interfaces.IQuyDinhService, DoAnPhanMem.Services.Implementations.QuyDinhService>();
 builder.Services.AddScoped<ISachService, SachService>();
 builder.Services.AddScoped<DoAnPhanMem.Services.Interfaces.IPhieuNhapService, DoAnPhanMem.Services.Implementations.PhieuNhapService>();
+builder.Services.AddScoped<IPhieuThuTienService, PhieuThuTienService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 //đăng ký dịch vụ KhachHangService
