@@ -49,6 +49,9 @@ namespace DoAnPhanMem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("int");
 
+                    b.Property<decimal>("TraNo")
+                        .HasColumnType("decimal(18,0)");
+
                     b.HasKey("MaBCCN");
 
                     b.HasIndex("MaKH");
@@ -61,6 +64,9 @@ namespace DoAnPhanMem.Migrations
                     b.Property<string>("MaBCT")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DaBan")
+                        .HasColumnType("int");
 
                     b.Property<string>("MaSach")
                         .IsRequired()

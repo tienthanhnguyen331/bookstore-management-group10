@@ -35,13 +35,7 @@ namespace DoAnPhanMem.Controllers
             {
                 var (maHoaDon, total) = await _saleService.CreateSaleAsync(dto);
 
-                if (dto.Items != null)
-                {
-                    foreach (var item in dto.Items)
-                    {
-                        await _stockReportService.UpdateInventoryReportAsync(item.MaSach, -item.SoLuong, dto.At);
-                    }
-                }
+                // Note: Stock report is updated inside CreateSaleAsync
 
                 await tx.CommitAsync();
                 return CreatedAtAction(nameof(GetInvoice), new { maHoaDon = maHoaDon }, new { MaHoaDon = maHoaDon, Total = total });
@@ -64,18 +58,8 @@ namespace DoAnPhanMem.Controllers
             {
                 var (maHoaDon, total) = await _saleService.CreateSaleAsync(dto);
 
-                if (dto.Items != null)
-                {
-                    foreach (var item in dto.Items)
-                    {
-                        await _stockReportService.UpdateInventoryReportAsync(item.MaSach, -item.SoLuong, dto.At);
-                    }
-                }
-
-                if (!string.IsNullOrWhiteSpace(dto.SDT) && total > 0)
-                {
-                    await _debtService.RecordDebtAsync(new CreateDebtDto { SDT = dto.SDT, Amount = total });
-                }
+                // Note: Stock report is updated inside CreateSaleAsync
+                // Note: Debt report is updated inside CreateSaleAsync
 
                 await tx.CommitAsync();
                 return CreatedAtAction(nameof(GetInvoice), new { maHoaDon = maHoaDon }, new { MaHoaDon = maHoaDon, Total = total });

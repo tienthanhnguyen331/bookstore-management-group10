@@ -20,6 +20,8 @@ namespace DoAnPhanMem.Models
         [Column(TypeName = "decimal(18, 0)")]
         public decimal NoPhatSinh { get; set;}
         [Column(TypeName = "decimal(18, 0)")]
+        public decimal TraNo { get; set; } //Thêm cột Số tiền khách đã trả
+        [Column(TypeName = "decimal(18, 0)")]
         public decimal NoCuoi { get; set; }
         [StringLength(100)]
         public string MaKH { get; set;}

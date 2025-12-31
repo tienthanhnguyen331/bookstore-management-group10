@@ -129,21 +129,31 @@ namespace DoAnPhanMem.Controllers
             if (baoCaoCongNo != null)
             {
              
-                baoCaoCongNo.NoPhatSinh -= dto.SoTienThu; //baoCaoCongNo.SoTienDaTra -= dto.SoTienThu
+                baoCaoCongNo.TraNo += dto.SoTienThu; 
              
                 baoCaoCongNo.NoCuoi -= dto.SoTienThu;
             }
             else
             {
+                // Tìm báo cáo tháng trước để lấy NoCuoi làm NoDau
+                var baoCaoCu = await _context.BAO_CAO_CONG_NO
+                .Where(b => b.MaKH == khachHang.MaKH && (b.Nam < nam || (b.Nam == nam && b.Thang < thang)))
+                .OrderByDescending(b => b.Nam)
+                .ThenByDescending(b => b.Thang)
+                .FirstOrDefaultAsync();
+
+                decimal noDauChuan = baoCaoCu != null ? baoCaoCu.NoCuoi : congNoTruoc;
+
                 var baoCaoMoi = new BAO_CAO_CONG_NO
                 {
                     MaBCCN = "BCCN" + maPhieu, 
                     Thang = thang,
                     Nam = nam,
                     MaKH = khachHang.MaKH,
-                    NoDau = congNoTruoc, 
-                    NoPhatSinh = -dto.SoTienThu,
-                    NoCuoi = khachHang.CongNo 
+                    NoDau = noDauChuan, 
+                    NoPhatSinh = 0,
+                    TraNo = dto.SoTienThu,
+                    NoCuoi = noDauChuan - dto.SoTienThu
                 };
                 _context.BAO_CAO_CONG_NO.Add(baoCaoMoi);
             }

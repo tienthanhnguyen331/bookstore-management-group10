@@ -122,9 +122,9 @@ namespace DoAnPhanMem.Controllers
                 }
 
                 // --- B. TẠO HÓA ĐƠN ---
-                // Format mã: HD + yyyyMMddHHmmss
-                var maHoaDon = "HD" + DateTime.UtcNow.AddHours(7).ToString("yyyyMMddHHmmss");
-                var ngayLap = DateTime.UtcNow.AddHours(7);
+                // [QUAN TRỌNG] Sử dụng ngày từ frontend nếu có, nếu không thì dùng ngày hiện tại
+                var ngayLap = dto.At ?? DateTime.UtcNow.AddHours(7);
+                var maHoaDon = $"HD-{ngayLap:yyyyMMddHHmmss}-{Guid.NewGuid().ToString("N").Substring(0, 6)}";
                 var nhanVien = await _context.NHAN_VIEN.FirstOrDefaultAsync(); // Lấy tạm NV đầu tiên
 
                 var hoaDon = new HOA_DON
@@ -190,16 +190,16 @@ namespace DoAnPhanMem.Controllers
                             Nam = nam,
                             MaSach = sach.MaSach,
                             TonDau = tonDau, 
-                            PhatSinh = item.SoLuong,
+                            PhatSinh = 0,            
+                            DaBan = item.SoLuong,    
                             TonCuoi = tonSauBan
                         };
                         _context.BAO_CAO_TON.Add(baoCaoTon);
                     }
                     else
                     {
-                        // Đã có -> Cộng dồn phát sinh bán
-                        baoCaoTon.PhatSinh += item.SoLuong;
-                        baoCaoTon.TonCuoi = tonSauBan; // Cập nhật lại tồn cuối thực tế
+                            baoCaoTon.DaBan += item.SoLuong;     
+                            baoCaoTon.TonCuoi -= item.SoLuong;  
                     }
 
                     // Tính tiền
@@ -246,7 +246,8 @@ namespace DoAnPhanMem.Controllers
                             Nam = nam,
                             MaKH = khachHang.MaKH,
                             NoDau = noDau,
-                            NoPhatSinh = tongTien, // Phát sinh tăng nợ
+                            NoPhatSinh = tongTien, 
+                            TraNo = 0,               
                             NoCuoi = noMoi
                         };
                         _context.BAO_CAO_CONG_NO.Add(baoCaoNo);
@@ -254,7 +255,7 @@ namespace DoAnPhanMem.Controllers
                     else
                     {
                         baoCaoNo.NoPhatSinh += tongTien;
-                        baoCaoNo.NoCuoi = noMoi;
+                        baoCaoNo.NoCuoi += tongTien;
                     }
                 }
                 // Lưu ý: Nếu trả tiền mặt (IsDebt = false), ta KHÔNG cộng nợ, KHÔNG cập nhật báo cáo nợ.

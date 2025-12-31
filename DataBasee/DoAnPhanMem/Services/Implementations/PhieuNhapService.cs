@@ -108,7 +108,8 @@ namespace DoAnPhanMem.Services.Implementations
                             MaSach = item.MaSach,
                             Thang = thang,
                             Nam = nam,
-                            TonDau = sach.SoLuongTon, // Lấy tồn hiện tại làm tồn đầu
+                            TonDau = sach.SoLuongTon,
+                            DaBan = 0, // Lấy tồn hiện tại làm tồn đầu
                             PhatSinh = item.SoLuong,
                             TonCuoi = sach.SoLuongTon + item.SoLuong
                         };

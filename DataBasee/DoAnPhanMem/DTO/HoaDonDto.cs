@@ -49,6 +49,8 @@ namespace DoAnPhanMem.DTO
 
         public bool IsDebt { get; set; } //Ghi nhận mua nợ 
 
+        public DateTime? At { get; set; } // Ngày hạch toán (nếu null thì dùng ngày hiện tại)
+
         [Required(ErrorMessage = "Danh sach san pham khong duoc de trong")]
         public List<ChiTietHoaDonDto> DanhSachSanPham { get; set; } = new();
     }

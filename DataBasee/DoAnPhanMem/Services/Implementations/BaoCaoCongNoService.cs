@@ -86,6 +86,7 @@ namespace DoAnPhanMem.Services.Implementations
                     Nam = nam,
                     NoDau = noDau,
                     NoPhatSinh = noPhatSinh,
+                    TraNo = 0,
                     NoCuoi = noCuoi
                 };
 
@@ -96,7 +97,7 @@ namespace DoAnPhanMem.Services.Implementations
             else
             {
                 report.NoPhatSinh += dto.Amount; // cập nhật số phát sinh
-                report.NoCuoi = report.NoDau + report.NoPhatSinh; // cập nhật số dư cuối kỳ
+                report.NoCuoi = report.NoDau + report.NoPhatSinh - report.TraNo; // cập nhật số dư cuối kỳ
                 _context.BAO_CAO_CONG_NO.Update(report); // cập nhật báo cáo
                 await _context.SaveChangesAsync();// lưu thay đổi vào database
                 return report;//  trả về báo cáo đã cập nhật
@@ -117,6 +118,7 @@ namespace DoAnPhanMem.Services.Implementations
                     SDT = r.KhachHang != null ? r.KhachHang.SDT : null,
                     NoDau = r.NoDau,
                     NoPhatSinh = r.NoPhatSinh,
+                    TraNo = r.TraNo,
                     NoCuoi = r.NoCuoi
                 })
                 .ToListAsync();

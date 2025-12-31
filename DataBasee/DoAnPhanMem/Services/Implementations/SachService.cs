@@ -97,10 +97,19 @@ namespace DoAnPhanMem.Services.Implementations
                 else
                 {
                     // Chưa có -> Tạo mã TG mới tăng dần
-                    string lastIdTG = await _context.TAC_GIA
-                        .OrderByDescending(x => x.MaTG)
+                    // [SỬA] Sort theo số thay vì sort theo string để tránh lỗi: TG005 < TG10 (theo string) nhưng 5 < 10 (theo số)
+                    var allTacGia = await _context.TAC_GIA
+                        .Where(x => x.MaTG.StartsWith("TG"))
+                        .ToListAsync();
+                    
+                    string lastIdTG = allTacGia
+                        .Select(x => new { 
+                            MaTG = x.MaTG, 
+                            Number = int.TryParse(x.MaTG.Substring(2), out int n) ? n : 0 
+                        })
+                        .OrderByDescending(x => x.Number)
                         .Select(x => x.MaTG)
-                        .FirstOrDefaultAsync();
+                        .FirstOrDefault();
 
                     maTacGiaChot = GenerateNextId(lastIdTG, "TG");
 
@@ -232,7 +241,20 @@ namespace DoAnPhanMem.Services.Implementations
                 else
                 {
                     // Chưa có -> Tạo Tác giả mới
-                    string lastIdTG = await _context.TAC_GIA.OrderByDescending(x => x.MaTG).Select(x => x.MaTG).FirstOrDefaultAsync();
+                    // [SỬA] Sort theo số thay vì sort theo string để tránh lỗi: TG005 < TG10 (theo string) nhưng 5 < 10 (theo số)
+                    var allTacGia = await _context.TAC_GIA
+                        .Where(x => x.MaTG.StartsWith("TG"))
+                        .ToListAsync();
+                    
+                    string lastIdTG = allTacGia
+                        .Select(x => new { 
+                            MaTG = x.MaTG, 
+                            Number = int.TryParse(x.MaTG.Substring(2), out int n) ? n : 0 
+                        })
+                        .OrderByDescending(x => x.Number)
+                        .Select(x => x.MaTG)
+                        .FirstOrDefault();
+                    
                     maTacGiaMoi = GenerateNextId(lastIdTG, "TG");
 
                     _context.TAC_GIA.Add(new TAC_GIA { MaTG = maTacGiaMoi, TenTG = request.TenTacGia });
