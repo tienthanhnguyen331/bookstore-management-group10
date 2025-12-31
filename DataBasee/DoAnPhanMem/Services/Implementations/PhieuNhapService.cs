@@ -84,13 +84,17 @@ namespace DoAnPhanMem.Services.Implementations
 
                     // BƯỚC 1: Tìm trong BỘ NHỚ LOCAL trước (Quan trọng: Tránh lỗi khi nhập trùng sách trong 1 phiếu)
                     var baoCao = _context.BAO_CAO_TON.Local
-                                         .FirstOrDefault(x => x.MaBCT == currentMaBCT);
+                                         .FirstOrDefault(x => x.MaSach == item.MaSach 
+                                                           && x.Thang == thang 
+                                                           && x.Nam == nam);
 
                     // BƯỚC 2: Nếu bộ nhớ chưa có, mới tìm dưới DATABASE
                     if (baoCao == null)
                     {
                         baoCao = await _context.BAO_CAO_TON
-                                       .FirstOrDefaultAsync(bc => bc.MaBCT == currentMaBCT);
+                                       .FirstOrDefaultAsync(bc => bc.MaSach == item.MaSach 
+                                                                && bc.Thang == thang 
+                                                                && bc.Nam == nam);
                     }
 
                     if (baoCao != null)
