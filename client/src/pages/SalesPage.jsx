@@ -177,6 +177,7 @@ const SalesPage = () => {
             const payload = {
                 SDTKhachHang: customerPhone ? customerPhone.trim() : "", 
                 IsDebt: isDebt, // Gửi cờ nợ/tiền mặt
+                At: saleDate,
                 DanhSachSanPham: cart.map(item => ({
                     MaSach: item.MaSach, // Dùng MaSach
                     SoLuong: parseInt(item.quantity) // Đảm bảo số nguyên
