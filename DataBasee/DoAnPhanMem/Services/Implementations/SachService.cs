@@ -32,9 +32,6 @@ namespace DoAnPhanMem.Services.Implementations
                             DonGia = s.DonGia,
 
 
-
-
-
                             SoLuongTon = s.SoLuongTon,
 
                             // --- KHẮC PHỤC LỖI TẠI ĐÂY ---
@@ -129,7 +126,7 @@ namespace DoAnPhanMem.Services.Implementations
                     MaSach = newMaSach,
                     TenSach = request.TenSach,
                     MaTL = maTheLoaiChot,      // Dùng mã vừa tìm/tạo ở B1
-                    
+
                     DonGia = request.DonGia,
                     SoLuongTon = request.SoLuongTon
                 };

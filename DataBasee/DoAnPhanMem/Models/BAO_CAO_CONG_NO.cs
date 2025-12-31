@@ -20,11 +20,13 @@ namespace DoAnPhanMem.Models
         [Column(TypeName = "decimal(18, 0)")]
         public decimal NoPhatSinh { get; set;}
         [Column(TypeName = "decimal(18, 0)")]
+        public decimal TraNo { get; set; }
+        [Column(TypeName = "decimal(18, 0)")]
         public decimal NoCuoi { get; set; }
         [StringLength(100)]
         public string MaKH { get; set;}
         [ForeignKey("MaKH")]
         public KHACH_HANG KhachHang { get; set; }
-        public decimal TraNo { get; internal set; }
+
     }
 }

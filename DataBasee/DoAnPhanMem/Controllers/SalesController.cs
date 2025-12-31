@@ -39,7 +39,7 @@ namespace DoAnPhanMem.Controllers
                 {
                     foreach (var item in dto.Items)
                     {
-                        await _stockReportService.UpdateInventoryReportAsync(item.MaSach, -item.SoLuong, dto.At);
+                        await _stockReportService.UpdateInventoryReportAsync(item.MaSach, -item.SoLuong, true, dto.At);
                     }
                 }
 
@@ -68,7 +68,7 @@ namespace DoAnPhanMem.Controllers
                 {
                     foreach (var item in dto.Items)
                     {
-                        await _stockReportService.UpdateInventoryReportAsync(item.MaSach, -item.SoLuong, dto.At);
+                        await _stockReportService.UpdateInventoryReportAsync(item.MaSach, -item.SoLuong,true, dto.At);
                     }
                 }
 

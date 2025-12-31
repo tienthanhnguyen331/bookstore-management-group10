@@ -7,6 +7,7 @@ using DoAnPhanMem.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,8 @@ builder.Services.AddControllers()
     {
         // Dòng này nghĩa là: "Đừng tự ý đổi tên biến của tôi, hãy giữ nguyên gốc"
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
+
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
 

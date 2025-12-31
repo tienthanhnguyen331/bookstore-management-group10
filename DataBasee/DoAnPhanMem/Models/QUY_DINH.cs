@@ -21,6 +21,8 @@ namespace DoAnPhanMem.Models
         // --- QUAN TRỌNG: THÊM DÒNG NÀY ---
         [ForeignKey("MaNV")]
         public  NHAN_VIEN NhanVien { get; set; }
-        public bool TrangThai { get; internal set; }
+
+
+
     }
 }
