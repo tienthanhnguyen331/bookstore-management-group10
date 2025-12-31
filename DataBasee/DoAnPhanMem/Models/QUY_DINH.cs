@@ -15,12 +15,12 @@ namespace DoAnPhanMem.Models
         public string GiaTri {  get; set; }
 
 
-        // Khóa ngoại chuẩn
-        public string MaNV { get; set; }
+        // Khóa ngoại chuẩn (tùy chọn)
+        public string? MaNV { get; set; }
 
-        // --- QUAN TRỌNG: THÊM DÒNG NÀY ---
+        // --- Quan sát: navigation có thể null nếu không chỉ định nhân viên ---
         [ForeignKey("MaNV")]
-        public  NHAN_VIEN NhanVien { get; set; }
+        public NHAN_VIEN? NhanVien { get; set; }
 
 
 

@@ -96,11 +96,11 @@ namespace DoAnPhanMem.Data
 
             //  Tạo dữ liệu quy định mãu
             modelBuilder.Entity<QUY_DINH>().HasData(
-                new QUY_DINH { TenQuyDinh = "QD1_NhapToiThieu", GiaTri = "150", TrangThai = true },
-                new QUY_DINH { TenQuyDinh = "QD1_TonToiDaTruocNhap", GiaTri = "300", TrangThai = true },
-                new QUY_DINH { TenQuyDinh = "QD2_NoToiDa", GiaTri = "20000", TrangThai = true },
-                new QUY_DINH { TenQuyDinh = "QD2_TonToiThieuSauBan", GiaTri = "20", TrangThai = true },
-                new QUY_DINH { TenQuyDinh = "QD4_KiemTraTienThu", GiaTri = "1", TrangThai = true }
+                new QUY_DINH { TenQuyDinh = "QD1_NhapToiThieu", GiaTri = "150" },
+                new QUY_DINH { TenQuyDinh = "QD1_TonToiDaTruocNhap", GiaTri = "300" },
+                new QUY_DINH { TenQuyDinh = "QD2_NoToiDa", GiaTri = "20000" },
+                new QUY_DINH { TenQuyDinh = "QD2_TonToiThieuSauBan", GiaTri = "20" },
+                new QUY_DINH { TenQuyDinh = "QD4_KiemTraTienThu", GiaTri = "1" }
             );
         }
 

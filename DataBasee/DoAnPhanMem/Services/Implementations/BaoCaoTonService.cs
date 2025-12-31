@@ -93,6 +93,7 @@ namespace DoAnPhanMem.Services.Implementations
                     TenSach = r.Sach != null ? r.Sach.TenSach : null,
                     TonDau = r.TonDau,
                     PhatSinh = r.PhatSinh,
+                    DaBan = r.DaBan,
                     TonCuoi = r.TonCuoi
                 })
                 .ToListAsync();

@@ -39,8 +39,7 @@ namespace DoAnPhanMem.Controllers
             }
 
             // Cập nhật giá trị mới
-            rule.GiaTri = input.GiaTri;    
-            rule.TrangThai = input.TrangThai; 
+            rule.GiaTri = input.GiaTri;
 
             // Lưu xuống Database
             await _context.SaveChangesAsync();
@@ -58,6 +57,5 @@ namespace DoAnPhanMem.Controllers
     public class UpdateRuleDto
     {
         public string GiaTri { get; set; }
-        public bool TrangThai { get; set; }
     }
 }

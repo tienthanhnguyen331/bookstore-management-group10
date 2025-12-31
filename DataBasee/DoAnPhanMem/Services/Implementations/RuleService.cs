@@ -18,22 +18,24 @@ namespace DoAnPhanMem.Services.Implementations
     public int GetIntRule(string key)
     {
         var rule = _context.QUY_DINH.Find(key);
-        // Nếu không tìm thấy hoặc tắt quy định -> Trả về giá trị mặc định an toàn
-        if (rule == null || !rule.TrangThai) return 0;
+        // Nếu không tìm thấy -> Trả về giá trị mặc định an toàn
+        if (rule == null) return 0;
         return int.Parse(rule.GiaTri);
     }
 
     public decimal GetDecimalRule(string key)
     {
         var rule = _context.QUY_DINH.Find(key);
-        if (rule == null || !rule.TrangThai) return 0;
+        if (rule == null) return 0;
         return decimal.Parse(rule.GiaTri);
     }
 
     public bool IsRuleEnabled(string key)
     {
         var rule = _context.QUY_DINH.Find(key);
-        return rule != null && rule.TrangThai && rule.GiaTri == "1";
+        // Previously we used a boolean TrangThai; without that property, consider a rule enabled
+        // when it exists and its GiaTri equals "1".
+        return rule != null && rule.GiaTri == "1";
     }
 
 
