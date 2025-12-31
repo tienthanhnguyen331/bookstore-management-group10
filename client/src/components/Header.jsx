@@ -22,10 +22,10 @@ export function Header() {
           <div className="flex items-center justify-between h-16">
             {/* Left: Hamburger (mobile) + Logo */}
             <div className="flex items-center gap-3">
-              {/* Hamburger Menu Button - Only visible on mobile */}
+              {/* Hamburger Menu Button - Only visible on mobile & tablet */}
               <button
                 onClick={() => setIsMobileSidebarOpen(true)}
-                className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <Menu className="w-6 h-6 text-gray-600" />
               </button>
@@ -34,8 +34,8 @@ export function Header() {
               <Logo onClick={handleClick} />
             </div>
 
-            {/* Center: Desktop Navigation - Hidden on mobile */}
-            <div className="hidden md:block">
+            {/* Center: Desktop Navigation - Hidden on mobile & tablet */}
+            <div className="hidden lg:block">
               <PageNav />
             </div>
 

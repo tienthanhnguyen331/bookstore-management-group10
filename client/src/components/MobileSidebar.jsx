@@ -19,12 +19,12 @@ function MobileSidebar({ isOpen, onClose }) {
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/50  z-40 md:hidden"
+                className="fixed inset-0 bg-black/50  z-40 lg:hidden"
                 onClick={onClose}
             />
 
             {/* Sidebar */}
-            <div className="fixed top-0 left-0 bottom-0 w-64 bg-white z-50 shadow-xl md:hidden transform transition-transform duration-300">
+            <div className="fixed top-0 left-0 bottom-0 w-64 bg-white z-50 shadow-xl lg:hidden transform transition-transform duration-300">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
                     <span className="text-blue-400 tracking-wide">MENU</span>
