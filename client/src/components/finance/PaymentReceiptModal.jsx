@@ -4,7 +4,7 @@ import { paymentReceiptService } from "../../services/paymentReceiptService";
 import StateMessage from "../shared/StateMessage";
 import formatCurrency from "../../utils/formatCurrency";
 
-function PaymentReceiptModal({ isOpen, onClose, customer, onSave }) {
+function PaymentReceiptModal({ isOpen, onClose, customer, onSave, rules }) {
     const [formData, setFormData] = useState({
         NgayThu: new Date().toISOString().split("T")[0],
         SoTienThu: "",
@@ -38,14 +38,15 @@ function PaymentReceiptModal({ isOpen, onClose, customer, onSave }) {
 
         // Validate amount
         const amount = parseFloat(formData.SoTienThu);
-        if (amount <= 0) {
+        if (amount < 0) {
             setValidationError("Số tiền thu phải lớn hơn 0");
             return;
         }
 
-        if (amount > customer.CongNo) {
+        // Check debt rule if enabled
+        if (rules?.CheckDebtRule && amount > customer.CongNo) {
             setValidationError(
-                "Số tiền thu không được vượt quá số tiền nợ hiện tại"
+                "Số tiền thu không được vượt quá số tiền nợ hiện tại (theo quy định)"
             );
             return;
         }
@@ -96,14 +97,31 @@ function PaymentReceiptModal({ isOpen, onClose, customer, onSave }) {
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-6">
                         {/* Current Debt Notice */}
-                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                            <p className="text-sm text-amber-800">
+                        <div className={`border rounded-lg p-4 ${
+                            rules?.CheckDebtRule 
+                                ? "bg-amber-50 border-amber-200" 
+                                : "bg-blue-50 border-blue-200"
+                        }`}>
+                            <p className={`text-sm ${
+                                rules?.CheckDebtRule 
+                                    ? "text-amber-800" 
+                                    : "text-blue-800"
+                            }`}>
                                 <span className="font-medium">Lưu ý:</span> Số
                                 tiền nợ hiện tại:{" "}
                                 <span className="font-semibold">
                                     {formatCurrency(customer.CongNo)}
                                 </span>
                             </p>
+                            {rules?.CheckDebtRule ? (
+                                <p className="text-xs text-amber-700 mt-1">
+                                    Số tiền thu không được vượt quá số nợ (quy định đang bật)
+                                </p>
+                            ) : (
+                                <p className="text-xs text-blue-700 mt-1">
+                                    Có thể thu số tiền lớn hơn nợ để tạo số dư cho lần mua sau
+                                </p>
+                            )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -183,7 +201,7 @@ function PaymentReceiptModal({ isOpen, onClose, customer, onSave }) {
                                 <input
                                     type="number"
                                     min="0"
-                                    max={customer.CongNo}
+                                    max={rules?.CheckDebtRule ? customer.CongNo : undefined}
                                     value={formData.SoTienThu}
                                     onChange={(e) =>
                                         handleChange(

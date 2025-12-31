@@ -12,7 +12,6 @@ export function EntryFormTable({
     setError,
     setSuccess,
 }) {
-
     const handleDelete = (id) => {
         setEntries(entries.filter((entry) => entry.id !== id));
     };

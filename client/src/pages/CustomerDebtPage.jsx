@@ -7,7 +7,7 @@ import { Header } from "../components/Header";
 import { paymentReceiptService } from "../services/paymentReceiptService";
 import StateMessage from "../components/shared/StateMessage";
 
-function CustomerDebtPage() {
+function CustomerDebtPage({ rules }) {
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -88,6 +88,7 @@ function CustomerDebtPage() {
                     onPaymentReceipt={handlePaymentReceipt}
                     loading={loading}
                     error={error}
+                    rules={rules}
                 />
             </div>
         </div>

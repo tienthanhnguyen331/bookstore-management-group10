@@ -47,7 +47,7 @@ function App() {
                 <Route path="/book" element={<BookPage />} />
                 <Route path="/sale" element={<SalesPage />} />
                 <Route path="/inventory" element={<InventoryPage rules={rules} rulesLoading={rulesLoading} />} />
-                <Route path="/finance" element={<CustomerDebtPage />} />
+                <Route path="/finance" element={<CustomerDebtPage rules={rules} />} />
                 <Route path="/customer" element={<CustomerListPage />} />
                 <Route path="/report" element={<ReportPage />} />
                 <Route path="/setting" element={<SettingsPage rules={rules} setRules={setRules} onRulesUpdate={loadRules} />} />

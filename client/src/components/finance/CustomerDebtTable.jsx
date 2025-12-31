@@ -19,6 +19,7 @@ export default function CustomerDebtTable({
     onPaymentReceipt,
     loading = false,
     error = null,
+    rules,
 }) {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,6 +46,7 @@ export default function CustomerDebtTable({
                 onClose={handleCloseModal}
                 customer={selectedCustomer}
                 onSave={handleSaveReceipt}
+                rules={rules}
             />
 
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
