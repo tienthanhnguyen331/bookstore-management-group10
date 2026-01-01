@@ -70,6 +70,7 @@ builder.Services.AddScoped<IBaoCaoCongNoService, BaoCaoCongNoService>();
 builder.Services.AddScoped<IBaoCaoTonService, BaoCaoTonService>();
 builder.Services.AddScoped<ISaleService, SaleService>();
 
+builder.Services.AddScoped<IAdminService, AdminService>();
 var app = builder.Build();
 
 // --- 6. HTTP PIPELINE ---

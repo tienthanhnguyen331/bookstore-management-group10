@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DoAnPhanMem.Migrations
 {
-    public partial class UpdateBaoCaoColumns : Migration
+    public partial class TaoDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

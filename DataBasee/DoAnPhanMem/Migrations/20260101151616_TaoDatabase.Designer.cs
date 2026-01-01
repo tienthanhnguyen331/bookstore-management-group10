@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoAnPhanMem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251231031538_UpdateBaoCaoColumns")]
-    partial class UpdateBaoCaoColumns
+    [Migration("20260101151616_TaoDatabase")]
+    partial class TaoDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
