@@ -1,18 +1,14 @@
 
+
 using DoAnPhanMem.Data;
-using Microsoft.EntityFrameworkCore;
-using DoAnPhanMem.Services.Interfaces;
 using DoAnPhanMem.Services.Implementations;
-
-﻿
-using DoAnPhanMem.Services;
-
+using DoAnPhanMem.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,29 +18,23 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// --- 2. CẤU HÌNH CORS (MỚI THÊM) ---
-// Cho phép React (localhost:5173) gọi vào API
+// --- 2. CẤU HÌNH CORS ---
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // Đổi port nếu React chạy port khác
+            policy.WithOrigins("http://localhost:5173")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
 });
 
 // --- 3. CẤU HÌNH CONTROLLERS & JSON ---
-// (Đã gộp 2 phần AddControllers của bạn lại thành 1 để tránh lỗi)
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Giữ nguyên tên biến (không viết hoa/thường tự động)
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
-
-        // Bỏ qua lỗi vòng lặp (Circular Reference)
-
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
@@ -65,34 +55,31 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// --- 5. SWAGGER & SERVICES ---
+// --- 5. SWAGGER (Dùng cấu hình tiện lợi của HEAD) ---
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
-    option.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "BookStore API", Version = "v1" });
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "BookStore API", Version = "v1" });
 
     // Cấu hình để nhập Token (Chỉ cần Paste, không cần gõ Bearer)
-    option.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        // 👇 Dòng mô tả này để nhắc bạn nhớ chỉ dán token thôi
+        In = ParameterLocation.Header,
         Description = "Chỉ cần dán chuỗi Token vào ô bên dưới (Không cần gõ 'Bearer')",
         Name = "Authorization",
-
-        // 👇 QUAN TRỌNG: 2 dòng này giúp Swagger tự điền chữ 'Bearer' cho bạn
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Type = SecuritySchemeType.Http,
         Scheme = "bearer",
-
         BearerFormat = "JWT"
     });
 
-    option.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            new OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                Reference = new OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
@@ -101,26 +88,29 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
+// --- 6. ĐĂNG KÝ SERVICES (Merge đầy đủ) ---
+
+// Các Service cơ bản
 builder.Services.AddScoped<IRuleService, RuleService>();
 builder.Services.AddScoped<IQuyDinhService, QuyDinhService>();
 builder.Services.AddScoped<ISachService, SachService>();
+builder.Services.AddScoped<IKhachHangService, KhachHangService>();
 
+// Các Service nghiệp vụ
 builder.Services.AddScoped<IPhieuNhapService, PhieuNhapService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IKhachHangService, KhachHangService>();
 builder.Services.AddScoped<IBaoCaoCongNoService, BaoCaoCongNoService>();
 builder.Services.AddScoped<IBaoCaoTonService, BaoCaoTonService>();
-
-builder.Services.AddScoped<DoAnPhanMem.Services.Interfaces.IPhieuNhapService, DoAnPhanMem.Services.Implementations.PhieuNhapService>();
-builder.Services.AddScoped<IPhieuThuTienService, PhieuThuTienService>();
-
-
 builder.Services.AddScoped<ISaleService, SaleService>();
 
-builder.Services.AddScoped<IAdminService, AdminService>();
+// Service quan trọng vừa merge
+builder.Services.AddScoped<IPhieuThuTienService, PhieuThuTienService>();
+builder.Services.AddScoped<IHoaDonService, HoaDonService>(); // Có cái này thì HoaDonController mới chạy được
+builder.Services.AddScoped<IAdminService, AdminService>();   // Có cái này thì AdminController mới chạy được
+
 var app = builder.Build();
 
-// --- 6. HTTP PIPELINE ---
+// --- 7. HTTP PIPELINE ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -129,9 +119,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ---> KÍCH HOẠT CORS TẠI ĐÂY (MỚI THÊM) <---
-// Phải đặt TRƯỚC Authentication/Authorization
-app.UseCors("AllowReactApp"); 
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();

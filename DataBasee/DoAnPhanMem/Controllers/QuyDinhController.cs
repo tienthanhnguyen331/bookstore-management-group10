@@ -3,12 +3,16 @@
 using DoAnPhanMem.Services.Interfaces;
 
 using DoAnPhanMem.DTO;
+
 using Microsoft.AspNetCore.Authorization;
+
 namespace DoAnPhanMem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     [Authorize]
+
     public class QuyDinhController : ControllerBase
     {
 
@@ -32,7 +36,9 @@ namespace DoAnPhanMem.Controllers
 
         // PUT: api/QuyDinh/CapNhat (Giữ nguyên)
         [HttpPut("CapNhat")]
+
         [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> UpdateQuyDinh([FromBody] QuyDinhUpdateDto request)
         {
             var result = await _quyDinhService.UpdateQuyDinhAsync(request);

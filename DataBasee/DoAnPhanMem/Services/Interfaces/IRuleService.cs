@@ -1,3 +1,4 @@
+
 namespace DoAnPhanMem.Services.Interfaces
 {
     public interface IRuleService
@@ -9,4 +10,5 @@ namespace DoAnPhanMem.Services.Interfaces
         void CheckRule_BanSach(decimal noHienTai, int tonKhoSauBan);
         void CheckRule_ThuTien(decimal soTienThu, decimal noHienTai);
     }
+
 }

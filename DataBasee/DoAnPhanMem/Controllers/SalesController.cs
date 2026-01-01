@@ -1,5 +1,5 @@
 
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +38,7 @@ namespace DoAnPhanMem.Controllers
                 var (maHoaDon, total) = await _saleService.CreateSaleAsync(dto);
 
 
+
                 if (dto.Items != null)
                 {
                     foreach (var item in dto.Items)
@@ -45,6 +46,7 @@ namespace DoAnPhanMem.Controllers
                         await _stockReportService.UpdateInventoryReportAsync(item.MaSach, -item.SoLuong, true, dto.At);
                     }
                 }
+
 
 
                 await tx.CommitAsync();
@@ -67,6 +69,7 @@ namespace DoAnPhanMem.Controllers
             try
             {
                 var (maHoaDon, total) = await _saleService.CreateSaleAsync(dto);
+
 
 
                 if (dto.Items != null)

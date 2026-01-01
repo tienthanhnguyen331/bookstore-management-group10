@@ -14,11 +14,13 @@ namespace DoAnPhanMem.Models
         [StringLength(100)]
         public string HoTen { get; set; }
         [StringLength(100)]
+
         public string? DiaChi { get; set; }
         [StringLength(100)]
         public string? SDT { get; set; }
         [StringLength (100)]
         public string? Email { get; set; }
+
         [StringLength (100)]
         public string ChucVu { get; set; }
         public ICollection<PHIEU_NHAP_SACH> PhieuNhapSach { get; set; }

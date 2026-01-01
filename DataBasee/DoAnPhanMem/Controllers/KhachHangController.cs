@@ -1,5 +1,5 @@
 
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.EntityFrameworkCore;
 using DoAnPhanMem.Data;
@@ -23,7 +23,9 @@ namespace DoAnPhanMem.Controllers
         }
 
 
+
         // API Lấy danh sách tất cả khách hàng -->OK
+
 
         // GET: api/KhachHang
         [HttpGet]
@@ -49,7 +51,9 @@ namespace DoAnPhanMem.Controllers
 
 
 
+
         // API Tạo khách hàng mới -->OK
+
 
         // POST: api/KhachHang
         [HttpPost]
@@ -86,7 +90,6 @@ namespace DoAnPhanMem.Controllers
             if (dto == null) return NotFound(); // Nếu không tìm thấy trả về 404
             return Ok(dto); // Trả về dữ liệu khách hàng
         }
-
 
         [HttpPut("update-info/{id}")] // API dạng PUT: api/customer/update-info/5
         public async Task<IActionResult> UpdateCustomerInfo(string id, [FromBody] UpdateCustomerDto request)

@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
+
+using DoAnPhanMem.DTO;
 using System.Threading.Tasks;
 
-public interface IAuthService
+namespace DoAnPhanMem.Services.Interfaces
 {
-    Task<string> Login(string username, string password);
+    public interface IAuthService
+    {
+        // Trả về DTO chứa Token + Role + IsFirstLogin
+        Task<LoginResponseDto> Login(string username, string password);
+
+        // Hàm đổi mật khẩu
+        Task<bool> ChangePassword(string username, string oldPassword, string newPassword);
+    }
 }

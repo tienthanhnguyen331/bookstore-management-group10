@@ -1,5 +1,5 @@
 
-namespace DoAnPhanMem.DTO
+﻿namespace DoAnPhanMem.DTO
 
 {
     public class InvoiceItemDto
