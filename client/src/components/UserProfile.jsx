@@ -1,20 +1,19 @@
 import { User, LogOut, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function UserProfile() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-    // Mock user data - replace with actual auth data
-    const user = {
-        name: "Nguyễn Văn A",
-        email: "admin@bookstore.vn",
-        role: "Quản trị viên",
-    };
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
-        // Add logout logic here
-        console.log("Logging out...");
+        logout();
+        navigate("/login");
     };
+
+    if (!user) return null;
 
     return (
         <div className="relative">
@@ -37,7 +36,7 @@ function UserProfile() {
                     <div className="p-4 border-b border-gray-200">
                         <div className="text-gray-900">{user.name}</div>
                         <div className="text-sm text-gray-500">
-                            {user.email}
+                            {user.username}
                         </div>
                     </div>
                     <div className="p-2">

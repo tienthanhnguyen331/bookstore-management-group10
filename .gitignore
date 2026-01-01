@@ -97,3 +97,8 @@ node_modules/
 dist/
 
 DataBasee/
+
+# Documentation
+demo.md
+Dev1.md
+FE_Task_Distribution.md

@@ -9,7 +9,10 @@ import CustomerDebtPage from "./pages/CustomerDebtPage";
 import CustomerListPage from "./pages/CustomerPage";
 import ReportPage from "./pages/ReportPage";
 import SettingsPage from "./pages/SettingsPage";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { settingsService } from "./services/settingsService";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
     
@@ -40,20 +43,32 @@ function App() {
     };
 
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route index element={<DashboardPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/book" element={<BookPage />} />
-                <Route path="/sale" element={<SalesPage />} />
-                <Route path="/inventory" element={<InventoryPage rules={rules} rulesLoading={rulesLoading} />} />
-                <Route path="/finance" element={<CustomerDebtPage rules={rules} />} />
-                <Route path="/customer" element={<CustomerListPage />} />
-                <Route path="/report" element={<ReportPage />} />
-                <Route path="/setting" element={<SettingsPage rules={rules} setRules={setRules} onRulesUpdate={loadRules} />} />
-                <Route path="*" element={<PageNotFound />} />
-            </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/login" element={<LoginPage />} />
+                    
+                    {/* Protected Routes */}
+                    <Route element={<ProtectedRoute allowedRoles={['Admin', 'NhanVien']} />}>
+                        <Route index element={<DashboardPage />} />
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/book" element={<BookPage />} />
+                        <Route path="/sale" element={<SalesPage />} />
+                        <Route path="/inventory" element={<InventoryPage rules={rules} rulesLoading={rulesLoading} />} />
+                        <Route path="/finance" element={<CustomerDebtPage rules={rules} />} />
+                        <Route path="/customer" element={<CustomerListPage />} />
+                    </Route>
+
+                    {/* Admin Only Routes */}
+                    <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
+                        <Route path="/report" element={<ReportPage />} />
+                        <Route path="/setting" element={<SettingsPage rules={rules} setRules={setRules} onRulesUpdate={loadRules} />} />
+                    </Route>
+
+                    <Route path="*" element={<PageNotFound />} />
+                </Routes>
+            </BrowserRouter>
+        </AuthProvider>
     );
 }
 

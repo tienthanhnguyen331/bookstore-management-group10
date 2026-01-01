@@ -1,19 +1,28 @@
 import { X } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const navItems = [
-    { label: "Dashboard", link: "/dashboard" },
-    { label: "Quản lí sách", link: "/book" },
-    { label: "Nhập kho", link: "/inventory" },
-    { label: "Bán hàng", link: "/sale" },
-    { label: "Tài chính", link: "/finance" },
-    { label: "Khách hàng", link: "/customer" },
-    { label: "Báo cáo", link: "/report" },
-    { label: "Cài đặt", link: "/setting" },
+    { label: "Dashboard", link: "/dashboard", roles: ['Admin', 'NhanVien'] },
+    { label: "Quản lí sách", link: "/book", roles: ['Admin', 'NhanVien'] },
+    { label: "Nhập kho", link: "/inventory", roles: ['Admin', 'NhanVien'] },
+    { label: "Bán hàng", link: "/sale", roles: ['Admin', 'NhanVien'] },
+    { label: "Tài chính", link: "/finance", roles: ['Admin', 'NhanVien'] },
+    { label: "Khách hàng", link: "/customer", roles: ['Admin', 'NhanVien'] },
+    { label: "Báo cáo", link: "/report", roles: ['Admin'] },
+    { label: "Cài đặt", link: "/setting", roles: ['Admin'] },
 ];
 
 function MobileSidebar({ isOpen, onClose }) {
+    const { user } = useAuth();
+
     if (!isOpen) return null;
+
+    // Filter items based on user role
+    const filteredNavItems = navItems.filter(item => {
+        if (!user) return false;
+        return item.roles.includes(user.role);
+    });
 
     return (
         <>
@@ -39,7 +48,7 @@ function MobileSidebar({ isOpen, onClose }) {
                 {/* Navigation */}
                 <nav className="p-4">
                     <div className="space-y-1">
-                        {navItems.map((item, index) => (
+                        {filteredNavItems.map((item, index) => (
                             <NavLink
                                 key={index}
                                 to={item.link}
