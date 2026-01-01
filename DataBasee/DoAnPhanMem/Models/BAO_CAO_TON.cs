@@ -26,9 +26,13 @@ namespace DoAnPhanMem.Models
        
         public int PhatSinh { get; set; }
 
+
         public int DaBan { get; set; } //Thêm cột ghi nhận số lượng sách đã bán
       
+
         public int TonCuoi { get; set; }
+
+        
 
     
     }

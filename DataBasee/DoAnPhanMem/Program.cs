@@ -1,11 +1,18 @@
+
 using DoAnPhanMem.Data;
 using Microsoft.EntityFrameworkCore;
 using DoAnPhanMem.Services.Interfaces;
 using DoAnPhanMem.Services.Implementations;
+
+﻿
+using DoAnPhanMem.Services;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +42,9 @@ builder.Services.AddControllers()
     {
         // Giữ nguyên tên biến (không viết hoa/thường tự động)
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
+
         // Bỏ qua lỗi vòng lặp (Circular Reference)
+
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
@@ -57,17 +66,55 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // --- 5. SWAGGER & SERVICES ---
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "BookStore API", Version = "v1" });
+
+    // Cấu hình để nhập Token (Chỉ cần Paste, không cần gõ Bearer)
+    option.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        // 👇 Dòng mô tả này để nhắc bạn nhớ chỉ dán token thôi
+        Description = "Chỉ cần dán chuỗi Token vào ô bên dưới (Không cần gõ 'Bearer')",
+        Name = "Authorization",
+
+        // 👇 QUAN TRỌNG: 2 dòng này giúp Swagger tự điền chữ 'Bearer' cho bạn
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+
+        BearerFormat = "JWT"
+    });
+
+    option.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 builder.Services.AddScoped<IRuleService, RuleService>();
 builder.Services.AddScoped<IQuyDinhService, QuyDinhService>();
 builder.Services.AddScoped<ISachService, SachService>();
+
 builder.Services.AddScoped<IPhieuNhapService, PhieuNhapService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
 builder.Services.AddScoped<IBaoCaoCongNoService, BaoCaoCongNoService>();
 builder.Services.AddScoped<IBaoCaoTonService, BaoCaoTonService>();
+
+builder.Services.AddScoped<DoAnPhanMem.Services.Interfaces.IPhieuNhapService, DoAnPhanMem.Services.Implementations.PhieuNhapService>();
+builder.Services.AddScoped<IPhieuThuTienService, PhieuThuTienService>();
+
+
 builder.Services.AddScoped<ISaleService, SaleService>();
 
 builder.Services.AddScoped<IAdminService, AdminService>();

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+
+using System.Threading.Tasks;
+
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DoAnPhanMem.DTO;
@@ -35,7 +37,15 @@ namespace DoAnPhanMem.Controllers
             {
                 var (maHoaDon, total) = await _saleService.CreateSaleAsync(dto);
 
-                // Note: Stock report is updated inside CreateSaleAsync
+
+                if (dto.Items != null)
+                {
+                    foreach (var item in dto.Items)
+                    {
+                        await _stockReportService.UpdateInventoryReportAsync(item.MaSach, -item.SoLuong, true, dto.At);
+                    }
+                }
+
 
                 await tx.CommitAsync();
                 return CreatedAtAction(nameof(GetInvoice), new { maHoaDon = maHoaDon }, new { MaHoaDon = maHoaDon, Total = total });
@@ -58,8 +68,20 @@ namespace DoAnPhanMem.Controllers
             {
                 var (maHoaDon, total) = await _saleService.CreateSaleAsync(dto);
 
-                // Note: Stock report is updated inside CreateSaleAsync
-                // Note: Debt report is updated inside CreateSaleAsync
+
+                if (dto.Items != null)
+                {
+                    foreach (var item in dto.Items)
+                    {
+                        await _stockReportService.UpdateInventoryReportAsync(item.MaSach, -item.SoLuong,true, dto.At);
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.SDT) && total > 0)
+                {
+                    await _debtService.RecordDebtAsync(new CreateDebtDto { SDT = dto.SDT, Amount = total, At = dto.At });
+                }
+
 
                 await tx.CommitAsync();
                 return CreatedAtAction(nameof(GetInvoice), new { maHoaDon = maHoaDon }, new { MaHoaDon = maHoaDon, Total = total });
@@ -80,4 +102,6 @@ namespace DoAnPhanMem.Controllers
             return Ok(dto);
         }
     }
+
 }
+
