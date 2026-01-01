@@ -1,1 +1,0 @@
--- Script thêm dữ liệu mẫu
