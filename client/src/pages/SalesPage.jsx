@@ -184,8 +184,6 @@ const SalesPage = () => {
                 }))
             };
 
-            console.log("Sending Payload:", payload); // Log ra để kiểm tra
-
             // Gọi API (createInvoice import từ service)
             const result = await createInvoice(payload);
             
