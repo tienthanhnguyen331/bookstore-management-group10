@@ -163,7 +163,7 @@ function DashboardPage() {
                                         Chức vụ
                                     </label>
                                     <div className="px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900">
-                                        {profile?.ChucVu === "QuanLy"
+                                        {profile?.ChucVu === "Admin"
                                             ? "Quản lý"
                                             : "Nhân viên"}
                                     </div>
