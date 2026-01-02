@@ -42,3 +42,6 @@ Desktop.ini
 
 # macOS
 .DS_Store
+
+# Documentation
+rule.md
