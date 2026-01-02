@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import { changePasswordService } from "../services/authService";
 
@@ -14,6 +14,22 @@ function ChangePasswordModal({ isOpen, onClose, username }) {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
+
+    // Reset form state when modal opens/closes
+    useEffect(() => {
+        if (!isOpen) {
+            setFormData({
+                oldPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+            });
+            setError("");
+            setSuccess("");
+            setShowOldPassword(false);
+            setShowNewPassword(false);
+            setShowConfirmPassword(false);
+        }
+    }, [isOpen]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
