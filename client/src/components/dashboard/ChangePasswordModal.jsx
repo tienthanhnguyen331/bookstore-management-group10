@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
-import { changePasswordService } from "../services/authService";
+import { changePasswordService } from "../../services/authService";
 
 function ChangePasswordModal({ isOpen, onClose, username }) {
     const [formData, setFormData] = useState({

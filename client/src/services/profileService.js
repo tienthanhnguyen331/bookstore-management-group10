@@ -10,4 +10,14 @@ export const profileService = {
             throw error;
         }
     },
+    
+    updateProfile: async (profileData) => {
+        try {
+            const response = await api.put("/profile", profileData);
+            return response.data;
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            throw error;
+        }
+    },
 };
