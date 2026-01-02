@@ -90,5 +90,13 @@ namespace DoAnPhanMem.Controllers
                 return BadRequest(new { message = errorMsg });
             }
         }
+
+        // GET: api/Admin/employees
+        [HttpGet("employees")]
+        public async Task<IActionResult> GetAllEmployees()
+        {
+            var result = await _adminService.GetAllNhanVienAsync();
+            return Ok(result);
+        }
     }
 }

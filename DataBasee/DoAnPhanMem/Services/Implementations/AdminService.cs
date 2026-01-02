@@ -195,5 +195,24 @@ namespace DoAnPhanMem.Services.Implementations
                 throw; // Ném lỗi ra cho Controller bắt
             }
         }
+
+        public async Task<List<NhanVienResponseDto>> GetAllNhanVienAsync()
+        {
+            // Lấy dữ liệu từ bảng NHAN_VIEN và chuyển sang DTO
+            var listNhanVien = await _context.NHAN_VIEN
+                .Select(nv => new NhanVienResponseDto
+                {
+                    MaNV = nv.MaNV,
+                    HoTen = nv.HoTen,
+                    Username = nv.TenDangNhap, // Map cột TenDangNhap vào Username
+                    SDT = nv.SDT,
+                    Email = nv.Email,
+                    ChucVu = nv.ChucVu
+                })
+                .OrderBy(nv => nv.MaNV) // Sắp xếp theo mã nhân viên cho đẹp
+                .ToListAsync();
+
+            return listNhanVien;
+        }
     }
 }
