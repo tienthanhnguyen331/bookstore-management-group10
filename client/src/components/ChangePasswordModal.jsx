@@ -84,12 +84,18 @@ function ChangePasswordModal({ isOpen, onClose, username }) {
         }
     };
 
+    const handleOverlayClick = (e) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
         <div
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-            onClick={onClose}
+            onClick={handleOverlayClick}
         >
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
                 {/* Header */}
