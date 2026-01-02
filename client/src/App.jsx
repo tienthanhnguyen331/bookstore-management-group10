@@ -27,7 +27,10 @@ function App() {
 
      // Load rules on app mount
     useEffect(() => {
-        loadRules();
+        const token = localStorage.getItem('token');
+        if (token) {
+            loadRules();
+        }
     }, []);
 
     const loadRules = async () => {

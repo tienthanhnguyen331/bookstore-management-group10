@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-// import api from '../services/api'; // Tạm thời chưa dùng API thật
+import { loginService } from '../services/authService';
 
 const AuthContext = createContext(null);
 
@@ -18,38 +18,22 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (username, password) => {
-        // --- MOCK DATA LOGIC ---
-        // Giả lập độ trễ mạng
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        if (username === 'admin' && password === '1') {
-            const mockUser = {
-                username: 'admin',
-                name: 'Nguyễn Văn Quản Lý',
-                role: 'Admin',
-                token: 'mock-jwt-token-admin'
+        try {
+            const data = await loginService(username, password);
+            const { Token, Role, IsFirstLogin } = data;
+            const userData = {
+                username,
+                role: Role,
+                token: Token,
+                isFirstLogin: IsFirstLogin
             };
-            setUser(mockUser);
-            localStorage.setItem('user', JSON.stringify(mockUser));
-            localStorage.setItem('token', mockUser.token);
+            setUser(userData);
+            localStorage.setItem('user', JSON.stringify(userData));
+            localStorage.setItem('token', userData.token);
             return true;
+        }catch (error) {
+            throw new Error(error.response?.data?.message || "Đăng nhập thất bại");
         }
-
-        if (username === 'staff' && password === '1') {
-            const mockUser = {
-                username: 'staff',
-                name: 'Trần Thị Nhân Viên',
-                role: 'NhanVien',
-                token: 'mock-jwt-token-staff'
-            };
-            setUser(mockUser);
-            localStorage.setItem('user', JSON.stringify(mockUser));
-            localStorage.setItem('token', mockUser.token);
-            return true;
-        }
-
-        throw new Error("Tên đăng nhập hoặc mật khẩu không đúng");
-        // --- END MOCK DATA ---
     };
 
     const logout = () => {
