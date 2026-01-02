@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import { employeeService } from "../../services/employeeService";
+import { Pencil, Trash2, RotateCw } from "lucide-react";
 
 export default function StaffManagement() {
     const [staffs, setStaffs] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editingStaff, setEditingStaff] = useState(null);
+    const [deleteStaff, setDeleteStaff] = useState(null); // nhân viên cần xóa
 
-    const [newStaff, setNewStaff] = useState({
+    const defaultStaff = {
         username: "",
         hoTen: "",
-        sdt: "",
-        email: ""
-    });
+        chucVu: "" 
+    };
+
+    const [newStaff, setNewStaff] = useState(defaultStaff);
+    const [usernameError, setUsernameError] = useState(""); // lưu thông báo lỗi cho username
+
 
     // Load danh sách nhân viên
     useEffect(() => {
@@ -24,7 +29,8 @@ export default function StaffManagement() {
             setStaffs(data);
         } catch (err) {
             console.error(err);
-            alert("Không thể tải danh sách nhân viên");
+           // alert("Không thể tải danh sách nhân viên");
+            setStaffs([]); // không lấy được dữ liệu
         }
     };
 
@@ -32,82 +38,38 @@ export default function StaffManagement() {
     const handleCreateStaff = async (e) => {
         e.preventDefault();
 
-        try {
+        try { 
             await employeeService.create({
-                username: newStaff.username,
-                hoTen: newStaff.hoTen,
-                sdt: newStaff.sdt,
-                email: newStaff.email,
-                password: "1"
+                TenDangNhap: newStaff.username,
+                HoTen: newStaff.hoTen,
+                ChucVu: newStaff.chucVu,
+                MatKhau: "1" 
             });
 
-            alert("Tạo nhân viên thành công!\nMật khẩu mặc định: 1");
             setShowForm(false);
-            setNewStaff({
-                username: "",
-                hoTen: "",
-                sdt: "",
-                email: ""
-            });
-
-            // reload danh sách
+            setNewStaff({ username: "", hoTen: "", chucVu: "NhanVien" });
+            // reset lỗi trước khi submit
+            setUsernameError("");
+            alert("Tạo nhân viên thành công!\nMật khẩu mặc định: 1");
             fetchStaffs();
+
         } catch (err) {
             console.error(err);
-            alert("Tạo nhân viên thất bại");
+            // Nếu backend trả lỗi trùng username
+            if (err.response && err.response.data && err.response.data.message) {
+                setUsernameError(err.response.data.message); // ví dụ: "Tên đăng nhập đã tồn tại"
+            } else {
+                setUsernameError("Tạo nhân viên thất bại");
+        }
         }
     };
-
-    // Update nhanvien
-    const handleUpdateStaff = async (e) => {
-        e.preventDefault();
-        try {
-            await employeeService.update(editingStaff.maNV, {
-                hoTen: editingStaff.hoTen,
-                sdt: editingStaff.sdt,
-                email: editingStaff.email,
-                chucVu: editingStaff.chucVu
-            });
-
-            alert("Cập nhật nhân viên thành công");
-            setEditingStaff(null);
-            fetchStaffs();
-        } catch (err) {
-            alert("Cập nhật thất bại");
-        }
-    };
-
-     // Xoa Nhan Vien
-    const handleDeleteStaff = async (maNV) => {
-        if (!window.confirm("Bạn chắc chắn muốn xóa nhân viên này?")) return;
-
-        try {
-            await employeeService.remove(maNV);
-            fetchStaffs();
-        } catch (err) {
-            alert("Xóa nhân viên thất bại");
-        }
-    };
-
-    // reset password
-    const handleResetPassword = async (maNV) => {
-        if (!window.confirm("Reset mật khẩu về mặc định?")) return;
-
-        try {
-            await employeeService.resetPassword(maNV);
-            alert("Đã reset mật khẩu về mặc định");
-        } catch (err) {
-            alert("Reset mật khẩu thất bại");
-        }
-    };
-
 
     return (
         <div>
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-blue-400">
-                    QUẢN LÝ NHÂN VIÊN
+                    QUẢN LÍ NHÂN VIÊN
                 </h2>
                 <button
                     onClick={() => setShowForm(true)}
@@ -118,99 +80,112 @@ export default function StaffManagement() {
             </div>
 
             {/* Table */}
-            <table className="w-full border border-gray-100 rounded-lg overflow-hidden">
+            <table className="min-w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
                 <thead className="bg-gray-50">
                     <tr>
-                        <th className="px-4 py-3 text-left border-b border-gray-100">Mã NV</th>
-                        <th className="px-4 py-3 text-left border-b border-gray-100">Họ tên</th>
-                        <th className="px-4 py-3 text-left border-b border-gray-100">Username</th>
-                        <th className="px-6 py-3 text-left border-b border-gray-100">SĐT</th>
-                        <th className="px-4 py-3 text-left border-b border-gray-100">Email</th>
-                        <th className="px-4 py-3 text-left border-b border-gray-100">Chức vụ</th>
-                        <th className="px-15 py-3 text-left border-b border-gray-100"> Thao tác</th>
-
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b border-gray-200">Mã NV</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b border-gray-200">Họ tên</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b border-gray-200">Username</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b border-gray-200">SĐT</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b border-gray-200">Email</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b border-gray-200">Chức vụ</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b border-gray-200">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {staffs.map(staff => (
-                        <tr key={staff.maNV} className="border-t hover:bg-gray-50">
-                            <td className="px-4 py-3 border-b border-gray-100">{staff.maNV}</td>
-                            <td className="px-4 py-3 border-b border-gray-100">{staff.hoTen}</td>
-                            <td className="px-7 py-3 border-b border-gray-100">{staff.username}</td>
-                            <td className="px-4 py-3 border-b border-gray-100">{staff.sdt}</td>
-                            <td className="px-4 py-3 border-b border-gray-100">{staff.email}</td>
-                            <td className="px-4 py-3 border-b border-gray-100">
-                                <span
-                                    className={`px-2 py-1 rounded text-xs ${
-                                        staff.chucVu === "Admin"
-                                            ? "bg-purple-100 text-purple-700"
-                                            : "bg-green-100 text-green-700"
-                                    }`}
-                                >
-                                    {staff.chucVu}
-                                </span>
-                            </td>
-                            <td className="px-4 py-3 border-b border-gray-100">
-                                 <div className="flex items-center gap-2">
-                                    {/* Sửa */}
-                                    <button
-                                        onClick={() => setEditingStaff(staff)}
-                                        className="px-3 py-1.5 rounded-md text-sm
-                                                 text-blue-600
-                                                hover:bg-blue-100 transition"
-                                        title="Cập nhật nhân viên"
-                                    >
-                                         Sửa
-                                    </button>
+                    {staffs.map((staff) => (
+                    <tr key={staff.MaNV} className="border-t border-gray-200 hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-2 text-sm text-gray-700">{staff.MaNV}</td>
+                        <td className="px-4 py-2 text-sm text-gray-700">{staff.HoTen}</td>
+                        <td className="px-4 py-2 text-sm text-gray-700">{staff.Username}</td>
+                        <td className="px-4 py-2 text-sm text-gray-700">{staff.SDT || "-"}</td>
+                        <td className="px-4 py-2 text-sm text-gray-700">{staff.Email || "-"}</td>
+                        <td className="px-4 py-2 text-sm text-gray-700">
+                        <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            staff.ChucVu === "Admin"
+                                ? "bg-purple-50 text-purple-700"
+                                : staff.ChucVu === "BanHang"
+                                ? "bg-yellow-50 text-yellow-700"
+                                : staff.ChucVu === "ThuKho"
+                                ? "bg-blue-50 text-blue-700"
+                                : "bg-green-50 text-green-700"
+                            }`}
+                        >
+                            {staff.ChucVu}
+                        </span>
+                        </td>
 
-                                    {/* Reset mật khẩu */}
-                                    <button
-                                        onClick={() => handleResetPassword(staff.maNV)}
-                                        className="px-3 py-1.5 rounded-md text-sm
-                                                 text-yellow-600
-                                                hover:bg-yellow-100 transition"
-                                        title="Reset mật khẩu"
-                                    >
-                                         Reset
-                                    </button>
+                        {/* <td className="px-4 py-2 text-sm flex gap-2">
+                            <button className="px-2 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition">Sửa</button>
+                            <button className="px-2 py-1 rounded bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition">Reset</button>
+                            <button className="px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition">Xóa</button>
+                        </td> */}
 
-                                    {/* Xóa */}
-                                    <button
-                                        onClick={() => handleDeleteStaff(staff.maNV)}
-                                        className="px-3 py-1.5 rounded-md text-sm
-                                                 text-red-600
-                                                hover:bg-red-100 transition"
-                                        title="Xóa nhân viên"
-                                    >
-                                         Xóa
-                                    </button>
-                                </div>
+                        <td className="px-4 py-2 text-sm flex gap-2">
+                            {/* Sửa */}
+                            <button
+                               // onClick={() => setEditingStaff(staff)}
+                                className="px-2 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                                title="Cập nhật NV"
+                            >
+                                <Pencil className="w-4 h-4" />
+                            </button>
+
+                            {/* Reset mật khẩu */}
+                            <button
+                                //onClick={() => handleResetPassword(staff.MaNV)}
+                                className="px-2 py-1 rounded bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition"
+                                title="Reset MK"
+                            >
+                                <RotateCw className="w-4 h-4" />
+                            </button>
+
+                            {/* Xóa */}
+                            <button
+                                //onClick={() => setDeleteStaff(staff)}
+                                className="px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition"
+                                title="Xóa NV"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
                             </td>
-                        </tr>
+                    </tr>
                     ))}
                 </tbody>
             </table>
 
-            {/* Modal */}
+            {/* Modal tao NV */}
             {showForm && (
                 <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center">
                     <form
                         onSubmit={handleCreateStaff}
                         className="bg-white p-6 rounded-lg w-96"
                     >
-                        <h3 className="font-bold mb-4">
-                            Tạo tài khoản nhân viên
-                        </h3>
+                       
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                                Tạo tài khoản nhân viên
+                            </h3>
+                        
 
-                        <input
-                            className="w-full mb-3 px-3 py-2 border rounded"
-                            placeholder="Tên đăng nhập"
-                            value={newStaff.username}
-                            onChange={e =>
-                                setNewStaff({ ...newStaff, username: e.target.value })
-                            }
-                            required
-                        />
+                        <div className="mb-3">
+                            <input
+                                type="text"
+                                placeholder="Tên đăng nhập"
+                                value={newStaff.username}
+                                onChange={(e) => {
+                                setNewStaff({ ...newStaff, username: e.target.value });
+                                if (usernameError) setUsernameError(""); // xóa lỗi khi sửa
+                                }}
+                                className={`w-full px-3 py-2 rounded border ${
+                                usernameError ? "border-red-500" : "rounded border"
+                                }`}
+                                required
+                            />
+                            {usernameError && (
+                                <p className="text-red-500 text-sm mt-1"><span>❗</span>{usernameError}</p> 
+                            )}
+                            </div>
 
                         <input
                             className="w-full mb-3 px-3 py-2 border rounded"
@@ -223,22 +198,13 @@ export default function StaffManagement() {
                         />
 
                         <input
-                            className="w-full mb-3 px-3 py-2 border rounded"
-                            placeholder="Số điện thoại"
-                            value={newStaff.sdt}
-                            onChange={e =>
-                                setNewStaff({ ...newStaff, sdt: e.target.value })
+                            className="w-full mb-4 px-3 py-2 border rounded"
+                            placeholder="Chức vụ (ví dụ: NhanVien, Admin)"
+                            value={newStaff.chucVu}
+                            onChange={(e) =>
+                                setNewStaff({ ...newStaff, chucVu: e.target.value })
                             }
-                        />
-
-                        <input
-                            className="w-full mb-3 px-3 py-2 border rounded"
-                            placeholder="Email"
-                            type="email"
-                            value={newStaff.email}
-                            onChange={e =>
-                                setNewStaff({ ...newStaff, email: e.target.value })
-                            }
+                            required
                         />
 
                         <p className="text-xs text-gray-500 mb-4">
@@ -248,7 +214,11 @@ export default function StaffManagement() {
                         <div className="flex justify-end gap-3">
                             <button
                                 type="button"
-                                onClick={() => setShowForm(false)}
+                                onClick={() => {
+                                    setShowForm(false);      // ẩn form
+                                    setNewStaff(defaultStaff); // reset tất cả input
+                                    setUsernameError(""); // reset lỗi
+                                }}
                                 className="text-gray-500"
                             >
                                 Hủy
@@ -317,6 +287,33 @@ export default function StaffManagement() {
                     </form>
                 </div>
             )}
+
+             {/* Modal xóa nhân viên */}
+            {deleteStaff && (
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
+                <div className="bg-white p-6 rounded-lg w-96">
+                    <h3 className="font-bold mb-4">Xác nhận xóa nhân viên</h3>
+                    <p className="mb-6">
+                    Bạn có chắc chắn muốn xóa nhân viên <b>{deleteStaff.hoTen}</b>?
+                    </p>
+                    <div className="flex justify-end gap-3">
+                    <button
+                        onClick={() => setDeleteStaff(null)}
+                        className="px-4 py-2 border rounded"
+                    >
+                        Hủy
+                    </button>
+                    <button
+                        onClick={confirmDeleteStaff}
+                        className="bg-red-600 text-white px-4 py-2 rounded"
+                    >
+                        Xóa
+                    </button>
+                    </div>
+                </div>
+                </div>
+            )}
+
         </div>
     );
 }
