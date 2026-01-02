@@ -6,7 +6,6 @@ export function EntryFormTable({
     entries,
     setEntries,
     handleSaveEntry,
-    history,
     selectedDate,
     setSaving,
     setError,
