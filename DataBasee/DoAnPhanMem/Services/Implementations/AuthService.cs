@@ -74,7 +74,7 @@ namespace DoAnPhanMem.Services.Implementations
             if (taiKhoan == null)
                 throw new Exception("Không tìm thấy tài khoản");
 
-            // Kiểm tra mật khẩu cũ
+            // // Kiểm tra mật khẩu cũ
             if (!BCrypt.Net.BCrypt.Verify(oldPassword, taiKhoan.MatKhau))
                 throw new Exception("Mật khẩu cũ không đúng");
 

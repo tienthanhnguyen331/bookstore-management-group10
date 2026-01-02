@@ -108,6 +108,12 @@ builder.Services.AddScoped<IPhieuThuTienService, PhieuThuTienService>();
 builder.Services.AddScoped<IHoaDonService, HoaDonService>(); // Có cái này thì HoaDonController mới chạy được
 builder.Services.AddScoped<IAdminService, AdminService>();   // Có cái này thì AdminController mới chạy được
 
+// Đăng ký Memory Cache
+builder.Services.AddMemoryCache();
+
+// Đăng ký Email Service
+builder.Services.AddScoped<DoAnPhanMem.Services.IEmailService, DoAnPhanMem.Services.EmailService>();
+
 var app = builder.Build();
 
 // --- 7. HTTP PIPELINE ---
