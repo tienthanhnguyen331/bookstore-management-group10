@@ -2,6 +2,8 @@ import { Header } from "../components/Header";
 import { useState, useEffect } from "react";
 import { settingsService } from "../services/settingsService";
 import StateMessage from "./../components/shared/StateMessage";
+import StaffManagement from "../components/settings/StaffManagement";
+
 
 export default function SettingsPage({rules, setRules, onRulesUpdate}) {
     const [activeTab, setActiveTab] = useState("rules");
@@ -231,13 +233,10 @@ export default function SettingsPage({rules, setRules, onRulesUpdate}) {
                             </div>
                         )}
 
+
                         {/* Tab 2: Staff Management */}
                         {activeTab === "staff" && (
-                            <div className="flex items-center justify-center min-h-96">
-                                <p className="text-gray-400 italic">
-                                    Chức năng đang phát triển
-                                </p>
-                            </div>
+                           <StaffManagement />        
                         )}
                     </div>
                 </div>
