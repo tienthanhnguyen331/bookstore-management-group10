@@ -64,10 +64,34 @@ namespace DoAnPhanMem.Controllers
 
             var nv = tk.NhanVien;
 
-            // Chỉ cho phép cập nhật các trường cho phép theo demo.md
-            if (!string.IsNullOrWhiteSpace(dto.SoDienThoai)) nv.SDT = dto.SoDienThoai;
-            if (!string.IsNullOrWhiteSpace(dto.DiaChi)) nv.DiaChi = dto.DiaChi;
-            if (!string.IsNullOrWhiteSpace(dto.Email)) nv.Email = dto.Email;
+            // Chỉ cho phép cập nhật các trường cho phép
+            if (!string.IsNullOrWhiteSpace(dto.DiaChi)) 
+            {
+                nv.DiaChi = dto.DiaChi;
+            }
+
+            //Kiểm trâ số điện thoại trùng
+            if (!string.IsNullOrWhiteSpace(dto.SoDienThoai) && dto.SoDienThoai != nv.SDT)
+            {
+              
+                var isDuplicate = await _context.NHAN_VIEN.AnyAsync(s => s.SDT == dto.SoDienThoai && s.MaNV != nv.MaNV);
+                if (isDuplicate)
+                {
+                    return BadRequest(new { message = "Số điện thoại đã tồn tại, vui lòng chọn số khác." });
+                }
+                nv.SDT = dto.SoDienThoai;
+            }
+
+            //Kiểm tra email trùng
+            if (!string.IsNullOrWhiteSpace(dto.Email) && dto.Email != nv.Email)
+            {
+                var isDuplicate = await _context.NHAN_VIEN.AnyAsync(e => e.Email == dto.Email && e.MaNV != nv.MaNV);
+                if (isDuplicate)
+                {
+                    return BadRequest(new { message = "Email đã tồn tại, vui lòng chọn email khác." });
+                }
+                nv.Email = dto.Email;
+            }
 
             await _context.SaveChangesAsync();
 
