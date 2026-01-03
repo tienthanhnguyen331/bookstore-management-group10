@@ -47,17 +47,13 @@ export function EntryFormTable({
             // POST to API
             await createImportReceipt(payload);
 
-            // Convert to history format for UI
-            const newHistory = {
-                id: history[history.length - 1]?.id + 1 || 1,
-                date: formatDate(selectedDate),
-                bookTypes: entries.length,
-                totalQuantity: entries.reduce((sum, e) => sum + e.quantity, 0),
-                bookList: [...entries],
-            };
-
-            handleSaveEntry(newHistory);
+            // Clear entries after successful save
+            setEntries([]);
             setSuccess(true);
+            
+            if (typeof handleSaveEntry === 'function') {
+                handleSaveEntry();
+            }
         } catch (err) {
             console.error("Error saving import receipt:", err);
             setError(err.response?.data?.message || "Không thể lưu phiếu nhập");
