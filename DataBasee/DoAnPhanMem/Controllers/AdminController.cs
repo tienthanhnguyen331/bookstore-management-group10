@@ -98,5 +98,16 @@ namespace DoAnPhanMem.Controllers
             var result = await _adminService.GetAllNhanVienAsync();
             return Ok(result);
         }
+
+        // PUT: api/Admin/{MaNV}
+        [HttpPut("{MaNV}")]
+        public async Task<IActionResult> UpdateEmployee(string MaNV, [FromBody] UpdateEmployeeDto dto)
+        {
+            var updated = await _adminService.UpdateEmployeeAsync(MaNV, dto);
+            if (!updated) return NotFound();
+
+            return Ok(new { message = "Cập nhật thành công" });
+        }
     }
+
 }
