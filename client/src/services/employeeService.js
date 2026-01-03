@@ -16,8 +16,15 @@ export const employeeService = {
     }
   },
 
-  // tạm thời các hàm khác chỉ mock vì backend chưa có
-  delete: async () => {},
-  update: async () => {},
-  resetPassword: async () => {},
+  // Cập nhật nhân viên
+  update: async (MaNV, data) => {
+    try {
+      const res = await api.put(`/Admin/${MaNV}`, data);
+      return res.data; // { message: "Cập nhật thành công" }
+    } catch (err) {
+      console.error("Error updating employee:", err.response || err);
+      throw err;
+    }
+  },
+  
 };
