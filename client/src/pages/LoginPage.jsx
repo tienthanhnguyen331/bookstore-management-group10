@@ -40,7 +40,7 @@ function LoginPage() {
                     Đăng nhập hệ thống
                 </h2>
                 <p className="mt-2 text-center text-sm text-gray-600">
-                    Quản lý nhà sách (Dev 1 Demo)
+                    Quản lý nhà sách
                 </p>
             </div>
 
