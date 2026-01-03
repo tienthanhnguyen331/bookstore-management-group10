@@ -24,14 +24,13 @@ function ProfileCard({ profile, onChangePassword }) {
                         Thông tin cá nhân
                     </span>
                 </div>
+
                 <div
+                    className="flex items-center gap-3 px-3 py-2 text-gray-600 cursor-pointer hover:bg-gray-50 rounded"
                     onClick={onChangePassword}
-                    className="cursor-pointer hover:bg-gray-50 rounded"
                 >
-                    <button className="flex items-center gap-3 px-3 py-2 text-gray-600">
-                        <Key className="w-4 h-4" />
-                        <span className="text-sm">Đổi mật khẩu</span>
-                    </button>
+                    <Key className="w-4 h-4" />
+                    <span className="text-sm">Đổi mật khẩu</span>
                 </div>
             </div>
         </div>
