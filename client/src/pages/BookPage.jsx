@@ -147,7 +147,6 @@ const BookPage = () => {
                             }, [books, searchTerm])
                     }
                     loading={loading}
-                    onDelete={false}
                     onOpenEditModal={handleEditClick}
                 />
 

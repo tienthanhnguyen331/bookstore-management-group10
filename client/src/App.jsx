@@ -13,7 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { settingsService } from "./services/settingsService";
 import { AuthProvider } from "./context/AuthContext";
-
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 function App() {
     
     const [rules, setRules] = useState({
@@ -50,6 +50,7 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     
                     {/* Protected Routes */}
                     <Route element={<ProtectedRoute allowedRoles={['Admin', 'NhanVien']} />}>

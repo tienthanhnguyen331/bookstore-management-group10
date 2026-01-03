@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 
@@ -40,7 +40,7 @@ function LoginPage() {
                     Đăng nhập hệ thống
                 </h2>
                 <p className="mt-2 text-center text-sm text-gray-600">
-                    Quản lý nhà sách (Dev 1 Demo)
+                    Quản lý nhà sách
                 </p>
             </div>
 
@@ -90,6 +90,14 @@ function LoginPage() {
                                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                     placeholder="Nhập '1'"
                                 />
+                            </div>
+                            <div className="flex items-center justify-end mt-2">
+                                <Link 
+                                    to="/forgot-password" 
+                                    className="text-sm font-medium text-blue-600 hover:text-blue-500"
+                                >
+                                    Quên mật khẩu?
+                                </Link>
                             </div>
                         </div>
 

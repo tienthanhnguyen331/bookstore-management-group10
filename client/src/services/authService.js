@@ -14,3 +14,11 @@ export const changePasswordService = async (username, oldPassword, newPassword) 
     });
     return response.data;
 };
+
+export const forgotPassword = async (email) => {
+    return await api.post('/auth/forgot-password', { email });
+};
+
+export const resetPasswordWithOtp = async (email, otp, newPassword) => {
+    return await api.post('/auth/reset-password-otp', { email, otp, newPassword });
+};
