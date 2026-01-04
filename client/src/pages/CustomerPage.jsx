@@ -7,6 +7,7 @@ import CustomerTable from "../components/customers/CustomerTable";
 import EditCustomerModal from "../components/shared/EditCustomerModal";
 import DeleteConfirmModal from "../components/customers/DeleteConfirmModal";
 import { customerService } from "../services/customerService";
+import StateMessage from "../components/shared/StateMessage";
 
 export default function CustomerListPage() {
     const [customers, setCustomers] = useState([]);
@@ -14,6 +15,8 @@ export default function CustomerListPage() {
         useCustomerFilter(customers);
     const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
 
     const loadCustomers = async () => {
         try{
@@ -54,12 +57,12 @@ export default function CustomerListPage() {
                 )
                 
             );
-            alert("Cập nhật thành công!");
+            setSuccess("Cập nhật thành công!");
             setSelectedCustomer(null);
         } catch (error) {
                 console.error("Lỗi update:", error);
                 const message = error.response?.data?.message || "Có lỗi xảy ra khi cập nhật!";
-                alert("LỖI CẬP NHẬT:\n" + message);
+                setError("LỖI CẬP NHẬT: " + message);
         }
         } else {
             // this else code using for adding new customer
@@ -67,14 +70,14 @@ export default function CustomerListPage() {
                 const newCustomer = await customerService.create(customerPayload);
                 if (newCustomer) {
                     setCustomers((prev) => [...prev, newCustomer]);
-                    alert("Thêm mới thành công!");
+                    setSuccess("Thêm mới thành công!");
                     setSelectedCustomer(null);
                 }
             } catch (error) {
 
                 console.error("Lỗi tạo khách mới:", error);
                 const message = error.response?.data?.message || "Có lỗi xảy ra khi thêm mới!";
-                alert("KHÔNG THỂ LƯU:\n" + message);
+                setError("KHÔNG THỂ LƯU: " + message);
             }
         }
     };
@@ -121,6 +124,15 @@ export default function CustomerListPage() {
                 onSave={handleSaveCustomer}
             />
 
+            {/* State Messages */}
+            <StateMessage
+                error={error}
+                success={success}
+                onClose={() => {
+                    setError(null);
+                    setSuccess(null);
+                }}
+            />
         </div>
     );
 }
