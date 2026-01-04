@@ -1,5 +1,6 @@
 import Spinner from "./Spinner";
 import { X } from "lucide-react";
+import { useEffect } from "react";
 
 /**
  * Reusable component for displaying loading, error, success, and empty states
@@ -23,6 +24,15 @@ export default function StateMessage({
     onClose,
     className = "",
 }) {
+    // Auto-dismiss error/success modals after 1.5 seconds
+    useEffect(() => {
+        if ((error || success) && onClose) {
+            const timer = setTimeout(() => {
+                onClose();
+            }, 1500);
+            return () => clearTimeout(timer);
+        }
+    }, [error, success, onClose]);
 
     if (loading) {
         return (
