@@ -4,6 +4,7 @@ import { createInvoice } from "../services/salesService"; // Hoặc salesService
 import { bookService } from "../services/bookService";
 import { settingsService } from "../services/settingsService";
 import { salesService } from "../services/salesService";
+import StateMessage from "../components/shared/StateMessage";
 
 const SalesPage = () => {
     // --- Data State ---
@@ -32,6 +33,10 @@ const SalesPage = () => {
 
     // --- Settings State ---
     const [debtLimit, setDebtLimit] = useState(2000000); // Quy định nợ tối đa
+
+    // --- Message State ---
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
 
     // 1. Load danh sách sách
     useEffect(() => {
@@ -117,7 +122,7 @@ const SalesPage = () => {
             setBooks(data);
         } catch (error) {
             console.error(error);
-            alert("Lỗi tải danh sách sách! Vui lòng kiểm tra Server.");
+            setError("Lỗi tải danh sách sách! Vui lòng kiểm tra Server.");
         }
     };
 
@@ -130,7 +135,8 @@ const SalesPage = () => {
     const handleAddToCart = () => {
         // 1. Validate input
         if (!selectedBookID || quantity <= 0) {
-            return alert("Vui lòng chọn sách và nhập số lượng hợp lệ!");
+            setError("Vui lòng chọn sách và nhập số lượng hợp lệ!");
+            return;
         }
 
         // 2. Tìm sách trong danh sách gốc (Dùng MaSach)
@@ -148,9 +154,10 @@ const SalesPage = () => {
             // Nếu có rồi -> Cộng dồn số lượng
             // Kiểm tra tồn kho trước khi cộng
             if (existItem.quantity + parseInt(quantity) > book.SoLuongTon) {
-                return alert(
+                setError(
                     `Kho chỉ còn ${book.SoLuongTon} cuốn. Giỏ hàng đang có ${existItem.quantity}.`
                 );
+                return;
             }
 
             setCart(
@@ -163,7 +170,8 @@ const SalesPage = () => {
         } else {
             // Nếu chưa có -> Thêm mới
             if (parseInt(quantity) > book.SoLuongTon) {
-                return alert(`Kho chỉ còn ${book.SoLuongTon} cuốn!`);
+                setError(`Kho chỉ còn ${book.SoLuongTon} cuốn!`);
+                return;
             }
             // Spread properties của book vào item để có TenSach, DonGia...
             setCart([...cart, { ...book, quantity: parseInt(quantity) }]);
@@ -175,13 +183,17 @@ const SalesPage = () => {
 
     // --- HÀM THANH TOÁN ---
     const handleCheckout = async (isDebt = false) => {
-        if (cart.length === 0) return alert("Giỏ hàng đang trống!");
+        if (cart.length === 0) {
+            setError("Giỏ hàng đang trống!");
+            return;
+        }
         if (
             customerError &&
             customerError !== "Không tìm thấy khách hàng trong hệ thống."
         ) {
             // Chỉ chặn nếu lỗi hệ thống, còn lỗi ko tìm thấy khách thì coi là khách mới/vãng lai
-            return alert(customerError);
+            setError(customerError);
+            return;
         }
 
         setLoading(true);
@@ -203,10 +215,8 @@ const SalesPage = () => {
 
             const tongTienThucTe = result.tongTien || result.TongTien || 0;
 
-            alert(
-                `✅ ${
-                    result.message || "Thanh toán thành công!"
-                }\n💰 Tổng tiền: ${tongTienThucTe.toLocaleString()}đ`
+            setSuccess(
+                `${result.message || "Thanh toán thành công!"} - Tổng tiền: ${tongTienThucTe.toLocaleString()}đ`
             );
 
             // Reset form hoàn toàn
@@ -227,10 +237,10 @@ const SalesPage = () => {
                 const msg =
                     error.response.data.message ||
                     JSON.stringify(error.response.data);
-                alert(`❌ KHÔNG THỂ THANH TOÁN:\n${msg}`);
+                setError(`KHÔNG THỂ THANH TOÁN: ${msg}`);
             } else {
                 console.error(error);
-                alert("❌ Lỗi hệ thống hoặc mất kết nối Server!");
+                setError("Lỗi hệ thống hoặc mất kết nối Server!");
             }
         } finally {
             setLoading(false);
@@ -517,6 +527,16 @@ const SalesPage = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* State Messages */}
+                <StateMessage
+                    error={error}
+                    success={success}
+                    onClose={() => {
+                        setError(null);
+                        setSuccess(null);
+                    }}
+                />
             </main>
         </div>
     );
