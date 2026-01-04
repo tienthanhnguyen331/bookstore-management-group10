@@ -49,6 +49,10 @@ export function EntryFormTable({
             // Clear entries after successful save
             setEntries([]);
             setSuccess(true);
+            
+            if (typeof handleSaveEntry === 'function') {
+                handleSaveEntry();
+            }
         } catch (err) {
             console.error("Error saving import receipt:", err);
             setError(err.response?.data?.message || "Không thể lưu phiếu nhập");

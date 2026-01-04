@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { employeeService } from "../../services/employeeService";
-import { Pencil, Trash2, RotateCw } from "lucide-react";
+import EditEmployeeForm from "../../features/settings/EditEmployeeForm";
+import { Pencil } from "lucide-react";
 
 export default function StaffManagement() {
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [staffs, setStaffs] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editingStaff, setEditingStaff] = useState(null);
-    const [deleteStaff, setDeleteStaff] = useState(null); // nhân viên cần xóa
 
     const defaultStaff = {
         username: "",
@@ -29,9 +30,12 @@ export default function StaffManagement() {
             setStaffs(data);
         } catch (err) {
             console.error(err);
-           // alert("Không thể tải danh sách nhân viên");
             setStaffs([]); // không lấy được dữ liệu
         }
+    };
+
+    const handleEditClick = (staff) => {
+        setEditingStaff(staff);
     };
 
     // Tạo nhân viên
@@ -50,7 +54,8 @@ export default function StaffManagement() {
             setNewStaff({ username: "", hoTen: "", chucVu: "NhanVien" });
             // reset lỗi trước khi submit
             setUsernameError("");
-            alert("Tạo nhân viên thành công!\nMật khẩu mặc định: 1");
+            //alert("Tạo nhân viên thành công!\nMật khẩu mặc định: 1");
+            setShowSuccessModal(true);
             fetchStaffs();
 
         } catch (err) {
@@ -104,7 +109,7 @@ export default function StaffManagement() {
                         <span
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                             staff.ChucVu === "Admin"
-                                ? "bg-purple-50 text-purple-700"
+                                ? "bg-red-50 text-red-700"
                                 : staff.ChucVu === "BanHang"
                                 ? "bg-yellow-50 text-yellow-700"
                                 : staff.ChucVu === "ThuKho"
@@ -116,38 +121,14 @@ export default function StaffManagement() {
                         </span>
                         </td>
 
-                        {/* <td className="px-4 py-2 text-sm flex gap-2">
-                            <button className="px-2 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition">Sửa</button>
-                            <button className="px-2 py-1 rounded bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition">Reset</button>
-                            <button className="px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition">Xóa</button>
-                        </td> */}
-
-                        <td className="px-4 py-2 text-sm flex gap-2">
+                        <td className="px-4 py-2 text-sm flex justify-center">
                             {/* Sửa */}
                             <button
-                               // onClick={() => setEditingStaff(staff)}
+                                onClick={() => handleEditClick(staff)}
                                 className="px-2 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
                                 title="Cập nhật NV"
                             >
                                 <Pencil className="w-4 h-4" />
-                            </button>
-
-                            {/* Reset mật khẩu */}
-                            <button
-                                //onClick={() => handleResetPassword(staff.MaNV)}
-                                className="px-2 py-1 rounded bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition"
-                                title="Reset MK"
-                            >
-                                <RotateCw className="w-4 h-4" />
-                            </button>
-
-                            {/* Xóa */}
-                            <button
-                                //onClick={() => setDeleteStaff(staff)}
-                                className="px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition"
-                                title="Xóa NV"
-                            >
-                                <Trash2 className="w-4 h-4" />
                             </button>
                             </td>
                     </tr>
@@ -162,12 +143,10 @@ export default function StaffManagement() {
                         onSubmit={handleCreateStaff}
                         className="bg-white p-6 rounded-lg w-96"
                     >
-                       
                             <h3 className="text-xl font-semibold text-gray-900 mb-4">
                                 Tạo tài khoản nhân viên
                             </h3>
                         
-
                         <div className="mb-3">
                             <input
                                 type="text"
@@ -234,86 +213,48 @@ export default function StaffManagement() {
                 </div>
             )}
 
-              {/* UPDATE MODAL */}
+            {/* UPDATE MODAL */}
             {editingStaff && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
-                    <form
-                        onSubmit={handleUpdateStaff}
-                        className="bg-white p-6 rounded-lg w-96"
-                    >
-                        <h3 className="font-bold mb-4">Cập nhật nhân viên</h3>
-
-                        <input
-                            className="w-full mb-2 px-3 py-2 border rounded"
-                            value={editingStaff.hoTen}
-                            onChange={(e) =>
-                                setEditingStaff({ ...editingStaff, hoTen: e.target.value })
-                            }
-                        />
-                        <input
-                            className="w-full mb-2 px-3 py-2 border rounded"
-                            value={editingStaff.sdt}
-                            onChange={(e) =>
-                                setEditingStaff({ ...editingStaff, sdt: e.target.value })
-                            }
-                        />
-                        <input
-                            className="w-full mb-2 px-3 py-2 border rounded"
-                            value={editingStaff.email}
-                            onChange={(e) =>
-                                setEditingStaff({ ...editingStaff, email: e.target.value })
-                            }
-                        />
-
-                        <select
-                            className="w-full mb-4 px-3 py-2 border rounded"
-                            value={editingStaff.chucVu}
-                            onChange={(e) =>
-                                setEditingStaff({ ...editingStaff, chucVu: e.target.value })
-                            }
-                        >
-                            <option value="NhanVien">Nhân viên</option>
-                            <option value="Admin">Admin</option>
-                        </select>
-
-                        <div className="flex justify-end gap-3">
-                            <button type="button" onClick={() => setEditingStaff(null)}>
-                                Hủy
-                            </button>
-                            <button className="bg-blue-400 text-white px-4 py-2 rounded">
-                                Lưu
-                            </button>
-                        </div>
-                    </form>
+                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center">
+                    <EditEmployeeForm
+                    employee={editingStaff}
+                    onSuccess={() => {
+                        setEditingStaff(null);
+                        fetchStaffs();
+                    }}
+                    onCancel={() => setEditingStaff(null)}
+                    />
                 </div>
             )}
+            
+            {/* SUCCESS MODAL */}
+            {showSuccessModal && (
+                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl p-6 w-96 shadow-lg text-center">
+                        {/* Icon thành công */}
+                        <div className="flex justify-center mb-3">
+                            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                                <span className="text-green-600 text-2xl">✓</span>
+                            </div>
+                        </div>
 
-             {/* Modal xóa nhân viên */}
-            {deleteStaff && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
-                <div className="bg-white p-6 rounded-lg w-96">
-                    <h3 className="font-bold mb-4">Xác nhận xóa nhân viên</h3>
-                    <p className="mb-6">
-                    Bạn có chắc chắn muốn xóa nhân viên <b>{deleteStaff.hoTen}</b>?
-                    </p>
-                    <div className="flex justify-end gap-3">
-                    <button
-                        onClick={() => setDeleteStaff(null)}
-                        className="px-4 py-2 border rounded"
-                    >
-                        Hủy
-                    </button>
-                    <button
-                        onClick={confirmDeleteStaff}
-                        className="bg-red-600 text-white px-4 py-2 rounded"
-                    >
-                        Xóa
-                    </button>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                            Tạo nhân viên thành công
+                        </h3>
+
+                        <p className="text-sm text-gray-600 mb-5">
+                            Mật khẩu mặc định: <b>1</b>
+                        </p>
+
+                        <button
+                            onClick={() => setShowSuccessModal(false)}
+                            className="px-5 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                        >
+                            OK
+                        </button>
                     </div>
                 </div>
-                </div>
             )}
-
         </div>
     );
 }
