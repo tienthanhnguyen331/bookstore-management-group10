@@ -58,7 +58,7 @@ function App() {
                         <Route path="/dashboard" element={<DashboardPage />} />
                         <Route path="/book" element={<BookPage />} />
                         <Route path="/sale" element={<SalesPage />} />
-                        <Route path="/inventory" element={<InventoryPage rules={rules} rulesLoading={rulesLoading} />} />
+                        <Route path="/inventory" element={<InventoryPage rules={rules}  />} />
                         <Route path="/finance" element={<CustomerDebtPage rules={rules} />} />
                         <Route path="/customer" element={<CustomerListPage />} />
                     </Route>

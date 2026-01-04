@@ -224,7 +224,14 @@ export function StockEntryForm({
                 <div className="flex justify-center pt-2">
                     <button
                         onClick={handleClick}
-                        disabled={quantityError || unitPriceError || saving}
+                        disabled={
+                            !formData.selectedBook ||
+                            !formData.quantity ||
+                            !formData.unitPrice ||
+                            quantityError ||
+                            unitPriceError ||
+                            saving
+                        }
                         className="flex items-center gap-2 px-10 py-2 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                     >
                         <Plus className="w-4 h-4" />

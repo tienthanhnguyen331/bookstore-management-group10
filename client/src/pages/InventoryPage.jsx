@@ -3,7 +3,7 @@ import { StockEntryForm } from "../components/StockEntryForm";
 import { EntryFormTable } from "../components/EntryFormTable";
 import { useState } from "react";
 
-export default function InventoryPage({ rules, rulesLoading }) {
+export default function InventoryPage({ rules }) {
     const [entries, setEntries] = useState([]);
     const [selectedDate, setSelectedDate] = useState(() =>
         new Date().toISOString().slice(0, 10)
