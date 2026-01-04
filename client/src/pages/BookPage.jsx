@@ -5,6 +5,7 @@ import { useState, useEffect, useMemo } from "react";
 import EditBookModal from "../features/books/EditBookModal.jsx";
 import AddBookModal from "../features/books/AddBookModal.jsx";
 import { bookService } from "../services/bookService.js";
+import StateMessage from "../components/shared/StateMessage.jsx";
 const BookPage = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +20,10 @@ const BookPage = () => {
 
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  // State for error and success messages
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const fetchBooks = () => {
     if(modifiedIds.size > 0) {
@@ -46,12 +51,12 @@ const BookPage = () => {
     try {
     //Gọi API post
       await bookService.addBook(newBook);
-      alert("Đã thêm sách thành công!");
+      setSuccess("Đã thêm sách thành công!");
       setIsAddModalOpen(false); //Đóng modal
       fetchBooks(); //Tải lại danh sách sách
     } catch (error) {
       console.error("Lỗi khi thêm sách:", error);
-      alert("Có lỗi xảy ra khi thêm sách!" + (error.response?.data || error.message));
+      setError("Có lỗi xảy ra khi thêm sách! " + (error.response?.data || error.message));
     }
   };  
     // Mở Modal
@@ -83,19 +88,19 @@ const BookPage = () => {
 
   const handleSaveChanges = async () => {
     if (modifiedIds.size === 0) {
-        alert("Không có thay đổi nào để lưu!");
+        setError("Không có thay đổi nào để lưu!");
         return;
     }
     try {
         const booksToUpdate = books.filter(b => modifiedIds.has(b.MaSach));
         await Promise.all(booksToUpdate.map(book => bookService.updateBook(book)));
-        alert(`Đã cập nhật thành công ${booksToUpdate.length} cuốn sách!`);
+        setSuccess(`Đã cập nhật thành công ${booksToUpdate.length} cuốn sách!`);
         
         // Reset lại trạng thái
         setModifiedIds(new Set()); 
     } catch (error) {
         console.error("Lỗi khi lưu thay đổi:", error);
-        alert("Có lỗi xảy ra khi lưu thay đổi!" + (error.response?.data || error.message));
+        setError("Có lỗi xảy ra khi lưu thay đổi! " + (error.response?.data || error.message));
     }
   };
   return (
@@ -174,6 +179,16 @@ const BookPage = () => {
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
                     onSave={handleAddBook}
+                />
+                
+                {/* State Messages */}
+                <StateMessage
+                    error={error}
+                    success={success}
+                    onClose={() => {
+                        setError(null);
+                        setSuccess(null);
+                    }}
                 />
             </main>
         </div>

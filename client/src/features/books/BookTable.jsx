@@ -1,7 +1,7 @@
 // Bảng hiển thị sách
 import { Pencil, Trash2 } from "lucide-react";
 
-const BookTable = ({ books, loading, onDelete, onOpenEditModal }) => {
+const BookTable = ({ books, loading, onOpenEditModal }) => {
     return (
         <div className="bg-white border border-gray-200 rounded-sm shadow-sm overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
@@ -65,12 +65,6 @@ const BookTable = ({ books, loading, onDelete, onOpenEditModal }) => {
                                                     onOpenEditModal(book)
                                                 }
                                             />
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(book.MaSach)}
-                                            className="p-2 bg-gray-200 hover:bg-red-100 hover:text-red-600 rounded text-gray-600 transition-colors"
-                                        >
-                                            <Trash2 size={16} />
                                         </button>
                                     </div>
                                 </td>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import StateMessage from '../../components/shared/StateMessage';
 
 const AddBookModal = ({isOpen, onClose, onSave}) => {
     //Lưu dữ liệu form
@@ -10,6 +11,8 @@ const AddBookModal = ({isOpen, onClose, onSave}) => {
         DonGia: 0,
         SoLuongTon: 0
     });
+    const [error, setError] = useState(null);
+    
     //Nếu form không bật trả về null
     if(!isOpen) return null;
 
@@ -23,7 +26,8 @@ const AddBookModal = ({isOpen, onClose, onSave}) => {
     const handleSubmit = (e) => {
         e.preventDefault(); //Ngăn chặn hành vi mặc định của form (tải lại trang)
         if (!formData.TenSach || !formData.TenTacGia) {
-            return alert("Vui lòng nhập đủ tên sách và tác giả!");
+            setError("Vui lòng nhập đủ tên sách và tác giả!");
+            return;
         }
         //Chuyển đổi kiểu dữ liệu
         const payload = {
@@ -128,6 +132,12 @@ const AddBookModal = ({isOpen, onClose, onSave}) => {
                     </button>
                 </div>
                 </form>
+                
+                {/* Error Message */}
+                <StateMessage
+                    error={error}
+                    onClose={() => setError(null)}
+                />
             </div>
         </div>
     );
