@@ -72,11 +72,21 @@ const BookPage = () => {
     //So sánh giá
     const oldPrice = parseFloat(oldBook.DonGia);
     const newPrice = parseFloat(updatedBook.DonGia);
-    if (oldPrice === newPrice) {
+
+    const oldName = oldBook.TenSach;
+    const newName = updatedBook.TenSach;
+
+    const oldAuthor = oldBook.TenTacGia;
+    const newAuthor = updatedBook.TenTacGia;
+
+    const oldCategory = oldBook.TenTheLoai;
+    const newCategory = updatedBook.TenTheLoai;
+
+    if (oldPrice === newPrice && oldName === newName && oldAuthor === newAuthor && oldCategory === newCategory) {
         setIsEditModalOpen(false);
         return;
     }
-          // Nếu giá có thay đổi → cập nhật UI + đánh dấu modifiedIds
+          // Nếu giá hoặc thông tin khác có thay đổi → cập nhật UI + đánh dấu modifiedIds
       setBooks(prevBooks => prevBooks.map(b =>
           b.MaSach === updatedBook.MaSach ? updatedBook : b
       ));

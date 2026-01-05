@@ -50,8 +50,8 @@ const SalesPage = () => {
             setRulesError("");
             try {
                 const data = await settingsService.getRules();
-                // Backend trả về chuỗi hoặc số, ép kiểu cho chắc
-                const maxDebtVal = data.QD2_NoToiDa || data.maxDebt || 2000000;
+                // Backend trả về chuỗi hoặc số
+                const maxDebtVal =  data.MaxDebt || 2000000;
                 setDebtLimit(Number(maxDebtVal));
             } catch (err) {
                 console.error("Không tải được quy định nợ khách:", err);

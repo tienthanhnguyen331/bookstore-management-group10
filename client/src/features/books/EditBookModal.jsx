@@ -1,9 +1,24 @@
 import { X } from "lucide-react";
-import { useState } from "react";
+import { use, useState } from "react";
 
 // Form sửa giá
 function EditBookModal({ selectedBook, onClose, onSave }) {
     const [price, setPrice] = useState(selectedBook.DonGia);
+    const [name, setName] = useState(selectedBook.TenSach);
+    const [author, setAuthor] = useState(selectedBook.TenTacGia);
+    const [category, setCategory] = useState(selectedBook.TenTheLoai);
+    const handleNameChange = function (e) {
+        e.preventDefault();
+        setName(e.target.value);
+    };
+    const handleAuthorChange = function (e) {
+        e.preventDefault();
+        setAuthor(e.target.value);
+    };
+    const handleCategoryChange = function (e) {
+        e.preventDefault();
+        setCategory(e.target.value);
+    };
 
     const handlePriceChange = function (e) {
         e.preventDefault();
@@ -18,7 +33,15 @@ function EditBookModal({ selectedBook, onClose, onSave }) {
 
     const handleSubmit = function (e) {
         e.preventDefault();
-        onSave({ ...selectedBook, DonGia: Number(price) });
+        const payload = {
+            MaSach: selectedBook.MaSach,
+            TenSach: name,
+            TenTacGia: author,
+            TenTheLoai: category,
+            DonGia: Number(price),
+            SoLuongTon: selectedBook.SoLuongTon,
+        }
+        onSave(payload);
         onClose();
     };
 
@@ -49,19 +72,34 @@ function EditBookModal({ selectedBook, onClose, onSave }) {
                             </label>
                             <input
                                 type="text"
-                                value={selectedBook.TenSach}
-                                disabled
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                                value={name}
+                                onChange={handleNameChange}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
                         <div>
                             <label className="block text-gray-700 mb-2">
-                                Giá bán hiện tại
+                                Thể loại
                             </label>
-                            <div className="px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600">
-                                {selectedBook.DonGia.toLocaleString("vi-VN")}đ
-                            </div>
+                            <input
+                                type="text"
+                                value={category}
+                                onChange={handleCategoryChange}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-gray-700 mb-2">
+                                Tác giả
+                            </label>
+                            <input
+                                type="text"
+                                value={author}
+                                onChange={handleAuthorChange}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
                         </div>
 
                         <div>
