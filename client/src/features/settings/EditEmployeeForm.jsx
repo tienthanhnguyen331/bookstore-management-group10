@@ -53,13 +53,14 @@ export default function EditEmployeeForm({ employee, onSuccess, onCancel }) {
         value={formData.SDT}
         onChange={handleChange}
       />
-
-      <input
+      
+     <input
         name="Email"
-        className="w-full mb-2 px-3 py-2 border rounded"
-        placeholder="Email"
+        type="email"
+        className="w-full mb-2 px-3 py-2 border rounded
+                  bg-gray-100 text-gray-400 cursor-not-allowed"
         value={formData.Email}
-        onChange={handleChange}
+        disabled
       />
 
       <select
