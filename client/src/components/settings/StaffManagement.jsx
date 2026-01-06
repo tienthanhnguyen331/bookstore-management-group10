@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { employeeService } from "../../services/employeeService";
 import EditEmployeeForm from "../../features/settings/EditEmployeeForm";
-import { Pencil } from "lucide-react";
+import { Pencil, X } from "lucide-react";
+import StateMessage from "../../components/shared/StateMessage";
 
 export default function StaffManagement() {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -54,7 +55,6 @@ export default function StaffManagement() {
             setNewStaff({ username: "", hoTen: "", chucVu: "NhanVien" });
             // reset lỗi trước khi submit
             setUsernameError("");
-            //alert("Tạo nhân viên thành công!\nMật khẩu mặc định: 1");
             setShowSuccessModal(true);
             fetchStaffs();
 
@@ -138,120 +138,190 @@ export default function StaffManagement() {
 
             {/* Modal tao NV */}
             {showForm && (
-                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center">
-                    <form
-                        onSubmit={handleCreateStaff}
-                        className="bg-white p-6 rounded-lg w-96"
-                    >
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                                Tạo tài khoản nhân viên
-                            </h3>
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    {/* Overlay */}
+                    <div 
+                        className="fixed inset-0 bg-opacity-40 backdrop-blur-sm"
+                        onClick={() => {
+                            setShowForm(false);
+                            setNewStaff(defaultStaff);
+                            setUsernameError("");
+                        }}
+                    ></div>
+                    
+                    {/* Modal Content */}
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 animate-fade-in relative z-10">
                         
-                        <div className="mb-3">
-                            <input
-                                type="text"
-                                placeholder="Tên đăng nhập"
-                                value={newStaff.username}
-                                onChange={(e) => {
-                                setNewStaff({ ...newStaff, username: e.target.value });
-                                if (usernameError) setUsernameError(""); // xóa lỗi khi sửa
-                                }}
-                                className={`w-full px-3 py-2 rounded border ${
-                                usernameError ? "border-red-500" : "rounded border"
-                                }`}
-                                required
-                            />
-                            {usernameError && (
-                                <p className="text-red-500 text-sm mt-1"><span>❗</span>{usernameError}</p> 
-                            )}
-                            </div>
-
-                        <input
-                            className="w-full mb-3 px-3 py-2 border rounded"
-                            placeholder="Họ và tên"
-                            value={newStaff.hoTen}
-                            onChange={e =>
-                                setNewStaff({ ...newStaff, hoTen: e.target.value })
-                            }
-                            required
-                        />
-
-                        <input
-                            className="w-full mb-4 px-3 py-2 border rounded"
-                            placeholder="Chức vụ (ví dụ: NhanVien, Admin)"
-                            value={newStaff.chucVu}
-                            onChange={(e) =>
-                                setNewStaff({ ...newStaff, chucVu: e.target.value })
-                            }
-                            required
-                        />
-
-                        <p className="text-xs text-gray-500 mb-4">
-                            Mật khẩu mặc định: <b>1</b>
-                        </p>
-
-                        <div className="flex justify-end gap-3">
-                            <button
-                                type="button"
+                        <div className="flex justify-between items-center mb-4 border-b pb-4">
+                            <h2 className="text-xl font-bold text-gray-800">Tạo tài khoản nhân viên</h2>
+                            <button 
                                 onClick={() => {
-                                    setShowForm(false);      // ẩn form
-                                    setNewStaff(defaultStaff); // reset tất cả input
-                                    setUsernameError(""); // reset lỗi
+                                    setShowForm(false);
+                                    setNewStaff(defaultStaff);
+                                    setUsernameError("");
                                 }}
-                                className="text-gray-500"
+                                className="text-gray-400 hover:text-gray-600"
                             >
-                                Hủy
-                            </button>
-                            <button
-                                type="submit"
-                                className="bg-blue-400 text-white px-4 py-2 rounded"
-                            >
-                                Tạo
+                                <X size={24} />
                             </button>
                         </div>
-                    </form>
+
+                        <form onSubmit={handleCreateStaff}>
+                            <div className="space-y-4">
+                                {/* Tên đăng nhập */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Tên đăng nhập <span className="text-red-500">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        required
+                                        value={newStaff.username}
+                                        onChange={(e) => {
+                                            setNewStaff({ ...newStaff, username: e.target.value });
+                                            if (usernameError) setUsernameError("");
+                                        }}
+                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Ví dụ: nguyenvana"
+                                    />
+                                    {usernameError && (
+                                        <p className="text-red-500 text-sm mt-1">❗ {usernameError}</p>
+                                    )}
+                                </div>
+
+                                {/* Họ tên */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Họ tên <span className="text-red-500">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="hoTen"
+                                        required
+                                        value={newStaff.hoTen}
+                                        onChange={e =>
+                                            setNewStaff({ ...newStaff, hoTen: e.target.value })
+                                        }
+                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Ví dụ: Nguyễn Văn A"
+                                    />
+                                </div>
+
+                                {/* Chức vụ */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Chức vụ <span className="text-red-500">*</span></label>
+                                    {/* <select
+                                        name="chucVu"
+                                        required
+                                        value={newStaff.chucVu}
+                                        onChange={(e) =>
+                                            setNewStaff({ ...newStaff, chucVu: e.target.value })
+                                        }
+                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                        <option value="">-- Chọn chức vụ --</option>
+                                        <option value="NhanVien">Nhân viên</option>
+                                        <option value="Admin">Admin</option>
+                                    </select> */}
+
+                                    <input
+                                        type="text"
+                                        name="chucVu"
+                                        required
+                                        value={newStaff.hoTen}
+                                        onChange={e =>
+                                            setNewStaff({ ...newStaff, hoTen: e.target.value })
+                                        }
+                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Nhân viên hoặc Admin"
+                                    />
+                                </div>
+
+                                {/* Thông tin mật khẩu */}
+                                <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                                    <p className="text-xs text-gray-600">
+                                        Mật khẩu mặc định: <b className="text-gray-800">1</b>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowForm(false);
+                                        setNewStaff(defaultStaff);
+                                        setUsernameError("");
+                                    }}
+                                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                                >
+                                    Hủy bỏ
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+                                >
+                                    + Tạo nhân viên
+                                </button>
+                            </div>
+                        </form>
+                        
+                        {/* Error Message */}
+                        <StateMessage
+                            error={usernameError}
+                            onClose={() => setUsernameError(null)}
+                        />
+                    </div>
                 </div>
             )}
 
             {/* UPDATE MODAL */}
             {editingStaff && (
-                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center">
-                    <EditEmployeeForm
+                <EditEmployeeForm
                     employee={editingStaff}
                     onSuccess={() => {
                         setEditingStaff(null);
                         fetchStaffs();
                     }}
                     onCancel={() => setEditingStaff(null)}
-                    />
-                </div>
+                />
             )}
             
             {/* SUCCESS MODAL */}
             {showSuccessModal && (
-                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl p-6 w-96 shadow-lg text-center">
-                        {/* Icon thành công */}
-                        <div className="flex justify-center mb-3">
-                            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                                <span className="text-green-600 text-2xl">✓</span>
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 animate-fadeIn"
+                    onClick={() => setShowSuccessModal(false)}
+                >
+                    <div 
+                        className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 animate-slideDown"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-start justify-between p-4 border-b border-green-200 bg-green-50">
+                            <div className="flex items-center gap-2">
+                                <svg
+                                    className="w-5 h-5 text-green-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                                <h3 className="text-lg font-semibold text-green-900">Thành công</h3>
                             </div>
+                            <button
+                                onClick={() => setShowSuccessModal(false)}
+                                className="text-green-400 hover:text-green-600 transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
                         </div>
-
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                            Tạo nhân viên thành công
-                        </h3>
-
-                        <p className="text-sm text-gray-600 mb-5">
-                            Mật khẩu mặc định: <b>1</b>
-                        </p>
-
-                        <button
-                            onClick={() => setShowSuccessModal(false)}
-                            className="px-5 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-                        >
-                            OK
-                        </button>
+                        <div className="p-4">
+                            <p className="text-green-700 mb-2">Tạo nhân viên thành công!</p>
+                            <p className="text-sm text-gray-600">Mật khẩu mặc định: <b>1</b></p>
+                        </div>
                     </div>
                 </div>
             )}
