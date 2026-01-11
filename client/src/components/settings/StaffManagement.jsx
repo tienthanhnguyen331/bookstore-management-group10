@@ -5,7 +5,7 @@ import { Pencil, X } from "lucide-react";
 import StateMessage from "../../components/shared/StateMessage";
 
 export default function StaffManagement() {
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(null);
     const [staffs, setStaffs] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editingStaff, setEditingStaff] = useState(null);
@@ -55,7 +55,7 @@ export default function StaffManagement() {
             setNewStaff({ username: "", hoTen: "", chucVu: "NhanVien" });
             // reset lỗi trước khi submit
             setUsernameError("");
-            setShowSuccessModal(true);
+            setSuccessMessage("Tạo nhân viên thành công! Mật khẩu mặc định: 1");
             fetchStaffs();
 
         } catch (err) {
@@ -207,7 +207,7 @@ export default function StaffManagement() {
                                 {/* Chức vụ */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Chức vụ <span className="text-red-500">*</span></label>
-                                    {/* <select
+                                     <select
                                         name="chucVu"
                                         required
                                         value={newStaff.chucVu}
@@ -219,19 +219,8 @@ export default function StaffManagement() {
                                         <option value="">-- Chọn chức vụ --</option>
                                         <option value="NhanVien">Nhân viên</option>
                                         <option value="Admin">Admin</option>
-                                    </select> */}
+                                    </select>
 
-                                    <input
-                                        type="text"
-                                        name="chucVu"
-                                        required
-                                        value={newStaff.hoTen}
-                                        onChange={e =>
-                                            setNewStaff({ ...newStaff, hoTen: e.target.value })
-                                        }
-                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Nhân viên hoặc Admin"
-                                    />
                                 </div>
 
                                 {/* Thông tin mật khẩu */}
@@ -283,48 +272,12 @@ export default function StaffManagement() {
                     onCancel={() => setEditingStaff(null)}
                 />
             )}
-            
-            {/* SUCCESS MODAL */}
-            {showSuccessModal && (
-                <div 
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 animate-fadeIn"
-                    onClick={() => setShowSuccessModal(false)}
-                >
-                    <div 
-                        className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 animate-slideDown"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="flex items-start justify-between p-4 border-b border-green-200 bg-green-50">
-                            <div className="flex items-center gap-2">
-                                <svg
-                                    className="w-5 h-5 text-green-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                                <h3 className="text-lg font-semibold text-green-900">Thành công</h3>
-                            </div>
-                            <button
-                                onClick={() => setShowSuccessModal(false)}
-                                className="text-green-400 hover:text-green-600 transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <div className="p-4">
-                            <p className="text-green-700 mb-2">Tạo nhân viên thành công!</p>
-                            <p className="text-sm text-gray-600">Mật khẩu mặc định: <b>1</b></p>
-                        </div>
-                    </div>
-                </div>
-            )}
+
+            {/* SUCCESS MESSAGE */}
+            <StateMessage
+                success={successMessage}
+                onClose={() => setSuccessMessage(null)}
+            />
         </div>
     );
 }
