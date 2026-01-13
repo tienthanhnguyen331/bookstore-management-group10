@@ -3,6 +3,20 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 import { AlertCircle, BookOpen, Eye, EyeOff, TrendingUp, Users } from 'lucide-react';
+import AuthBrandingSidebar from '../components/auth/AuthBrandingSidebar';
+
+const brandingFeatures = [
+    {
+        icon: TrendingUp,
+        title: 'Báo cáo chi tiết',
+        description: 'Theo dõi doanh thu'
+    },
+    {
+        icon: Users,
+        title: 'Quản lý nhân viên',
+        description: 'Tạo tài khoản và kiểm soát quyền hạn'
+    }
+];
 
 function LoginPage() {
     const [username, setUsername] = useState('');
@@ -36,49 +50,11 @@ function LoginPage() {
    return (
         <div className="min-h-screen flex">
             {/* Left Side - Branding */}
-            <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-blue-400 to-blue-500 p-12 flex-col justify-between relative overflow-hidden">
-                {/* Decorative Elements */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-300 rounded-full opacity-20 blur-3xl -mr-48 -mt-48"></div>
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600 rounded-full opacity-20 blur-3xl -ml-48 -mb-48"></div>
-                
-                <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-12">
-                        <div className="bg-white/10 backdrop-blur-sm p-2 rounded-lg border border-white/20">
-                            <BookOpen className="h-8 w-8 text-white" />
-                        </div>
-                        <span className="text-2xl font-semibold text-white">BOOKSTORE</span>
-                    </div>
-                    
-                    <h2 className="text-4xl font-bold text-white mb-4">
-                        Quản lý nhà sách<br />chuyên nghiệp và đẳng cấp
-                    </h2>
-                    <p className="text-blue-100 text-lg">
-                        Hệ thống quản lý toàn diện cho mọi hoạt động kinh doanh sách
-                    </p>
-                </div>
-
-                <div className="relative z-10 space-y-4">
-                    <div className="flex items-center gap-4 text-white">
-                        <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg border border-white/20">
-                            <TrendingUp className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <div className="font-medium">Báo cáo chi tiết</div>
-                            <div className="text-sm text-blue-100">Theo dõi doanh thu</div>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-4 text-white">
-                        <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg border border-white/20">
-                            <Users className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <div className="font-medium">Quản lý nhân viên</div>
-                            <div className="text-sm text-blue-100">Kiểm soát tài khoản nhân viên</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            <AuthBrandingSidebar
+                title="Quản lý nhà sách chuyên nghiệp và đẳng cấp"
+                subtitle="Hệ thống quản lý toàn diện cho mọi hoạt động kinh doanh sách"
+                features={brandingFeatures}
+            />
 
             {/* Right Side - Login Form */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
