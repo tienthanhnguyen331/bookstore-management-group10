@@ -133,7 +133,9 @@ namespace DoAnPhanMem.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Lỗi gửi email: " + ex.Message);
+                Console.WriteLine($"Error sending email to {dto.Email}: {ex}"); // Log to Render Console
+                var innerMessage = ex.InnerException != null ? ex.InnerException.Message : "";
+                return StatusCode(500, $"Lỗi gửi email: {ex.Message} | Chi tiết: {innerMessage}");
             }
         }
 
