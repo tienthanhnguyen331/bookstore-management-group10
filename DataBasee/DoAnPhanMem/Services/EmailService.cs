@@ -1,59 +1,46 @@
-using MailKit.Net.Smtp;
-using MailKit.Security;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using Microsoft.Extensions.Configuration;
-using MimeKit;
 using System.Threading.Tasks;
+using System;
 
 namespace DoAnPhanMem.Services
 {
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _config;
+        private readonly string _sendGridKey;
 
         public EmailService(IConfiguration config)
         {
             _config = config;
+            // Key MUST come from Environment Variable "SendGridKey" to pass GitHub Security
+            _sendGridKey = _config["SendGridKey"] ?? throw new Exception("SendGridKey not found in Config!"); 
         }
 
         public async Task SendEmailAsync(string toEmail, string subject, string message)
         {
-            var emailSettings = _config.GetSection("EmailSettings");
+            var folderSettings = _config.GetSection("EmailSettings");
+            var fromEmail = folderSettings["SenderEmail"] ?? "nguyentienthanh7298@gmail.com"; 
+            var fromName = folderSettings["SenderName"] ?? "BookStore Support";
 
-            var email = new MimeMessage();
-            email.From.Add(new MailboxAddress(emailSettings["SenderName"], emailSettings["SenderEmail"]));
-            email.To.Add(MailboxAddress.Parse(toEmail));
-            email.Subject = subject;
+            var client = new SendGridClient(_sendGridKey);
+            var from = new EmailAddress(fromEmail, fromName);
+            var to = new EmailAddress(toEmail);
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, "", message);
+            
+            Console.WriteLine($"[SendGrid] Sending to {toEmail} from {fromEmail}...");
+            var response = await client.SendEmailAsync(msg);
 
-            var builder = new BodyBuilder();
-            builder.HtmlBody = message;
-            email.Body = builder.ToMessageBody();
-
-            using var smtp = new SmtpClient();
-            try 
+            if (response.IsSuccessStatusCode)
             {
-                smtp.Timeout = 15000; 
-                smtp.CheckCertificateRevocation = false;
-                smtp.ServerCertificateValidationCallback = (s, c, h, e) => true; // Bypass all cert errors (for IP connection)
-
-                var port = int.Parse(emailSettings["Port"]);
-                var host = emailSettings["SmtpServer"];
-
-                // Force IPv4 Resolution
-                var addresses = await System.Net.Dns.GetHostAddressesAsync(host);
-                var ipAddress = addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
-                var connectHost = ipAddress?.ToString() ?? host;
-
-                Console.WriteLine($"[Email] Resolved {host} -> {connectHost}. Connecting to {port}..."); 
-                
-                var options = port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
-                
-                await smtp.ConnectAsync(connectHost, port, options);
-                await smtp.AuthenticateAsync(emailSettings["Username"], emailSettings["Password"]);
-                await smtp.SendAsync(email);
+                Console.WriteLine("[SendGrid] Email sent successfully!");
             }
-            finally
+            else
             {
-                await smtp.DisconnectAsync(true);
+                var body = await response.Body.ReadAsStringAsync();
+                Console.WriteLine($"[SendGrid] FAILED. Status: {response.StatusCode}. Body: {body}");
+                throw new Exception($"SendGrid Error: {response.StatusCode} - {body}");
             }
         }
     }

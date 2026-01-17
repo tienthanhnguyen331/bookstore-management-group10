@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\Databasee\\DoAnPhanMem\\DoAnPhanMem.csproj": {}
+    "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\Databasee\\DoAnPhanMem\\DoAnPhanMem.csproj": {
+    "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\Databasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
+        "projectUniqueName": "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
         "projectName": "DoAnPhanMem",
-        "projectPath": "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\Databasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
+        "projectPath": "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
         "packagesPath": "C:\\Users\\Home\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\Databasee\\DoAnPhanMem\\obj\\",
+        "outputPath": "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -91,6 +91,10 @@
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[9.0.3, )"
+            },
+            "SendGrid": {
+              "target": "Package",
+              "version": "[9.29.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
