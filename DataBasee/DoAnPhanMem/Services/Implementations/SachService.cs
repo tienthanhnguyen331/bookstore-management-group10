@@ -34,7 +34,6 @@ namespace DoAnPhanMem.Services.Implementations
 
                             SoLuongTon = s.SoLuongTon,
 
-                            // --- KHẮC PHỤC LỖI TẠI ĐÂY ---
                             // Logic: Tìm trong bảng trung gian -> Join sang bảng Tác giả -> Lấy Tên
                             TenTacGia = (from st in _context.SACH_TAC_GIA
                                              // Nối bảng Trung Gian (st) với bảng Tác Giả (tg) qua MaTG
