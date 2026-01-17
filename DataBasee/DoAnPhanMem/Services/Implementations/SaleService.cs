@@ -1,4 +1,6 @@
-﻿using System;
+
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DoAnPhanMem.Data;
@@ -22,32 +24,41 @@ namespace DoAnPhanMem.Services.Implementations
         {
             if (dto.Items == null || !dto.Items.Any()) throw new ArgumentException("Danh sách sản phẩm rỗng");
 
-            // ensure customer exists if SDT provided, otherwise create a guest customer
+            // =================================================================================
+            // 1. CHỐT NGÀY HẠCH TOÁN (ACCOUNTING DATE)
+            // =================================================================================
+            // Dùng ngày Client gửi lên hoặc mặc định hiện tại. 
+            // Ngày này sẽ được dùng cho cả Hóa đơn và Chi tiết.
+            DateTime ngayHachToan = dto.At ?? DateTime.Now;
+
+            // =================================================================================
+            // 2. XỬ LÝ KHÁCH HÀNG (Logic từ HEAD - Chặt chẽ hơn)
+            // =================================================================================
+            KHACH_HANG kh = null;
             string maKH = null;
+
             if (!string.IsNullOrWhiteSpace(dto.SDT))
             {
-                var kh = await _context.KHACH_HANG.FirstOrDefaultAsync(k => k.SDT == dto.SDT);
+                kh = await _context.KHACH_HANG.FirstOrDefaultAsync(k => k.SDT == dto.SDT);
+
+                // Nếu chưa có khách hàng -> Tạo mới (Khách vãng lai)
                 if (kh == null)
                 {
-                    // Generate MaKH using the same KH<number> rule as KhachHangService
-                    var existingKeys = await _context.KHACH_HANG
-                        .AsNoTracking()
+                    // Nếu khách mới mà đòi ghi nợ ngay -> Chặn (Logic nghiệp vụ an toàn)
+                    if (dto.IsDebt) throw new InvalidOperationException("Khách vãng lai (mới) không được phép ghi nợ!");
+
+                    // Logic tự sinh mã KH (KH001, KH002...)
+                    var existingKeys = await _context.KHACH_HANG.AsNoTracking()
                         .Where(k => k.MaKH.StartsWith("KH"))
-                        .Select(k => k.MaKH)
-                        .ToListAsync();
+                        .Select(k => k.MaKH).ToListAsync();
 
                     var numericKeys = existingKeys
-                        .Where(k => System.Text.RegularExpressions.Regex.IsMatch(k, "^KH\\d+$"))
-                        .ToList();
+                        .Where(k => System.Text.RegularExpressions.Regex.IsMatch(k, "^KH\\d+$")).ToList();
 
                     int max = 0;
                     foreach (var key in numericKeys)
                     {
-                        var suffix = key.Substring(2);
-                        if (int.TryParse(suffix, out var n))
-                        {
-                            if (n > max) max = n;
-                        }
+                        if (int.TryParse(key.Substring(2), out var n) && n > max) max = n;
                     }
 
                     string newMa;
@@ -55,8 +66,7 @@ namespace DoAnPhanMem.Services.Implementations
                     do
                     {
                         newMa = "KH" + attempt;
-                        var exists2 = await _context.KHACH_HANG.AnyAsync(x => x.MaKH == newMa);
-                        if (!exists2) break;
+                        if (!await _context.KHACH_HANG.AnyAsync(x => x.MaKH == newMa)) break;
                         attempt++;
                     } while (true);
 
@@ -64,37 +74,41 @@ namespace DoAnPhanMem.Services.Implementations
                     {
                         MaKH = newMa,
                         HoTen = "Khách vãng lai",
-                        DiaChi = string.Empty,
                         SDT = dto.SDT,
-                        Email = string.Empty,
-                        CongNo = 0m
+                        CongNo = 0m,
+                        DiaChi = "",
+                        Email = ""
                     };
                     _context.KHACH_HANG.Add(kh);
                     await _context.SaveChangesAsync();
                 }
                 maKH = kh.MaKH;
             }
-
-            // validate MaNV: only use dto.MaNV if it exists in NHAN_VIEN, otherwise leave null
-            string? maNVValue = null;
-            if (!string.IsNullOrWhiteSpace(dto.MaNV))
+            else
             {
-                var nv = await _context.NHAN_VIEN.FindAsync(dto.MaNV);
-                if (nv != null) maNVValue = dto.MaNV;
+                // Nếu mua nợ mà không có thông tin khách -> Chặn
+                if (dto.IsDebt) throw new InvalidOperationException("Cần thông tin khách hàng để ghi nợ!");
             }
 
-            // create MaHoaDon
-            var maHoaDon = $"HD-{DateTime.Now:yyyyMMddHHmmss}-{Guid.NewGuid().ToString("N").Substring(0, 6)}";
+            // =================================================================================
+            // 3. TẠO HÓA ĐƠN (HEADER)
+            // =================================================================================
+            var maHoaDon = $"HD-{ngayHachToan:yyyyMMddHHmmss}-{Guid.NewGuid().ToString("N").Substring(0, 6)}";
 
             var hoaDon = new HOA_DON
             {
                 MaHoaDon = maHoaDon,
-                MaNV = maNVValue,
-                MaKH = maKH ?? string.Empty
+                MaNV = dto.MaNV,
+                MaKH = maKH ?? "" // Nếu khách lẻ không lưu tên
             };
             _context.HOA_DON.Add(hoaDon);
 
             decimal total = 0m;
+
+            // =================================================================================
+            // 4. DUYỆT SẢN PHẨM -> CẬP NHẬT KHO (SACH) & TẠO CHI TIẾT
+            // =================================================================================
+            // Lưu ý: Không cập nhật Báo Cáo Tồn ở đây vì Controller đã gọi Service riêng rồi.
 
             foreach (var item in dto.Items)
             {
@@ -102,26 +116,28 @@ namespace DoAnPhanMem.Services.Implementations
                 if (sach == null) throw new InvalidOperationException($"Sách {item.MaSach} không tồn tại");
                 if (sach.SoLuongTon < item.SoLuong) throw new InvalidOperationException($"Tồn kho không đủ cho {item.MaSach}");
 
-                // decrement stock
+                // Trừ kho thực tế
                 sach.SoLuongTon -= item.SoLuong;
                 _context.SACH.Update(sach);
 
-                // add chi tiet hoa don
                 var cthd = new CHI_TIET_HOA_DON
                 {
                     MaHoaDon = maHoaDon,
                     MaSach = item.MaSach,
                     DonGiaBan = item.DonGia,
-                    NgayLapHoaDon = DateTime.Now,
-                    SoLuong = item.SoLuong
+                    SoLuong = item.SoLuong,
+                    // Lưu đúng ngày hạch toán
+                    NgayLapHoaDon = ngayHachToan
                 };
                 _context.CHI_TIET_HOA_DON.Add(cthd);
 
                 total += item.DonGia * item.SoLuong;
             }
 
+            // Lưu thay đổi vào DB (Bao gồm Khách mới, Hóa đơn, Chi tiết, Cập nhật kho Sách)
             await _context.SaveChangesAsync();
 
+            // Trả về kết quả để Controller tiếp tục xử lý Báo cáo & Công nợ
             return (maHoaDon, total);
         }
 
@@ -161,4 +177,5 @@ namespace DoAnPhanMem.Services.Implementations
             return dto;
         }
     }
+
 }

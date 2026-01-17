@@ -1,4 +1,6 @@
+
 ﻿namespace DoAnPhanMem.DTO
+
 {
     public class DebtReportDto
     {
@@ -8,6 +10,7 @@
         public string? SDT { get; set; }
         public decimal NoDau { get; set; }
         public decimal NoPhatSinh { get; set; }
+        public decimal TraNo { get; set; }
         public decimal NoCuoi { get; set; }
     }
 }

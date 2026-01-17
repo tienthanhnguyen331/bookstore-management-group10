@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DoAnPhanMem.Migrations
 {
-    public partial class taodatabase : Migration
+    public partial class TaoDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -70,6 +70,7 @@ namespace DoAnPhanMem.Migrations
                     Nam = table.Column<int>(type: "int", nullable: false),
                     NoDau = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     NoPhatSinh = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    TraNo = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     NoCuoi = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     MaKH = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
@@ -229,6 +230,7 @@ namespace DoAnPhanMem.Migrations
                     Nam = table.Column<int>(type: "int", nullable: false),
                     TonDau = table.Column<int>(type: "int", nullable: false),
                     PhatSinh = table.Column<int>(type: "int", nullable: false),
+                    DaBan = table.Column<int>(type: "int", nullable: false),
                     TonCuoi = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

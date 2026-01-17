@@ -1,4 +1,7 @@
-﻿using DoAnPhanMem.Data;
+
+
+
+using DoAnPhanMem.Data;
 using DoAnPhanMem.DTO;
 using DoAnPhanMem.Models;
 using DoAnPhanMem.Services.Interfaces;
@@ -58,6 +61,13 @@ namespace DoAnPhanMem.Services.Implementations
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
 
+            // Check trùng số điện thoại, đảm bảo nợ ai nấy trả
+            bool isDuplicate = await _context.KHACH_HANG.AnyAsync(k => k.SDT == dto.SDT);
+            if (isDuplicate)
+            {
+                throw new InvalidOperationException($"Số điện thoại {dto.SDT} đã tồn tại trong hệ thống!");
+            }
+
             // Only accept basic customer info from client
             var hoTen = string.IsNullOrWhiteSpace(dto.HoTen) ? null : dto.HoTen.Trim();
             var email = string.IsNullOrWhiteSpace(dto.Email) ? null : dto.Email.Trim();
@@ -70,29 +80,28 @@ namespace DoAnPhanMem.Services.Implementations
             }
 
             // Generate a unique MaKH in the form KH1, KH2, ...
-            // We'll find existing keys that start with 'KH' and pick the next integer suffix.
             var existingKeys = await _context.KHACH_HANG
                 .AsNoTracking()
                 .Where(k => k.MaKH.StartsWith("KH"))
                 .Select(k => k.MaKH)
                 .ToListAsync();
 
-            // Only consider keys that strictly match the format KH<number>, e.g. KH1, KH2
+            // Chỉ lấy các mã đúng định dạng KH+ số (Hợp nhất code từ 2 nhánh tại đây)
             var numericKeys = existingKeys
                 .Where(k => System.Text.RegularExpressions.Regex.IsMatch(k, "^KH\\d+$"))
                 .ToList();
 
             int max = 0;
-            foreach (var key in numericKeys) // lày phần số trong MaKH
+            foreach (var key in numericKeys) // lấy phần số trong MaKH
             {
                 var suffix = key.Substring(2); // bỏ 'KH' lấy phần số
-                if (int.TryParse(suffix, out var n))// chuyển phần số sang int
+                if (int.TryParse(suffix, out var n)) // chuyển phần số sang int
                 {
                     if (n > max) max = n; // tìm số lớn nhất để tạo mã mới
                 }
             }
 
-            string newMa;// mã khách hàng mới
+            string newMa; // mã khách hàng mới
             int attempt = max + 1; // bắt đầu từ số lớn nhất + 1
             do
             {
@@ -116,7 +125,7 @@ namespace DoAnPhanMem.Services.Implementations
             _context.KHACH_HANG.Add(entity);
             await _context.SaveChangesAsync();
 
-            return new CustomerDto // Trả về 1 CustomerDto
+            return new CustomerDto
             {
                 MaKH = entity.MaKH,
                 HoTen = entity.HoTen,
@@ -125,7 +134,8 @@ namespace DoAnPhanMem.Services.Implementations
                 SDT = entity.SDT
             };
         }
-        //. Lấy ttin khách hàng theo số điện thoại
+
+        // Lấy thông tin khách hàng theo số điện thoại
         public async Task<CustomerDetailDto?> GetByPhoneAsync(string sdt)
         {
             if (string.IsNullOrWhiteSpace(sdt)) return null; // Nếu sdt rỗng thì không tìm
@@ -135,12 +145,11 @@ namespace DoAnPhanMem.Services.Implementations
                 .AsNoTracking() // Không theo dõi thay đổi
                 .FirstOrDefaultAsync(x => x.SDT == sdt); // So sánh số điện thoại
 
-            if (entity == null) return null;// Không tìm thấy khách hàng
-
+            if (entity == null) return null; // Không tìm thấy khách hàng
             else // Tìm thấy khách hàng
             {
-                return new CustomerDetailDto
-                { // Trả về DTO chi tiết
+                return new CustomerDetailDto // Trả về DTO chi tiết
+                {
                     MaKH = entity.MaKH,
                     HoTen = entity.HoTen,
                     Email = entity.Email,

@@ -1,4 +1,6 @@
+
 ﻿using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.EntityFrameworkCore;
 using DoAnPhanMem.Data;
 using DoAnPhanMem.Models;
@@ -20,7 +22,11 @@ namespace DoAnPhanMem.Controllers
             _khService = khachHangService;
         }
 
-        // API Lấy danh sách tất cả khách hàng
+
+
+        // API Lấy danh sách tất cả khách hàng -->OK
+
+
         // GET: api/KhachHang
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()
@@ -44,7 +50,11 @@ namespace DoAnPhanMem.Controllers
 
 
 
-        // API Tạo khách hàng mới
+
+
+        // API Tạo khách hàng mới -->OK
+
+
         // POST: api/KhachHang
         [HttpPost]
         //Danh sách các mã trạng thái có thể trả về
@@ -79,6 +89,44 @@ namespace DoAnPhanMem.Controllers
             var dto = await _khService.GetByPhoneAsync(sdt); // Gọi service lấy dữ liệu
             if (dto == null) return NotFound(); // Nếu không tìm thấy trả về 404
             return Ok(dto); // Trả về dữ liệu khách hàng
+        }
+
+        [HttpPut("update-info/{id}")] // API dạng PUT: api/customer/update-info/5
+        public async Task<IActionResult> UpdateCustomerInfo(string id, [FromBody] UpdateCustomerDto request)
+        {
+            // 1. Tìm khách hàng trong database theo ID
+            var customer = await _context.KHACH_HANG.FindAsync(id);
+
+            // 2. Nếu không tìm thấy thì báo lỗi 404
+            if (customer == null)
+            {
+                return NotFound("Không tìm thấy khách hàng này!");
+            }
+
+            // 2.1: Kiểm tra số điện thoại trùng. Để đảm bảo nợ ai người nấy trả
+            var isDuplicatePhoneNumber = await _context.KHACH_HANG.AnyAsync(k => k.SDT == request.SDT &&  k.MaKH != id);
+            if(isDuplicatePhoneNumber)
+            {
+                return BadRequest(new { message = "Số điện thoại này đã được sử dụng bởi khách hàng khác!" });
+            }
+
+
+            // 3. Cập nhật thông tin mới từ form vào database
+            customer.HoTen = request.HoTen;     
+            customer.Email = request.Email;          
+            customer.SDT = request.SDT; 
+            customer.DiaChi = request.DiaChi;       
+
+            // 4. Lưu thay đổi
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Cập nhật thành công!", data = customer });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi khi lưu dữ liệu: " + ex.Message);
+            }
         }
 
     }

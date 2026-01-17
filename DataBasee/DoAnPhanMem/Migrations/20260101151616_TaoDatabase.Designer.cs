@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoAnPhanMem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251221172552_taodatabase")]
-    partial class taodatabase
+    [Migration("20260101151616_TaoDatabase")]
+    partial class TaoDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -51,6 +51,9 @@ namespace DoAnPhanMem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("int");
 
+                    b.Property<decimal>("TraNo")
+                        .HasColumnType("decimal(18,0)");
+
                     b.HasKey("MaBCCN");
 
                     b.HasIndex("MaKH");
@@ -63,6 +66,9 @@ namespace DoAnPhanMem.Migrations
                     b.Property<string>("MaBCT")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DaBan")
+                        .HasColumnType("int");
 
                     b.Property<string>("MaSach")
                         .IsRequired()

@@ -47,8 +47,13 @@ namespace DoAnPhanMem.DTO
     {
         public string? SDTKhachHang { get; set; }
 
+        public bool IsDebt { get; set; } //Ghi nhận mua nợ 
+
+        public DateTime? At { get; set; } // Ngày hạch toán (nếu null thì dùng ngày hiện tại)
+
         [Required(ErrorMessage = "Danh sach san pham khong duoc de trong")]
         public List<ChiTietHoaDonDto> DanhSachSanPham { get; set; } = new();
+
     }
 
     // Response sau khi lap hoa don thanh cong
@@ -96,4 +101,5 @@ namespace DoAnPhanMem.DTO
         [Required(ErrorMessage = "Danh sach san pham khong duoc de trong")]
         public List<UpdateChiTietHoaDonDto> DanhSachSanPham { get; set; } = new();
     }
+    
 }
