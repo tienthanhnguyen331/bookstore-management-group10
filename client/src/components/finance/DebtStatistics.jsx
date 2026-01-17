@@ -1,5 +1,5 @@
 import { DollarSign, Users, AlertCircle } from "lucide-react";
-import StatCard from "./statCard";
+import StatCard from "./StatCard";
 
 function DebtStatistics({ customers }) {
     const totalDebt = customers.reduce(
