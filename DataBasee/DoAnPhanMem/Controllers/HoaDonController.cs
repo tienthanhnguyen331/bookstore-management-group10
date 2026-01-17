@@ -53,8 +53,9 @@ namespace DoAnPhanMem.Controllers
             }
             catch (Exception ex)
             {
-                // Trả về lỗi 400 kèm thông báo từ Service (VD: Hết hàng, Nợ quá mức...)
-                return BadRequest(new { message = ex.Message });
+                Console.WriteLine($"Error LapHoaDon: {ex}"); // Log full error to Render Console
+                var innerMessage = ex.InnerException != null ? ex.InnerException.Message : "";
+                return BadRequest(new { message = $"Lỗi: {ex.Message} | Chi tiết DB: {innerMessage}" });
             }
         }
 

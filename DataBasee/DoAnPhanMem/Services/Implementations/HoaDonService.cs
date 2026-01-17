@@ -207,7 +207,7 @@ namespace DoAnPhanMem.Services.Implementations
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                throw new Exception(ex.Message); // Bắt gọn exception
+                throw; // Rethrow original exception with full details (InnerException)
             }
         }
 
