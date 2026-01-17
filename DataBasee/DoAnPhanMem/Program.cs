@@ -24,7 +24,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173", "https://bookstore-management-group10-25ds.vercel.app") // Add Vercel domain
+            policy.WithOrigins("http://localhost:5173", 
+                               "https://bookstore-management-group10.vercel.app",
+                               "https://bookstore-management-group10-n6lt.vercel.app") // Update Vercel domains
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
