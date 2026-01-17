@@ -31,8 +31,11 @@ namespace DoAnPhanMem.Services
             using var smtp = new SmtpClient();
             try 
             {
-                smtp.Timeout = 10000; // 10s timeout
-                await smtp.ConnectAsync(emailSettings["SmtpServer"], int.Parse(emailSettings["Port"]), SecureSocketOptions.Auto);
+                smtp.Timeout = 20000; // Increase to 20s
+                var port = int.Parse(emailSettings["Port"]);
+                var options = port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
+                
+                await smtp.ConnectAsync(emailSettings["SmtpServer"], port, options);
                 await smtp.AuthenticateAsync(emailSettings["Username"], emailSettings["Password"]);
                 await smtp.SendAsync(email);
             }
