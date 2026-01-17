@@ -10,6 +10,9 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 
+// Enable legacy timestamp behavior for Npgsql to handle timezone conversion automatically
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. CẤU HÌNH DB ---
