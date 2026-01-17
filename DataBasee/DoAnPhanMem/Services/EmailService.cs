@@ -32,14 +32,22 @@ namespace DoAnPhanMem.Services
             try 
             {
                 smtp.Timeout = 15000; 
-                smtp.CheckCertificateRevocation = false; // Fix for Render Timeout
+                smtp.CheckCertificateRevocation = false;
+                smtp.ServerCertificateValidationCallback = (s, c, h, e) => true; // Bypass all cert errors (for IP connection)
+
                 var port = int.Parse(emailSettings["Port"]);
                 var host = emailSettings["SmtpServer"];
 
-                Console.WriteLine($"[Email] Connecting to {host}:{port}..."); // Debug Log
+                // Force IPv4 Resolution
+                var addresses = await System.Net.Dns.GetHostAddressesAsync(host);
+                var ipAddress = addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+                var connectHost = ipAddress?.ToString() ?? host;
+
+                Console.WriteLine($"[Email] Resolved {host} -> {connectHost}. Connecting to {port}..."); 
+                
                 var options = port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
                 
-                await smtp.ConnectAsync(host, port, options);
+                await smtp.ConnectAsync(connectHost, port, options);
                 await smtp.AuthenticateAsync(emailSettings["Username"], emailSettings["Password"]);
                 await smtp.SendAsync(email);
             }
