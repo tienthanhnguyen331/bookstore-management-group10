@@ -66,7 +66,7 @@ namespace DoAnPhanMem.Data
             {
                
                 // BỎ ràng buộc >= 150 và < 300 đi, vì đó là việc của Code check quy định
-                entity.HasCheckConstraint("CK_SACH_SoLuongTon_Valid", "SoLuongTon >= 0");
+                entity.HasCheckConstraint("CK_SACH_SoLuongTon_Valid", "\"SoLuongTon\" >= 0");
                 entity.Property(e => e.SoLuongTon).HasDefaultValue(0);
             });
 
@@ -79,19 +79,19 @@ namespace DoAnPhanMem.Data
             modelBuilder.Entity<CHI_TIET_HOA_DON>(entity =>
             {
                 // Số lượng bán > 0 
-                entity.HasCheckConstraint("CK_CTHD_SoLuong", "SoLuong > 0");
+                entity.HasCheckConstraint("CK_CTHD_SoLuong", "\"SoLuong\" > 0");
             });
 
             modelBuilder.Entity<PHIEU_THU_TIEN>(entity =>
             {
                 // Tiền thu > 0 
-                entity.HasCheckConstraint("CK_PTT_SoTien", "SoTienThu > 0");
+                entity.HasCheckConstraint("CK_PTT_SoTien", "\"SoTienThu\" > 0");
             });
 
             modelBuilder.Entity<CHI_TIET_PHIEU_NHAP>(entity =>
                 {
                     // Số lượng nhập > 0
-                    entity.HasCheckConstraint("CK_CTPN_SoLuong", "SoLuongNhap > 0");
+                    entity.HasCheckConstraint("CK_CTPN_SoLuong", "\"SoLuongNhap\" > 0");
                 });
 
            

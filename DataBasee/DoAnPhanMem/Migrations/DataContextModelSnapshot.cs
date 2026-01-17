@@ -3,8 +3,8 @@ using System;
 using DoAnPhanMem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,40 +17,40 @@ namespace DoAnPhanMem.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("DoAnPhanMem.Models.BAO_CAO_CONG_NO", b =>
                 {
                     b.Property<string>("MaBCCN")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaKH")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("Nam")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("NoCuoi")
-                        .HasColumnType("decimal(18,0)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<decimal>("NoDau")
-                        .HasColumnType("decimal(18,0)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<decimal>("NoPhatSinh")
-                        .HasColumnType("decimal(18,0)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<int>("Thang")
                         .HasMaxLength(100)
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("TraNo")
-                        .HasColumnType("decimal(18,0)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.HasKey("MaBCCN");
 
@@ -63,31 +63,31 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("MaBCT")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("DaBan")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("MaSach")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("Nam")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PhatSinh")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Thang")
                         .HasMaxLength(100)
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TonCuoi")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TonDau")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("MaBCT");
 
@@ -100,71 +100,73 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("MaHoaDon")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaSach")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<decimal>("DonGiaBan")
-                        .HasColumnType("decimal(18,0)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<DateTime>("NgayLapHoaDon")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("SoLuong")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("MaHoaDon", "MaSach");
 
                     b.HasIndex("MaSach");
 
-                    b.ToTable("CHI_TIET_HOA_DON");
-
-                    b.HasCheckConstraint("CK_CTHD_SoLuong", "SoLuong > 0");
+                    b.ToTable("CHI_TIET_HOA_DON", t =>
+                        {
+                            t.HasCheckConstraint("CK_CTHD_SoLuong", "\"SoLuong\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("DoAnPhanMem.Models.CHI_TIET_PHIEU_NHAP", b =>
                 {
                     b.Property<string>("MaPhieu")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaSach")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<decimal>("Gia")
-                        .HasColumnType("decimal(18,0)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<DateTime>("NgayNhap")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("SoLuongNhap")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("MaPhieu", "MaSach");
 
                     b.HasIndex("MaSach");
 
-                    b.ToTable("CHI_TIET_PHIEU_NHAP");
-
-                    b.HasCheckConstraint("CK_CTPN_SoLuong", "SoLuongNhap > 0");
+                    b.ToTable("CHI_TIET_PHIEU_NHAP", t =>
+                        {
+                            t.HasCheckConstraint("CK_CTPN_SoLuong", "\"SoLuongNhap\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("DoAnPhanMem.Models.HOA_DON", b =>
                 {
                     b.Property<string>("MaHoaDon")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaKH")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaNV")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MaHoaDon");
 
@@ -179,32 +181,32 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("MaKH")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<decimal>("CongNo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,0)")
+                        .HasColumnType("decimal(18, 0)")
                         .HasDefaultValue(0m);
 
                     b.Property<string>("DiaChi")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("HoTen")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("SDT")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MaKH");
 
@@ -215,37 +217,34 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("MaNV")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("ChucVu")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("DiaChi")
-                        .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("HoTen")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("SDT")
-                        .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("TenDangNhap")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MaNV");
 
@@ -259,12 +258,12 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("MaPhieu")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaNV")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MaPhieu");
 
@@ -277,22 +276,22 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("MaPhieu")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaKH")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaNV")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("NgayThuTien")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("SoTienThu")
-                        .HasColumnType("decimal(18,0)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.HasKey("MaPhieu");
 
@@ -300,25 +299,26 @@ namespace DoAnPhanMem.Migrations
 
                     b.HasIndex("MaNV");
 
-                    b.ToTable("PHIEU_THU_TIEN");
-
-                    b.HasCheckConstraint("CK_PTT_SoTien", "SoTienThu > 0");
+                    b.ToTable("PHIEU_THU_TIEN", t =>
+                        {
+                            t.HasCheckConstraint("CK_PTT_SoTien", "\"SoTienThu\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("DoAnPhanMem.Models.QUY_DINH", b =>
                 {
                     b.Property<string>("TenQuyDinh")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("GiaTri")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaNV")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("TenQuyDinh");
 
@@ -331,44 +331,45 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("MaSach")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<decimal>("DonGia")
-                        .HasColumnType("decimal(18,0)");
+                        .HasColumnType("decimal(18, 0)");
 
                     b.Property<string>("MaTL")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("SoLuongTon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasDefaultValue(0);
 
                     b.Property<string>("TenSach")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MaSach");
 
                     b.HasIndex("MaTL");
 
-                    b.ToTable("SACH");
-
-                    b.HasCheckConstraint("CK_SACH_SoLuongTon_Valid", "SoLuongTon >= 0");
+                    b.ToTable("SACH", t =>
+                        {
+                            t.HasCheckConstraint("CK_SACH_SoLuongTon_Valid", "\"SoLuongTon\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("DoAnPhanMem.Models.SACH_TAC_GIA", b =>
                 {
                     b.Property<string>("MaSach")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MaTG")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MaSach", "MaTG");
 
@@ -381,12 +382,12 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("MaTG")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("TenTG")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MaTG");
 
@@ -397,12 +398,12 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("TenDangNhap")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("MatKhau")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("TenDangNhap");
 
@@ -413,12 +414,12 @@ namespace DoAnPhanMem.Migrations
                 {
                     b.Property<string>("MaTL")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("TenTL")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MaTL");
 

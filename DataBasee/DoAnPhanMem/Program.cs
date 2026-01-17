@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // --- 1. CẤU HÌNH DB ---
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 // --- 2. CẤU HÌNH CORS ---
