@@ -117,11 +117,15 @@ builder.Services.AddScoped<DoAnPhanMem.Services.IEmailService, DoAnPhanMem.Servi
 var app = builder.Build();
 
 // --- 7. HTTP PIPELINE ---
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI();
+
+// Redirect root URL to Swagger
+app.MapGet("/", async context =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    context.Response.Redirect("/swagger/index.html");
+    await Task.CompletedTask;
+});
 
 app.UseHttpsRedirection();
 
