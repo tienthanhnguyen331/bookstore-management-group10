@@ -282,15 +282,30 @@ namespace DoAnPhanMem.Services.Implementations
         {
             var hoaDons = await _context.HOA_DON
                .Include(hd => hd.KhachHang)
-               .Include(hd => hd.ChiTietHoaDon)
+               .Include(hd => hd.ChiTietHoaDon).ThenInclude(ct => ct.Sach) // Include Sach to get names
                .ToListAsync();
 
-            return hoaDons.Select(hd => new HoaDonResponseDto
+            return hoaDons.Select(hd =>
             {
-                MaHoaDon = hd.MaHoaDon,
-                NgayLap = hd.ChiTietHoaDon.FirstOrDefault()?.NgayLapHoaDon ?? DateTime.MinValue,
-                TenKhachHang = hd.KhachHang?.HoTen ?? "Khach vang lai",
-                TongTien = hd.ChiTietHoaDon.Sum(ct => ct.DonGiaBan * ct.SoLuong)
+                var details = hd.ChiTietHoaDon.Select((ct, index) => new ChiTietHoaDonResponseDto
+                {
+                    STT = index + 1,
+                    MaSach = ct.MaSach,
+                    TenSach = ct.Sach?.TenSach ?? "",
+                    SoLuong = ct.SoLuong,
+                    DonGia = ct.DonGiaBan,
+                    ThanhTien = ct.DonGiaBan * ct.SoLuong
+                }).ToList();
+
+                return new HoaDonResponseDto
+                {
+                    MaHoaDon = hd.MaHoaDon,
+                    NgayLap = hd.ChiTietHoaDon.FirstOrDefault()?.NgayLapHoaDon ?? DateTime.MinValue,
+                    TenKhachHang = hd.KhachHang?.HoTen ?? "Khach vang lai",
+                    SDTKhachHang = hd.KhachHang?.SDT ?? "",
+                    DanhSachSanPham = details,
+                    TongTien = details.Sum(d => d.ThanhTien)
+                };
             }).ToList();
         }
 
