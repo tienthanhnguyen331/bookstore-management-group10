@@ -31,12 +31,29 @@ const InvoiceHistory = () => {
         }
     };
 
-    const handleExportPDF = (invoice) => {
+    const handleExportPDF = async (invoice) => {
         const doc = new jsPDF();
 
-        // Font setup for Vietnamese support (standard font may not support full Vietnamese)
-        // For a simple demo, we use the default font. authentic app might need custom font loading.
-        // doc.addFont(...) 
+        // Add Vietnamese font (Roboto-Regular)
+        try {
+            const fontUrl = "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf";
+            const response = await fetch(fontUrl);
+            const blob = await response.blob();
+            const reader = new FileReader();
+
+            await new Promise((resolve) => {
+                reader.onloadend = () => {
+                    const base64data = reader.result.split(",")[1];
+                    doc.addFileToVFS("Roboto-Regular.ttf", base64data);
+                    doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+                    doc.setFont("Roboto");
+                    resolve();
+                };
+                reader.readAsDataURL(blob);
+            });
+        } catch (e) {
+            console.error("Could not load font, falling back to default", e);
+        }
 
         // HEADER
         doc.setFontSize(22);
@@ -76,13 +93,13 @@ const InvoiceHistory = () => {
             startY: 55,
             theme: "grid",
             headStyles: { fillColor: [66, 133, 244] }, // Blue header
-            styles: { font: "helvetica" }, // Use standard font for compatibility
+            styles: { font: "Roboto" }, // Use custom font
         });
 
         // TOTAL
         const finalY = doc.lastAutoTable.finalY + 10;
         doc.setFontSize(12);
-        doc.setFont("helvetica", "bold");
+        doc.setFont("Roboto", "normal");
         doc.text(
             `Tong cong: ${invoice.TongTien.toLocaleString("vi-VN")} d`,
             190,
