@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import { salesService } from "../services/salesService";
 import formatCurrency from "../utils/formatCurrency";
 
@@ -70,7 +70,7 @@ const InvoiceHistory = () => {
             tableRows.push(rowData);
         });
 
-        doc.autoTable({
+        autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
             startY: 55,
