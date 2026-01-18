@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lVrYaqPtcxo=",
+  "dgSpecHash": "9bALgi6pooY=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\DataBasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
+  "projectFilePath": "C:\\Users\\Home\\Desktop\\BookStore_Static_Demo\\FE\\bookstore-management-group10\\Databasee\\DoAnPhanMem\\DoAnPhanMem.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Home\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Home\\.nuget\\packages\\bouncycastle.cryptography\\2.6.1\\bouncycastle.cryptography.2.6.1.nupkg.sha512",

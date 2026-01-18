@@ -4,8 +4,8 @@ import api from "./api"; // Đảm bảo bạn đã cấu hình axios trong file
 export const getCustomerDebt = async (phone) => {
     // Gọi API: GET /api/HoaDon/TraCuuKhachHang?sdt=...
     // Backend trả về: { MaKH, HoTen, CongNo, ... }
-    const response = await api.get('/HoaDon/TraCuuKhachHang', { 
-        params: { sdt: phone } 
+    const response = await api.get('/HoaDon/TraCuuKhachHang', {
+        params: { sdt: phone }
     });
     return response.data;
 };
@@ -15,12 +15,16 @@ export const createInvoice = async (payload) => {
     // Gọi API: POST /api/HoaDon/LapHoaDon
     // Payload nhận vào từ SalesPage: { SDTKhachHang, IsDebt, DanhSachSanPham }
     const response = await api.post('/HoaDon/LapHoaDon', payload);
-    return response.data; 
+    return response.data;
     // Backend trả về: { message, totalAmount, ... }
 };
 
 // 3. Export gom nhóm (để tương thích nếu bạn import dạng salesService.method)
 export const salesService = {
     getCustomerDebt,
-    createInvoice
+    createInvoice,
+    getInvoices: async () => {
+        const response = await api.get('/HoaDon');
+        return response.data;
+    }
 };

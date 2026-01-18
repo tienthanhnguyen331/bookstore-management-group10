@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Header } from "../components/Header";
-import { createInvoice } from "../services/salesService"; // Hoặc salesService.createInvoice tùy cách export
+import { createInvoice } from "../services/salesService";
 import { bookService } from "../services/bookService";
 import { settingsService } from "../services/settingsService";
 import { salesService } from "../services/salesService";
 import StateMessage from "../components/shared/StateMessage";
+import InvoiceHistory from "../components/InvoiceHistory";
 
 const SalesPage = () => {
+    // --- UI/Tab State ---
+    const [activeTab, setActiveTab] = useState("create"); // 'create' | 'history'
+
     // --- Data State ---
     const [books, setBooks] = useState([]); // Danh sách sách từ DB
     const [cart, setCart] = useState([]); // Giỏ hàng hiện tại
@@ -51,7 +55,7 @@ const SalesPage = () => {
             try {
                 const data = await settingsService.getRules();
                 // Backend trả về chuỗi hoặc số
-                const maxDebtVal =  data.MaxDebt || 2000000;
+                const maxDebtVal = data.MaxDebt || 2000000;
                 setDebtLimit(Number(maxDebtVal));
             } catch (err) {
                 console.error("Không tải được quy định nợ khách:", err);
@@ -251,282 +255,308 @@ const SalesPage = () => {
         <div className="min-h-screen bg-gray-50">
             <Header />
             <main className="max-w-7xl mx-auto px-6 py-8">
-                <h1 className="mb-8">Lập Hóa Đơn</h1>
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold">Quản lý Bán Hàng</h1>
+                    <div className="flex bg-white rounded-lg p-1 shadow-sm border border-gray-200">
+                        <button
+                            onClick={() => setActiveTab("create")}
+                            className={`px-4 py-2 rounded-md transition-all text-sm font-medium ${activeTab === "create"
+                                    ? "bg-blue-500 text-white shadow"
+                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                                }`}
+                        >
+                            Lập Hóa Đơn
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("history")}
+                            className={`px-4 py-2 rounded-md transition-all text-sm font-medium ${activeTab === "history"
+                                    ? "bg-blue-500 text-white shadow"
+                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                                }`}
+                        >
+                            Lịch Sử Hóa Đơn
+                        </button>
+                    </div>
+                </div>
 
-                {/* FORM NHẬP LIỆU */}
-                <div className="bg-white rounded-lg p-6 mb-8 shadow-sm">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        {/* Left Column */}
-                        <div className="space-y-6">
-                            <div className="mb-13">
-                                <label className="block mb-2">
-                                    Ngày lập hóa đơn
-                                    <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="date"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
-                                    value={saleDate}
-                                    onChange={(e) =>
-                                        setSaleDate(e.target.value)
-                                    }
-                                />
-                            </div>
-                            <div>
-                                <label className="block mb-2">
-                                    Chọn sách
-                                    <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
-                                    value={selectedBookID}
-                                    onChange={(e) =>
-                                        setSelectedBookID(e.target.value)
-                                    }
-                                >
-                                    <option value="">-- Chọn sách --</option>
-                                    {books.map((b) => (
-                                        <option
-                                            key={b.MaSach}
-                                            value={b.MaSach}
-                                            disabled={b.SoLuongTon <= 0}
+                {activeTab === "create" ? (
+                    <>
+                        {/* FORM NHẬP LIỆU */}
+                        <div className="bg-white rounded-lg p-6 mb-8 shadow-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                {/* Left Column */}
+                                <div className="space-y-6">
+                                    <div className="mb-13">
+                                        <label className="block mb-2">
+                                            Ngày lập hóa đơn
+                                            <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
+                                            value={saleDate}
+                                            onChange={(e) =>
+                                                setSaleDate(e.target.value)
+                                            }
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block mb-2">
+                                            Chọn sách
+                                            <span className="text-red-500">*</span>
+                                        </label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
+                                            value={selectedBookID}
+                                            onChange={(e) =>
+                                                setSelectedBookID(e.target.value)
+                                            }
                                         >
-                                            {b.TenSach} - Giá:{" "}
-                                            {(b.DonGia || 0).toLocaleString()}đ
-                                            - Kho: {b.SoLuongTon}{" "}
-                                            {b.SoLuongTon <= 0 ? "(HẾT)" : ""}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
+                                            <option value="">-- Chọn sách --</option>
+                                            {books.map((b) => (
+                                                <option
+                                                    key={b.MaSach}
+                                                    value={b.MaSach}
+                                                    disabled={b.SoLuongTon <= 0}
+                                                >
+                                                    {b.TenSach} - Giá:{" "}
+                                                    {(b.DonGia || 0).toLocaleString()}đ
+                                                    - Kho: {b.SoLuongTon}{" "}
+                                                    {b.SoLuongTon <= 0 ? "(HẾT)" : ""}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
 
-                        {/* Right Column */}
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block mb-2">
-                                    Số điện thoại khách hàng
-                                </label>
-                                <input
-                                    type="tel"
-                                    inputMode="numeric"
-                                    pattern="[0-9]*"
-                                    maxLength={15}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
-                                    placeholder="Nhập SĐT để tìm hoặc bán khách lẻ..."
-                                    value={customerPhone}
-                                    onChange={(e) =>
-                                        setCustomerPhone(
-                                            e.target.value.replace(/\D/g, "")
-                                        )
-                                    }
-                                />
-                                <div className="mt-2 flex justify-between items-start text-sm">
-                                    <p className="text-gray-500">
-                                        Nợ hiện tại:{" "}
-                                        <span className="text-blue-400">
-                                            {checkingDebt
-                                                ? "..."
-                                                : `${customerDebt.toLocaleString()}đ`}
-                                        </span>
-                                        <span className="text-gray-400">
-                                            {" "}
-                                            (Max: {debtLimit.toLocaleString()}đ)
-                                        </span>
-                                    </p>
-                                    {customerError && (
-                                        <span className="text-orange-500">
-                                            {customerError}
-                                        </span>
-                                    )}
+                                {/* Right Column */}
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="block mb-2">
+                                            Số điện thoại khách hàng
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
+                                            maxLength={15}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
+                                            placeholder="Nhập SĐT để tìm hoặc bán khách lẻ..."
+                                            value={customerPhone}
+                                            onChange={(e) =>
+                                                setCustomerPhone(
+                                                    e.target.value.replace(/\D/g, "")
+                                                )
+                                            }
+                                        />
+                                        <div className="mt-2 flex justify-between items-start text-sm">
+                                            <p className="text-gray-500">
+                                                Nợ hiện tại:{" "}
+                                                <span className="text-blue-400">
+                                                    {checkingDebt
+                                                        ? "..."
+                                                        : `${customerDebt.toLocaleString()}đ`}
+                                                </span>
+                                                <span className="text-gray-400">
+                                                    {" "}
+                                                    (Max: {debtLimit.toLocaleString()}đ)
+                                                </span>
+                                            </p>
+                                            {customerError && (
+                                                <span className="text-orange-500">
+                                                    {customerError}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block mb-2">
+                                            Số lượng mua
+                                            <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
+                                            value={quantity}
+                                            onChange={(e) =>
+                                                setQuantity(e.target.value)
+                                            }
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block mb-2">
-                                    Số lượng mua
-                                    <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
-                                    value={quantity}
-                                    onChange={(e) =>
-                                        setQuantity(e.target.value)
-                                    }
-                                />
+                            <button
+                                onClick={handleAddToCart}
+                                className="px-6 py-2 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors"
+                            >
+                                + Thêm vào giỏ
+                            </button>
+                        </div>
+
+                        {/* BẢNG GIỎ HÀNG */}
+                        <div className="bg-white rounded-lg shadow-sm">
+                            <div className="p-6 border-b border-gray-100">
+                                <h2 className="mb-4">Chi tiết hóa đơn</h2>
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-gray-500">
+                                    <p>
+                                        Khách hàng:{" "}
+                                        <span className="text-gray-900">
+                                            {customerDisplayName}
+                                        </span>
+                                    </p>
+                                    <p>Ngày lập: {saleDate}</p>
+                                </div>
+                            </div>
+
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead>
+                                        <tr className="bg-gray-100">
+                                            <th className="px-4 py-3 text-left">STT</th>
+                                            <th className="px-4 py-3 text-left">
+                                                Tên Sách
+                                            </th>
+                                            <th className="px-4 py-3 text-left">
+                                                Thể loại
+                                            </th>
+                                            <th className="px-4 py-3 text-center">
+                                                SL
+                                            </th>
+                                            <th className="px-4 py-3 text-right">
+                                                Đơn giá
+                                            </th>
+                                            <th className="px-4 py-3 text-right">
+                                                Thành tiền
+                                            </th>
+                                            <th className="px-4 py-3 text-center">
+                                                Xóa
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {cart.length === 0 ? (
+                                            <tr>
+                                                <td
+                                                    colSpan="7"
+                                                    className="px-4 py-8 text-center text-gray-400"
+                                                >
+                                                    Chưa có sản phẩm nào
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            cart.map((item, idx) => (
+                                                <tr
+                                                    key={item.MaSach || idx}
+                                                    className="border-t border-gray-100"
+                                                >
+                                                    <td className="px-4 py-4">
+                                                        {idx + 1}
+                                                    </td>
+                                                    <td className="px-4 py-4">
+                                                        {item.TenSach}
+                                                    </td>
+                                                    <td className="px-4 py-4 text-gray-500">
+                                                        {item.TenTheLoai ||
+                                                            item.TheLoai?.TenTL ||
+                                                            "-"}
+                                                    </td>
+                                                    <td className="px-4 py-4 text-center">
+                                                        {item.quantity}
+                                                    </td>
+                                                    <td className="px-4 py-4 text-right">
+                                                        {(
+                                                            item.DonGia || 0
+                                                        ).toLocaleString()}
+                                                        đ
+                                                    </td>
+                                                    <td className="px-4 py-4 text-right text-blue-400">
+                                                        {(
+                                                            (item.DonGia || 0) *
+                                                            item.quantity
+                                                        ).toLocaleString()}
+                                                        đ
+                                                    </td>
+                                                    <td className="px-4 py-4 text-center">
+                                                        <button
+                                                            className="text-red-500 hover:text-red-600 px-2"
+                                                            onClick={() =>
+                                                                handleDelete(
+                                                                    item.MaSach
+                                                                )
+                                                            }
+                                                        >
+                                                            Xóa
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="p-6 border-t border-gray-100 flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between">
+                                <div className="text-gray-500">
+                                    Tổng cộng:{" "}
+                                    <span className="text-blue-400">
+                                        {cart
+                                            .reduce(
+                                                (sum, i) =>
+                                                    sum + (i.DonGia || 0) * i.quantity,
+                                                0
+                                            )
+                                            .toLocaleString()}
+                                        đ
+                                    </span>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                    {/* Nút Thanh Toán (Tiền mặt) */}
+                                    <button
+                                        onClick={() => handleCheckout(false)}
+                                        disabled={loading || cart.length === 0}
+                                        className={`px-6 py-2 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors ${loading || cart.length === 0
+                                                ? "opacity-50 cursor-not-allowed"
+                                                : ""
+                                            }`}
+                                    >
+                                        {loading ? "Đang xử lý..." : "Thanh toán"}
+                                    </button>
+
+                                    {/* Nút Ghi Nợ */}
+                                    <button
+                                        onClick={() => handleCheckout(true)}
+                                        disabled={
+                                            loading ||
+                                            cart.length === 0 ||
+                                            !customerPhone.trim() ||
+                                            customerDisplayName === "Khách vãng lai"
+                                        }
+                                        className={`px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors ${loading ||
+                                                cart.length === 0 ||
+                                                !customerPhone.trim() ||
+                                                customerDisplayName === "Khách vãng lai"
+                                                ? "opacity-50 cursor-not-allowed"
+                                                : ""
+                                            }`}
+                                        title={
+                                            !customerPhone.trim()
+                                                ? "Vui lòng nhập SĐT khách hàng để ghi nợ"
+                                                : ""
+                                        }
+                                    >
+                                        {loading ? "Đang xử lý..." : "Ghi sổ nợ"}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <button
-                        onClick={handleAddToCart}
-                        className="px-6 py-2 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors"
-                    >
-                        + Thêm vào giỏ
-                    </button>
-                </div>
-
-                {/* BẢNG GIỎ HÀNG */}
-                <div className="bg-white rounded-lg shadow-sm">
-                    <div className="p-6 border-b border-gray-100">
-                        <h2 className="mb-4">Chi tiết hóa đơn</h2>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-gray-500">
-                            <p>
-                                Khách hàng:{" "}
-                                <span className="text-gray-900">
-                                    {customerDisplayName}
-                                </span>
-                            </p>
-                            <p>Ngày lập: {saleDate}</p>
-                        </div>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="px-4 py-3 text-left">STT</th>
-                                    <th className="px-4 py-3 text-left">
-                                        Tên Sách
-                                    </th>
-                                    <th className="px-4 py-3 text-left">
-                                        Thể loại
-                                    </th>
-                                    <th className="px-4 py-3 text-center">
-                                        SL
-                                    </th>
-                                    <th className="px-4 py-3 text-right">
-                                        Đơn giá
-                                    </th>
-                                    <th className="px-4 py-3 text-right">
-                                        Thành tiền
-                                    </th>
-                                    <th className="px-4 py-3 text-center">
-                                        Xóa
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {cart.length === 0 ? (
-                                    <tr>
-                                        <td
-                                            colSpan="7"
-                                            className="px-4 py-8 text-center text-gray-400"
-                                        >
-                                            Chưa có sản phẩm nào
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    cart.map((item, idx) => (
-                                        <tr
-                                            key={item.MaSach || idx}
-                                            className="border-t border-gray-100"
-                                        >
-                                            <td className="px-4 py-4">
-                                                {idx + 1}
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                {item.TenSach}
-                                            </td>
-                                            <td className="px-4 py-4 text-gray-500">
-                                                {item.TenTheLoai ||
-                                                    item.TheLoai?.TenTL ||
-                                                    "-"}
-                                            </td>
-                                            <td className="px-4 py-4 text-center">
-                                                {item.quantity}
-                                            </td>
-                                            <td className="px-4 py-4 text-right">
-                                                {(
-                                                    item.DonGia || 0
-                                                ).toLocaleString()}
-                                                đ
-                                            </td>
-                                            <td className="px-4 py-4 text-right text-blue-400">
-                                                {(
-                                                    (item.DonGia || 0) *
-                                                    item.quantity
-                                                ).toLocaleString()}
-                                                đ
-                                            </td>
-                                            <td className="px-4 py-4 text-center">
-                                                <button
-                                                    className="text-red-500 hover:text-red-600 px-2"
-                                                    onClick={() =>
-                                                        handleDelete(
-                                                            item.MaSach
-                                                        )
-                                                    }
-                                                >
-                                                    Xóa
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div className="p-6 border-t border-gray-100 flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between">
-                        <div className="text-gray-500">
-                            Tổng cộng:{" "}
-                            <span className="text-blue-400">
-                                {cart
-                                    .reduce(
-                                        (sum, i) =>
-                                            sum + (i.DonGia || 0) * i.quantity,
-                                        0
-                                    )
-                                    .toLocaleString()}
-                                đ
-                            </span>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                            {/* Nút Thanh Toán (Tiền mặt) */}
-                            <button
-                                onClick={() => handleCheckout(false)}
-                                disabled={loading || cart.length === 0}
-                                className={`px-6 py-2 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors ${
-                                    loading || cart.length === 0
-                                        ? "opacity-50 cursor-not-allowed"
-                                        : ""
-                                }`}
-                            >
-                                {loading ? "Đang xử lý..." : "Thanh toán"}
-                            </button>
-
-                            {/* Nút Ghi Nợ */}
-                            <button
-                                onClick={() => handleCheckout(true)}
-                                disabled={
-                                    loading ||
-                                    cart.length === 0 ||
-                                    !customerPhone.trim() ||
-                                    customerDisplayName === "Khách vãng lai"
-                                }
-                                className={`px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors ${
-                                    loading ||
-                                    cart.length === 0 ||
-                                    !customerPhone.trim() ||
-                                    customerDisplayName === "Khách vãng lai"
-                                        ? "opacity-50 cursor-not-allowed"
-                                        : ""
-                                }`}
-                                title={
-                                    !customerPhone.trim()
-                                        ? "Vui lòng nhập SĐT khách hàng để ghi nợ"
-                                        : ""
-                                }
-                            >
-                                {loading ? "Đang xử lý..." : "Ghi sổ nợ"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                    </>
+                ) : (
+                    <InvoiceHistory />
+                )}
 
                 {/* State Messages */}
                 <StateMessage

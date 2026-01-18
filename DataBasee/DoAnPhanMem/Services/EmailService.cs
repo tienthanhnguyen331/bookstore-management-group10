@@ -14,8 +14,7 @@ namespace DoAnPhanMem.Services
         public EmailService(IConfiguration config)
         {
             _config = config;
-            // Key MUST come from Environment Variable "SendGridKey" to pass GitHub Security
-            _sendGridKey = _config["SendGridKey"] ?? throw new Exception("SendGridKey not found in Config!"); 
+            _sendGridKey = _config["SendGridKey"];
         }
 
         public async Task SendEmailAsync(string toEmail, string subject, string message)
@@ -23,6 +22,12 @@ namespace DoAnPhanMem.Services
             var folderSettings = _config.GetSection("EmailSettings");
             var fromEmail = folderSettings["SenderEmail"] ?? "nguyentienthanh7298@gmail.com"; 
             var fromName = folderSettings["SenderName"] ?? "BookStore Support";
+
+            if (string.IsNullOrEmpty(_sendGridKey))
+            {
+                Console.WriteLine("[SendGrid] SendGridKey is missing. Email not sent.");
+                return; // Or throw exception depending on requirement, but avoiding crash is better for demo
+            }
 
             var client = new SendGridClient(_sendGridKey);
             var from = new EmailAddress(fromEmail, fromName);
